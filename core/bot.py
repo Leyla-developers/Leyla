@@ -4,7 +4,7 @@ from disnake.ext import commands
 from classes.context import Context
 
 
-class Bot(commands.Bot):
+class Leyla(commands.Bot):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
