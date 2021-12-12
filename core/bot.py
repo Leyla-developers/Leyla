@@ -15,6 +15,7 @@ class Leyla(commands.Bot):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
         self.uptime = datetime.utcnow()
+        self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
@@ -27,6 +28,7 @@ class Leyla(commands.Bot):
             for cog in find_extensions_in(folder):
                 if ignore_cogs is None or ignore_cogs is not None and not cog in ignore_cogs:
                     try:
+                        print('Loading cog', cog, '...')
                         self.load_extension(cog)
                     except Exception as e:
                         print(cog, e)
@@ -37,9 +39,6 @@ class Leyla(commands.Bot):
 
     async def get_context(self, message, *, cls=Context):
         return await super().get_context(message=message, cls=cls)
-
-    async def on_connect(self):
-        self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
 
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
