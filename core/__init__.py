@@ -1,1 +1,1 @@
-from core import Leyla
+from .bot import Leyla

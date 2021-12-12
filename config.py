@@ -7,14 +7,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class Config:
 
-    TOKEN = environ('TOKEN')
     MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
     DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'prefix': 'l.', 'color': ...}
 
-    def __init__(self, bot):
-        self.bot = bot
-        self.bot.config = self
+    def __init__(self) -> None:
+        pass
 
     async def get_prefix(self, bot, message):
         if message.guild:
@@ -26,4 +24,4 @@ class Config:
             data = await self.DB.guilds.find_one({"_id": guild.id})
         else:
             data = self.DEFAULT_GUILD_DATA
-        return data.get(key) if key else data
+        return data.get(key) if key is not None else data

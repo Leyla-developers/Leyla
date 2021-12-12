@@ -1,3 +1,4 @@
+import yaml
 from datetime import datetime
 from typing import Iterable
 
@@ -29,11 +30,15 @@ class Leyla(commands.Bot):
                     except Exception as e:
                         print(cog, e)
 
+    def get_lang_cog(self, cog: str, lang: str):
+        with open(f'localization/{lang}/{cog.lower()}.yml', 'r') as file:
+            return yaml.safe_load(file)
+
     async def get_context(self, message, *, cls):
         return await super().get_context(message, cls=Context)
 
     async def on_connect(self):
-        self.load_cogs()
+        self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
 
     async def on_ready(self):
         print(self.name, 'started at:', str(self.uptime))
