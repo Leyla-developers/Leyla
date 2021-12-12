@@ -34,8 +34,8 @@ class Leyla(commands.Bot):
         with open(f'localization/{lang}/{cog.lower()}.yml', 'r') as file:
             return yaml.safe_load(file)
 
-    async def get_context(self, message, *, cls):
-        return await super().get_context(message, cls=Context)
+    async def get_context(self, message, *, cls=Context):
+        return await super().get_context(message, cls)
 
     async def on_connect(self):
         self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
