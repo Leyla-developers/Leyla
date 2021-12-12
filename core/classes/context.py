@@ -15,3 +15,6 @@ class Context(commands.Context):
             return await super().reply(content=content, **kwargs)
         except disnake.HTTPException:
             return await super().send(content=content, **kwargs)
+
+    async def config(self):
+        return self.bot.config
