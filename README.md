@@ -12,11 +12,11 @@
 ___
 
 #### **A little about the capabilities of the bot:**
-- ### **`RP commands`** 🎭
-- ### **`Fun commands`** 🥳
-- ### **`Utilities`** 🔨
-- ### **`Settings`** ⚙
-- ### **`Custom server commands`** 🔧
+- **`RP commands`** 🎭
+- **`Fun commands`** 🥳
+- **`Utilities`** 🔨
+- **`Settings`** ⚙
+- **`Custom server commands`** 🔧
 ___
 ### Other info
 
