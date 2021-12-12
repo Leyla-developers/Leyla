@@ -1,12 +1,25 @@
-## Leyla - multifunctional bot for Discord. 
+[![Official Discord Server](https://discordapp.com/api/guilds/864367089102749726/embed.png)](https://discord.gg/43zapTjgvm)
+[![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](LICENSE)
+# <b>Leyla - multifunctional bot for Discord</b> 
 
-Links: [`Сервер поддержки`](https://discord.gg/43zapTjgvm)
+<p align="center">
+    <img src="data/assets/images/bot_avatar.png" alt="drawing" width="200"/>
+</p>
 
-Creators: [`Reidy`](https://discord.com/users/848593011038224405) | [`MagM1go`](https://discord.com/users/598387707311554570)
+>Links: [`Official Discord Server`](https://discord.gg/43zapTjgvm)
 
+>Creators: [`Reidy`](https://discord.com/users/848593011038224405) | [`MagM1go`](https://discord.com/users/598387707311554570)
+___
 
+#### **A little about the capabilities of the bot:**
+- ### **`RP commands`** 🎭
+- ### **`Fun commands`** 🥳
+- ### **`Utilities`** 🔨
+- ### **`Settings`** ⚙
+- ### **`Custom server commands`** 🔧
+___
 ### Other info
 
-Language: [`Python 3.10.0`](https://python.org)
+> Language: [`Python 3.10.0`](https://python.org)
 
-Library: [`Disnake`](https://pypi.org/project/disnake/)
+> Library: [`Disnake`](https://pypi.org/project/disnake/)
