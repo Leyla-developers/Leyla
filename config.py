@@ -19,7 +19,7 @@ class Config:
             prefix = await self.get_guild_data(message.guild.id, key='prefix')
             return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(bot, message)
 
-    async def get_guild_data(self, guild: Guild, key: str=None) -> dict:
+    async def get_guild_data(self, guild: commands.GuildConverter, key: str=None) -> dict:
         if await self.DB.guilds.count_documents({"_id": guild.id}) != 0:
             data = await self.DB.guilds.find_one({"_id": guild.id})
         else:
