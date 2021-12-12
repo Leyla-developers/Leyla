@@ -5,7 +5,7 @@ from typing import Iterable
 from disnake.ext import commands
 from jishaku.modules import find_extensions_in
 
-from classes.context import Context
+from .classes.context import Context
 
 
 class Leyla(commands.Bot):
