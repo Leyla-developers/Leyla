@@ -12,7 +12,7 @@ config = Config()
 async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
         owner_ids=[848593011038224405, 880028714841305150, 598387707311554570],
-        command_prefix=config.get_prefix(),
+        command_prefix=config.get_prefix,
         allowed_mentions=disnake.AllowedMentions(
             everyone=False,
             replies=True,
