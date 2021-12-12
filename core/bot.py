@@ -35,7 +35,7 @@ class Leyla(commands.Bot):
             return yaml.safe_load(file)
 
     async def get_context(self, message, *, cls=Context):
-        return await super().get_context(message, cls)
+        return await super().get_context(message=message, cls=cls)
 
     async def on_connect(self):
         self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
