@@ -15,7 +15,7 @@ async def init_and_run_bot(token: str) -> None:
         command_prefix=config.get_prefix,
         allowed_mentions=disnake.AllowedMentions(
             everyone=False,
-            replies=True,
+            replied_user=True,
             roles=False,
             users=False,
         ),
