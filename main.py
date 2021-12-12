@@ -31,3 +31,4 @@ async def init_and_run_bot(token: str) -> None:
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init_and_run_bot(environ['TOKEN']))
+loop.close()
