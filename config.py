@@ -9,7 +9,7 @@ class Config:
 
     TOKEN = environ('TOKEN')
     MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
-    DB = MONGO_CLIENT.main.Leyla
+    DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'prefix': 'l.', 'color': ...}
 
     def __init__(self, bot):
