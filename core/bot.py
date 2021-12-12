@@ -21,10 +21,10 @@ class Leyla(commands.Bot):
     def __delitem__(self, item: str):
         return self.remove_command(item)
     
-    def load_cogs(self, folders: Iterable, ignore_cogs: Iterable):
+    def load_cogs(self, folders: Iterable, ignore_cogs: Iterable=None):
         for folder in folders:
             for cog in find_extensions_in(folder):
-                if not cog in ignore_cogs:
+                if ignore_cogs is not None and not cog in ignore_cogs:
                     try:
                         self.load_extension(cog)
                     except Exception as e:
