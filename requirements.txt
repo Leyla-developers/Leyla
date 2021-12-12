@@ -1,2 +1,6 @@
+asyncio
+aiohttp
 disnake
-disnake-jishaku 
+disnake-jishaku
+motor
+dnspython
