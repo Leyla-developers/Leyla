@@ -1,5 +1,8 @@
 [![Official Discord Server](https://discordapp.com/api/guilds/864367089102749726/embed.png)](https://discord.gg/43zapTjgvm)
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](LICENSE)
+<a href="https://github.com/kuzaku-developers/kuzaku">
+    <img src="https://img.shields.io/tokei/lines/github/leyla-developers/Leyla?color=blue&label=Lines%20of%20code&logo=github&logoColor=blue" alt="boosty">
+</a>
 # <b>Leyla - multifunctional bot for Discord</b> 
 
 <p align="center">
