@@ -15,7 +15,7 @@ class Leyla(commands.Bot):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
         self.uptime = datetime.utcnow()
-        self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
+        self.load_cogs(['cogs/slash_commands', 'cogs/message_commands', 'cogs/events'])
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)

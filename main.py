@@ -9,7 +9,7 @@ from config import Config
 config = Config()
 
 
-def init_and_run_bot(token: str) -> None:
+async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
         owner_ids=[848593011038224405, 880028714841305150, 598387707311554570],
         command_prefix=config.get_prefix,
@@ -28,4 +28,7 @@ def init_and_run_bot(token: str) -> None:
     bot.run(token)
 
 
-init_and_run_bot(environ['TOKEN'])
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(init_and_run_bot(environ['TOKEN']))
+loop.close()
