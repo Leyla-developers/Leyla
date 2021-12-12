@@ -41,4 +41,4 @@ class Leyla(commands.Bot):
         self.load_cogs(['cogs.slash_commands', 'cogs.message_commands', 'cogs.events'])
 
     async def on_ready(self):
-        print(self.name, 'started at:', str(self.uptime))
+        print(self.user.name, 'started at:', str(self.uptime))
