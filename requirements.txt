@@ -1,4 +1,4 @@
-yaml
+PyYAML
 asyncio
 aiohttp
 disnake
