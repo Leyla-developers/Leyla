@@ -25,9 +25,9 @@ async def init_and_run_bot(token: str) -> None:
         intents=disnake.Intents.all()
     )
     bot.config = config
-    bot.run(token)
+    await bot.start(token)
 
 
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(init_and_run_bot(environ['TOKEN']))
+init_and_run_bot(environ['TOKEN'])
