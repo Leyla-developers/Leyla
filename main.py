@@ -8,7 +8,6 @@ from config import Config
 
 config = Config()
 
-
 async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
         owner_ids=[848593011038224405, 880028714841305150, 598387707311554570],
@@ -26,7 +25,6 @@ async def init_and_run_bot(token: str) -> None:
     )
     bot.config = config
     await bot.start(token)
-
 
 
 loop = asyncio.get_event_loop()

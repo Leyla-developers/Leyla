@@ -26,7 +26,7 @@ class Leyla(commands.Bot):
     def load_cogs(self, folders: Iterable, ignore_cogs: Iterable=None):
         for folder in folders:
             for cog in find_extensions_in(folder):
-                if ignore_cogs is None or ignore_cogs is not None and not cog in ignore_cogs:
+                if not ignore_cogs or ignore_cogs and not cog in ignore_cogs:
                     try:
                         print('Loading cog', cog, '...')
                         self.load_extension(cog)

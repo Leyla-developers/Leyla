@@ -11,9 +11,11 @@ class Utilities(commands.Cog):
 
     @commands.command()
     async def avatar(self, ctx: commands.Context, user: disnake.User=None):
-        user = user if user is not None else ctx.author.avatar
-        embed = ctx.embed(title=self.bot.get_lang_cog('en', self.qualified_name)['commands'][ctx.command.qualified_name]['embed_title'],
-                          image=user.display_avatar.url)
+        user = user if user else ctx.author.avatar
+        embed = ctx.embed(
+            title=self.bot.get_lang_cog('en', self.qualified_name)['commands'][ctx.command.qualified_name]['embed_title'],
+            image=user.display_avatar.url
+        )
         return await ctx.reply(embed=embed)
 
 

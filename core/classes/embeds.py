@@ -13,15 +13,15 @@ class Embeds(Embed):
         embed = self.from_dict(**kwargs)
 
         if isinstance(embed.color, self.Empty):
-            embed.color = self.default_color if ctx is None else ctx.config.get_guild_data(ctx.guild.id, key='color')
+            embed.color = self.default_color if not ctx else ctx.config.get_guild_data(ctx.guild.id, key='color')
 
-        if ctx is not None:
+        if ctx:
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
 
-        if image is not None:
+        if image:
             embed.set_image(url=image)
 
-        if thumbnail is not None:
+        if thumbnail:
             embed.set_thumbnail(url=thumbnail)
 
         return embed
