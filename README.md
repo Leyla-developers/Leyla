@@ -2,7 +2,6 @@
 [![GPL Licence](https://badges.frapsoft.com/os/gpl/gpl.svg?v=103)](LICENSE)
 <a href="https://github.com/leyla-developers/Leyla">
     <img src="https://img.shields.io/tokei/lines/github/leyla-developers/Leyla?color=blue&label=Lines%20of%20code&logo=github&logoColor=blue" alt="boosty">
-    <iframe src="https://canary.discord.com/widget?id=864367089102749726&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 </a>
 # <b>Leyla - multifunctional bot for Discord</b> 
 
