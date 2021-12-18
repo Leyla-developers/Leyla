@@ -11,6 +11,8 @@
 
 >Links: [`Official Discord Server`](https://discord.gg/43zapTjgvm)
 
+<iframe src="https://canary.discord.com/widget?id=864367089102749726&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+
 >Creators: [`Reidy`](https://discord.com/users/848593011038224405) | [`MagM1go`](https://discord.com/users/598387707311554570)
 ___
 
