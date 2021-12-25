@@ -16,7 +16,7 @@ class Leyla(commands.Bot):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
         self.uptime = datetime.utcnow()
-        self.embeds = Embeds(self.config.DEFAULT_GUILD_OPTIONS['color'])
+        self.embeds = Embeds(0xa8a6f0)
         self.load_cogs(['cogs/slash_commands', 'cogs/message_commands', 'cogs/events'])
 
     def __getitem__(self, item: str) -> commands.Command:
