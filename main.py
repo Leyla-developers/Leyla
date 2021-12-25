@@ -26,6 +26,5 @@ async def init_and_run_bot(token: str) -> None:
     bot.config = config
     await bot.start(token)
 
-
 loop = asyncio.get_event_loop()
-init_and_run_bot(environ['TOKEN'])
+loop.run_until_complete(init_and_run_bot(environ['TOKEN']))
