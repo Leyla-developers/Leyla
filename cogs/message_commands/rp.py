@@ -24,7 +24,7 @@ class RolePlay(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.user_command(
+    @commands.slash_command(
         description='Взаимодействовать с пользователем',
         options=[
             disnake.Option('user', 'пользователь', type=disnake.OptionType.user),
