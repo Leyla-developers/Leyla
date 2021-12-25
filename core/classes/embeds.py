@@ -1,5 +1,6 @@
 from typing import Union
 
+import disnake
 from disnake import Embed, Integration
 from disnake.ext.commands import Context
 
