@@ -7,6 +7,7 @@ from disnake.ext import commands
 from jishaku.modules import find_extensions_in
 
 from .classes.context import Context
+from .classes.embeds import Embeds
 
 
 class Leyla(commands.Bot):
@@ -15,6 +16,7 @@ class Leyla(commands.Bot):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
         self.uptime = datetime.utcnow()
+        self.embeds = Embeds(self.config.DEFAULT_GUILD_OPTIONS['color'])
         self.load_cogs(['cogs/slash_commands', 'cogs/message_commands', 'cogs/events'])
 
     def __getitem__(self, item: str) -> commands.Command:
