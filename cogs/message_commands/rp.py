@@ -36,7 +36,7 @@ class RolePlay(commands.Cog):
         embed = await self.bot.embeds.simple(
             inter, 
             description=f'***{RP_DESCRIPTIONS[choice].format(user=user)}',
-            image=await waifu_pics.get_image('sfw', choice, self.bot.session)
+            image=await waifu_pics.get_image('sfw', choice)
         )
         return await inter.send(embed=embed)
 
