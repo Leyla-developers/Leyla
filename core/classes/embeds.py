@@ -9,7 +9,7 @@ class Embeds(Embed):
     def __init__(self, default_color) -> None:
         self.default_color = default_color
 
-    async def simple(self, ctx: Union[Context, Integration]=None, image: str=None, thumbnail: str=None, **kwargs):
+    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, image: str=None, thumbnail: str=None, **kwargs):
         embed = self.from_dict(**kwargs)
 
         if isinstance(embed.color, self.Empty):

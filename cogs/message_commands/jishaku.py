@@ -5,8 +5,12 @@ from disnake.ext import commands
 from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES, Jishaku
 from jishaku.features.baseclass import Feature
 
+from config import DEFAULT_GUILD_DATA
+
 
 class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
+
+    COG_EMOJI = '👑'
 
     @Feature.Command(parent='jsk', name='test')
     async def test(self, ctx):
@@ -18,5 +22,5 @@ def setup(bot: commands.Bot):
     jishaku.Flags.FORCE_PAGINATOR = True
     jishaku.Flags.NO_DM_TRACEBACK = True
     environ['JISHAKU_EMBEDDED_JSK'] = 'true'
-    environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = bot.config.DEFAULT_GUILD_DATA['color']
+    environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = DEFAULT_GUILD_DATA['color']
     bot.add_cog(Jishaku(bot))
