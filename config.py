@@ -8,12 +8,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class Config:
 
-    MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
-    DB = MONGO_CLIENT.Leyla
-    DEFAULT_GUILD_DATA = {'prefix': 'l.', 'color': 0xa8a6f0}
-
     def __init__(self) -> None:
-        pass
+        self.MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
+        self.DB = self.MONGO_CLIENT.Leyla
+        self.DEFAULT_GUILD_DATA = {'prefix': 'l.', 'color': 0xa8a6f0}
+
 
     async def get_prefix(self, bot, message):
         if message.guild:
