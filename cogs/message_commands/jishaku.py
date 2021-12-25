@@ -8,6 +8,9 @@ from jishaku.features.baseclass import Feature
 from config import Config
 
 
+config = Config()
+
+
 class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
     COG_EMOJI = '👑'
@@ -22,5 +25,5 @@ def setup(bot: commands.Bot):
     jishaku.Flags.FORCE_PAGINATOR = True
     jishaku.Flags.NO_DM_TRACEBACK = True
     environ['JISHAKU_EMBEDDED_JSK'] = 'true'
-    environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = Config.DEFAULT_GUILD_DATA['color']
+    environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = config.DEFAULT_GUILD_DATA['color']
     bot.add_cog(Jishaku(bot))

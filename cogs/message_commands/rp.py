@@ -27,9 +27,9 @@ class RolePlay(commands.Cog):
     @commands.slash_command(
         description='Взаимодействовать с пользователем',
         options=[
-            disnake.Option('user', 'пользователь', type=disnake.OptionType.user),
             disnake.Option('choice', 'выбор действия', type=disnake.OptionType.string,
-                            required=True, choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()])
+                            required=True, choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()]),
+            disnake.Option('user', 'пользователь', type=disnake.OptionType.user)
         ]
     )
     async def rp(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User = commands.Param(lambda inter: inter.author), choice: str=None):
