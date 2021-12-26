@@ -10,8 +10,8 @@ class Embeds(Embed):
     def __init__(self, default_color) -> None:
         self.default_color = default_color
 
-    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, title: str=None, description: str=None, image: str=None, thumbnail: str=None, *args, **kwargs):
-        embed = self.from_dict(*args, **kwargs)
+    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, title: str=None, description: str=None, image: str=None, thumbnail: str=None, **kwargs):
+        embed = self.from_dict(**kwargs)
 
         if isinstance(embed.color, self.Empty):
             embed.color = self.default_color if not ctx else ctx.config.get_guild_data(ctx.guild.id, key='color')
