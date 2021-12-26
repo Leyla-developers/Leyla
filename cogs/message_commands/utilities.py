@@ -26,7 +26,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         usage='<to/from> <Текст>'
     )
-    async def morse(self, ctx, variant: typing.Literal['to', 'from'], *, code):
+    async def morse(self, ctx: commands.Context, variant: typing.Literal['to', 'from'], *, code):
         if variant == 'to':
             morse = Decoder().to_morse(code)
         elif variant == 'from':

@@ -6,7 +6,7 @@ from typing import Iterable
 from disnake.ext import commands
 from jishaku.modules import find_extensions_in
 
-from .classes.context import Context, Application
+from .classes.context import Context
 from .classes.embeds import Embeds
 
 
