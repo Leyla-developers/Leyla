@@ -38,8 +38,5 @@ class Leyla(commands.Bot):
     async def get_context(self, message, *, cls=Context):
         return await super().get_context(message=message, cls=cls)
 
-    async def get_application(self, message, *, cls=Application):
-        return await super().get_application(message=message, cls=cls)
-
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))

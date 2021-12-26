@@ -8,6 +8,9 @@ from jishaku.features.baseclass import Feature
 
 class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
+    def __init__(self, bot):
+        self.bot = bot
+
     COG_EMOJI = '👑'
 
     @Feature.Command(parent='jsk', name='test')
