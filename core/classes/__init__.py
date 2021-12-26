@@ -1,2 +1,2 @@
-from .context import Context, Application
+from .context import Context
 from .embeds import Embeds
