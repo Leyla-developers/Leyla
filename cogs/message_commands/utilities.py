@@ -22,7 +22,7 @@ class Utilities(commands.Cog):
             title=f"Аватар {'бота' if user.bot else 'пользователя'}",
             image=user.display_avatar.url
         )
-        return await ctx.reply(embed=embed)
+        return await ctx.response.send_message(embed=embed)
 
     @commands.slash_command(
         usage='<to/from> <Текст>'
@@ -36,7 +36,7 @@ class Utilities(commands.Cog):
             title='Декодер морзе',
             description=morse
         )
-        await ctx.reply(embed=embed)
+        await ctx.response.send_message(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
