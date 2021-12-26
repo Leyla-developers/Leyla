@@ -26,7 +26,7 @@ class Decoder:
         self.morse_reverse = {value:key for key, value in self.morse_dict.items()}
 
     def to_morse(self, string):
-        return "".join(self.morse_dict.get(i.upper()) for i in string)        
+        return " ".join(self.morse_dict.get(i.upper()) for i in string)        
 
     def from_morse(self, string):
-        return "".join(self.morse_reverse.get(i.upper()) for i in string)
+        return "".join(self.morse_reverse.get(i.upper()) for i in string.split())
