@@ -13,11 +13,12 @@ class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.embed = self.bot.embeds
 
     @commands.slash_command()
     async def avatar(self, ctx: commands.Context, user: disnake.User=None):
         user = user if user else ctx.author.avatar
-        embed = await ctx.embed(
+        embed = await self.embed.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'}",
             image=user.display_avatar.url
         )
@@ -31,7 +32,7 @@ class Utilities(commands.Cog):
             morse = Decoder().to_morse(code)
         elif variant == 'from':
             morse = Decoder().from_morse(code)
-        embed = await ctx.embed(
+        embed = await self.embed.simple(
             title='Декодер морзе',
             description=morse
         )

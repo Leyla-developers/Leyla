@@ -16,6 +16,3 @@ class Context(Context):
             return await super().reply(content=content, **kwargs)
         except HTTPException:
             return await super().send(content=content, **kwargs)
-
-    async def embed(self, image: str=None, thumbnail: str=None, **kwargs) -> Embed:
-        return await self.bot.embeds.simple(self, image, thumbnail, **kwargs)
