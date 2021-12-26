@@ -32,8 +32,9 @@ class Utilities(commands.Cog):
             morse = Decoder().to_morse(code)
         elif variant == 'from':
             morse = Decoder().from_morse(code)
+
         embed = await self.embed.simple(
-            title='Декодер морзе',
+            title='Decoder/Encoder морзе.',
             description=morse
         )
         await ctx.response.send_message(embed=embed)
