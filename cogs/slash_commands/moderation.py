@@ -12,8 +12,8 @@ class Moderation(commands.Cog):
         description="Можете теперь спокойно выдавать предупреждения uwu."
     )
     @commands.has_permissions(ban_members=True)
-    async def warn(self, ctx, member: disnake.Member, *, reason: str):
-        
+    async def warn(self, ctx, member: disnake.Member, *, reason: str=None):
+        embed = await self.bot.embeds.simple()
 
 
 def setup(bot):

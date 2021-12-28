@@ -72,8 +72,6 @@ class Utilities(commands.Cog):
     async def discriminator(self, ctx, discriminator: str):
         if 4 < len(str(discriminator)) > 4:
             raise CustomError("Слишком маленький/большой дискриминатор.")
-        elif not discriminator in list(filter(lambda i: i.discriminator, self.bot.users)):
-            raise CustomError("Я не нашла такой дискриминатор(")
         else:
             members = list(filter(lambda i: i.discriminator == discriminator, self.bot.users))
             await ctx.reply(embed=await self.bot.embeds.simple(
