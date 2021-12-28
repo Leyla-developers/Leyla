@@ -14,7 +14,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def warn(self, ctx, member: disnake.Member, *, reason: str=None):
         embed = await self.bot.embeds.simple()
-
+        await self.bot.config.DB.moderation
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

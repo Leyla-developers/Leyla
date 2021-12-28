@@ -45,7 +45,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии"
     )
-    async def guild(self, ctx, guild: disnake.Guild):
+    async def guild(self, ctx, guild: typing.Optional[disnake.Guild]):
         guild = self.bot.get_guild(guild.id) if guild else self.bot.get_guild(ctx.guild.id)
         information = (
             f'Участников: **{len(guild.members)}**',
@@ -69,11 +69,11 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Поиск пользователей через дискриминатор (среди людей, на серверах которых есть бот)"
     )
-    async def discriminator(self, ctx, discriminator: str):
-        if 4 < len(str(discriminator)) > 4:
+    async def discriminator(self, ctx, discriminator: typing.Optional[str]):
+        if 4 < len(str(discriminator)) if discriminator else ctx.author.discriminator > 4:
             raise CustomError("Слишком маленький/большой дискриминатор.")
         else:
-            members = list(filter(lambda i: i.discriminator == discriminator, self.bot.users))
+            members = list(filter(lambda i: i.discriminator == discriminator if discriminator else ctx.author.discriminator, self.bot.users))
             await ctx.reply(embed=await self.bot.embeds.simple(
                 title=f"Пользователей с таким дискриминатором: {len(members)}",
                 description="\n".join(members)
