@@ -64,7 +64,7 @@ class Utilities(commands.Cog):
         if guild.icon:
             embed.set_thumbnail(guild.icon)
 
-        await ctx.reply(embed=embed)
+        await ctx.response.send_message(embed=embed)
 
     @commands.slash_command(
         description="Поиск пользователей через дискриминатор (среди людей, на серверах которых есть бот)"
@@ -74,7 +74,7 @@ class Utilities(commands.Cog):
             raise CustomError("Слишком маленький/большой дискриминатор.")
         else:
             members = list(filter(lambda i: i.discriminator == discriminator if discriminator else ctx.author.discriminator, self.bot.users))
-            await ctx.reply(embed=await self.bot.embeds.simple(
+            await ctx.response.send_message(embed=await self.bot.embeds.simple(
                 title=f"Пользователей с таким дискриминатором: {len(members)}",
                 description="\n".join(members)
             )
