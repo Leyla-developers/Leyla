@@ -67,9 +67,14 @@ class Utilities(commands.Cog):
         await ctx.response.send_message(embed=embed)
 
     @commands.slash_command(
-        description="Поиск пользователей через дискриминатор (среди людей, на серверах которых есть бот)"
+        description="Поиск пользователей через дискриминатор (среди людей, на серверах которых есть бот)",
+        options=[
+            disnake.Option(
+                "discriminator", required=False, type=disnake.OptionType.integer
+            )
+        ]
     )
-    async def discriminator(self, ctx, discriminator: typing.Optional[str]):
+    async def discriminator(self, ctx, discriminator: typing.Union[disnake.User, str]):
         if 4 < len(str(discriminator)) if discriminator else ctx.author.discriminator > 4:
             raise CustomError("Слишком маленький/большой дискриминатор.")
         else:
