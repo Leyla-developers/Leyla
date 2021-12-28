@@ -27,8 +27,12 @@ class RolePlay(commands.Cog):
     @commands.slash_command(
         description='Взаимодействовать с пользователем',
         options=[
-            disnake.Option('choice', 'выбор действия', type=disnake.OptionType.string,
-                            required=True, choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()]),
+            disnake.Option(
+                'choice', 'выбор действия', 
+                type=disnake.OptionType.string,
+                required=True, 
+                choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()]
+            ),
             disnake.Option('user', 'пользователь', type=disnake.OptionType.user)
         ]
     )
