@@ -28,7 +28,6 @@ class OnErrors(commands.Cog):
             title=f"{self.emoji} Произошла ошибка",
             color=disnake.Colour.red()
         )
-
         embed.description = DESCRIPTIONS.get(type(cmd_error), "Произошла неизвестная ошибка, пожалуйста, отправьте ошибку на [сервер технической поддержки](https://discord.gg/43zapTjgvm)")
 
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
