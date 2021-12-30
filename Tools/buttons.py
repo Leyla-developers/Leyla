@@ -9,4 +9,4 @@ class SupportButton(disnake.ui.View):
 
     @disnake.ui.button(label="Сервер поддержки", style=disnake.ButtonStyle.blurple)
     async def support_server(self, button, inter):
-        await inter.response.send_message("Сервер поддержки: https://discord.gg/43zapTjgvm", ephemeral=True)
+        await inter.response.send_message("Сервер поддержки: https://discord.gg/тут была хуйня для приглашения", ephemeral=True)
