@@ -15,7 +15,7 @@ class Embeds(Embed):
         embed = Embed(**kwargs)
 
         if isinstance(embed.color, type(self.Empty)):
-            embed.color = self.default_color if not ctx else config.get_guild_data(ctx.guild.id, key='color')
+            embed.color = self.default_color if not ctx else config.get_guild_data(guild=ctx.guild.id, key='color')
 
         if ctx:
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
