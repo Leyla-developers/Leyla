@@ -35,7 +35,7 @@ class OnErrors(commands.Cog):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
         
         if not type(cmd_error) in DESCRIPTIONS.keys():
-            embed.add_field(name="**Непрдвиденная** ошибка", value=cmd_error)
+            embed.add_field(name="**Непредвиденная** ошибка", value=cmd_error)
             view = SupportButton()
 
         await ctx.response.send_message(embed=embed, ephemeral=True, view=view or None)
