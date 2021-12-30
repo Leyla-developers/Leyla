@@ -25,7 +25,7 @@ class OnErrors(commands.Cog):
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, cmd_error):
         embed = await self.bot.embeds.simple(
-            title=f"{self.emoji} Произошла ошибка в команде **{ctx.command.qualified_name}**",
+            title=f"{self.emoji} Произошла ошибка",
             color=disnake.Colour.red()
         )
 
