@@ -22,7 +22,7 @@ class Utilities(commands.Cog):
     async def avatar(self, ctx: commands.Context, user: disnake.User=None):
         user = user if user else ctx.author
         embed = await self.embed.simple(
-            title=f"Аватар {'бота' if user.bot else 'пользователя'}",
+            title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
             image=user.display_avatar.url
         )
         return await ctx.response.send_message(embed=embed)

@@ -23,4 +23,4 @@ def setup(bot: commands.Bot):
     jishaku.Flags.FORCE_PAGINATOR = True
     jishaku.Flags.NO_DM_TRACEBACK = True
     environ['JISHAKU_EMBEDDED_JSK'] = 'true'
-    bot.add_cog(Jishaku(bot))
+    bot.add_cog(Jishaku(bot=bot))
