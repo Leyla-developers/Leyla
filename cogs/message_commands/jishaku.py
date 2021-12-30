@@ -6,7 +6,7 @@ from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES, Jishaku
 from jishaku.features.baseclass import Feature
 
 
-class Jishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
+class LeylaJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES, Jishaku):
 
     def __init__(self, bot):
         self.bot = bot
@@ -23,4 +23,4 @@ def setup(bot: commands.Bot):
     jishaku.Flags.FORCE_PAGINATOR = True
     jishaku.Flags.NO_DM_TRACEBACK = True
     environ['JISHAKU_EMBEDDED_JSK'] = 'true'
-    bot.add_cog(Jishaku(bot=bot))
+    bot.add_cog(LeylaJishaku(bot=bot))
