@@ -39,7 +39,7 @@ class RolePlay(commands.Cog):
     async def rp(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User = commands.Param(lambda inter: inter.author), choice: str=None):
         embed = await self.bot.embeds.simple(
             inter, 
-            description=f'***{RP_DESCRIPTIONS[choice].format(user=user)}',
+            description=f'***{RP_DESCRIPTIONS[choice].format(user=user)}***',
             image=await waifu_pics.get_image('sfw', choice)
         )
         return await inter.send(embed=embed)
