@@ -51,7 +51,7 @@ class Utilities(commands.Cog):
         ]
     )
     async def guild(self, ctx, guild: disnake.Guild):
-        guild = self.bot.get_guild(guild.id) if guild else self.bot.get_guild(ctx.guild.id)
+        guild = self.bot.get_guild(guild.id) if guild else ctx.guild
         information = (
             f'Участников: **{len(guild.members)}**',
             f'Эмодзи: **{len(guild.emojis)}**',

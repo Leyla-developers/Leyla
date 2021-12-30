@@ -7,7 +7,7 @@ class OnErrors(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, cmd_error):
+    async def on_slash_command_error(self, ctx, cmd_error):
         await ctx.reply(cmd_error)
     
 
