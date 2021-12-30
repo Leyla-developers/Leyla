@@ -17,23 +17,28 @@ PERMISSIONS = {
 }
 
 class OnErrors(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = "<:blurplecross:918571629997613096>"
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, cmd_error):
         embed = await self.bot.embeds.simple(
-            title="Произошла ошибка",
+            title=f"{self.emoji} Произошла ошибка в команде **{ctx.command.qualified_name}**",
             color=disnake.Colour.red()
         )
-        view = SupportButton()
 
         embed.description = DESCRIPTIONS.get(type(cmd_error), "Произошла неизвестная ошибка, пожалуйста, отправьте ошибку на [сервер технической поддержки](https://discord.gg/43zapTjgvm)")
 
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
-            embed.add_field(name="Недостаточные права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
+            embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
+        
+        if not type(cmd_error) in DESCRIPTIONS.keys():
+            embed.add_field(name="**Непрдвиденная** ошибка", value=cmd_error)
+            view = SupportButton()
 
-        await ctx.response.send_message(embed=embed, ephemeral=True, view=view)
+        await ctx.response.send_message(embed=embed, ephemeral=True, view=view or None)
 
 def setup(bot):
     bot.add_cog(OnErrors(bot))
