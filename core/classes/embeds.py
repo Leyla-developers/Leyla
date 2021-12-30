@@ -14,8 +14,7 @@ class Embeds(Embed):
     async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, image: str=None, thumbnail: str=None, **kwargs):
         embed = Embed(**kwargs)
 
-        if isinstance(type(self.Empty), embed.color):
-            embed.color = self.default_color if not ctx else Config().get_guild_data(guild=ctx.guild.id, key='color')
+        embed.color = self.default_color if not ctx else Config().get_guild_data(guild=ctx.guild.id, key='color')
 
         if ctx:
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
