@@ -16,11 +16,3 @@ class Context(Context):
             return await super().reply(content=content, **kwargs)
         except HTTPException:
             return await super().send(content=content, **kwargs)
-
-class ApplicationCommandInteraction(ApplicationCommandInteraction):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
-    async def embed(self):
-        return await self.bot.embeds

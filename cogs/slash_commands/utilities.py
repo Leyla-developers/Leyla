@@ -6,7 +6,6 @@ from disnake.ext import commands
 from Tools.links import fotmat_links_for_avatar
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
-from core.classes.context import ApplicationCommandInteraction
 
 
 TEST_GUILD = 885541278908043304
@@ -65,10 +64,6 @@ class Utilities(commands.Cog):
             embed.set_thumbnail(ctx.guild.icon)
 
         await ctx.response.send_message(embed=embed)
-
-    @commands.slash_command()
-    async def test(self, ctx: ApplicationCommandInteraction):
-        await ctx.send(embed=await ctx.embed(title='sd'))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
