@@ -2,11 +2,11 @@ from os import environ
 
 import jishaku
 from disnake.ext import commands
-from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES, Jishaku
+from jishaku.cog import Jishaku
 from jishaku.features.baseclass import Feature
 
 
-class LeylaJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES, Jishaku):
+class LeylaJishaku(Jishaku):
 
     def __init__(self, bot):
         self.bot = bot
