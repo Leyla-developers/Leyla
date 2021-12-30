@@ -46,7 +46,7 @@ class Utilities(commands.Cog):
         description="Вывод информации о гильдии",
         options=[
             disnake.Option(
-                "integer", desccription="Гильдия, информацию о которой хотите узнать", type=disnake.OptionType.integer, required=False
+                "integer", description="Гильдия, информацию о которой хотите узнать", type=disnake.OptionType.integer, required=False
             )
         ]
     )
