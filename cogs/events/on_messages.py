@@ -9,7 +9,7 @@ class OnMessages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        percent = (len(list(filter(lambda i: i.isupper(), message.content))) / len(message.conent)) * 100
+        percent = (len(list(filter(lambda i: i.isupper(), message.content))) / len(message.content)) * 100
         DB_percent = await self.bot.config.DB.automod.find_one({"_id": message.guild.id})
         if not DB_percent:
             return
