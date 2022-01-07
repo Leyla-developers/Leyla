@@ -76,10 +76,10 @@ class Utilities(commands.Cog):
         embed.set_image(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
         
-        information = (
+        information = [
             f"Зарегистрировался: **{round(user.created_at.timestamp())}**",
             f"Полный никнейм: **{str(user)}**",
-        )
+        ]
 
         if user in ctx.guild.members:
             user_to_member = ctx.guild.get_member(user.id)
