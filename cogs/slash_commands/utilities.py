@@ -83,10 +83,11 @@ class Utilities(commands.Cog):
 
         if user in ctx.guild.members:
             user_to_member = ctx.guild.get_member(user.id)
+            message = await ctx.original_message()
             information.append(
                 f"Зашёл(-ла) на сервер: **{round(user_to_member.joined_at.timestamp())}**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
-                f"Находится дней на сервере: **{(ctx.message.created_at - user.created_at).days}**"
+                f"Находится дней на сервере: **{(message.created_at - user.created_at).days}**"
             )
 
         await ctx.send(embed=embed)
