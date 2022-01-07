@@ -69,7 +69,7 @@ class Utilities(commands.Cog):
         description="Вывод информации о юзере"
     )
     async def user(self, ctx, user: disnake.User = commands.Param(lambda ctx: ctx.author)):
-        embed = await self.bot.embeds.simple()
+        embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
 
         if user.banner:
             embed.set_image(url=user.banner.url)
