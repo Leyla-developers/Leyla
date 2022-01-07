@@ -14,7 +14,7 @@ class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.embed = self.bot.embeds
+        self.embed = self.bot.embed
 
     @commands.slash_command(
         description="Вывод аватара участника"
@@ -25,7 +25,7 @@ class Utilities(commands.Cog):
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
             image=user.display_avatar.url
         )
-        return await ctx.response.send_message(embed=embed)
+        return await ctx.send(embed=embed)
 
     @commands.slash_command(
         description='Перевод в/из азбуки морзе.'
@@ -40,7 +40,7 @@ class Utilities(commands.Cog):
             title='Decoder/Encoder морзе.',
             description=morse
         )
-        await ctx.response.send_message(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.slash_command(
         description="Вывод информации о гильдии",
@@ -50,7 +50,6 @@ class Utilities(commands.Cog):
             f'Участников: **{len(ctx.guild.members)}**',
             f'Эмодзи: **{len(ctx.guild.emojis)}**',
             f'Ролей: **{len(ctx.guild.roles)}**',
-
         )
         embed = await self.bot.embeds.simple(
             title=f'Информация о гильдии {ctx.guild.name}',
@@ -63,7 +62,35 @@ class Utilities(commands.Cog):
         if ctx.guild.icon:
             embed.set_thumbnail(ctx.guild.icon)
 
-        await ctx.response.send_message(embed=embed)
+        await ctx.send(embed=embed)
+
+    @commands.slash_command(
+        description="Вывод информации о юзере"
+    )
+    async def user(self, ctx, user: disnake.User = commands.Param(lambda ctx: ctx.author)):
+        embed = await self.bot.embeds.simple()
+
+        if user.banner:
+            embed.set_image(url=user.banner.url)
+
+        embed.set_image(url=user.display_avatar.url)
+        embed.set_footer(text=f"ID: {user.id}")
+        
+        information = (
+            f"Зарегистрировался: **{round(user.created_at.timestamp())}**",
+            f"Полный никнейм: **{str(user)}**",
+        )
+
+        if user in ctx.guild.members:
+            user_to_member = ctx.guild.get_member(user.id)
+            information.append(
+                f"Зашёл(-ла) на сервер: **{round(user_to_member.joined_at.timestamp())}**",
+                f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
+                f"Находится дней на сервере: **{(ctx.message.created_at - user.created_at).days}**"
+            )
+
+        await ctx.send(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
+ 

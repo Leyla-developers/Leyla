@@ -1,5 +1,5 @@
 from disnake import integrations
-import yaml
+from __init__ import __version__
 from datetime import datetime
 from typing import Iterable
 
@@ -11,6 +11,7 @@ from .classes.embeds import Embeds
 
 
 class Leyla(commands.Bot):
+    assert __version__ == "2.0.3"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
