@@ -1,3 +1,4 @@
+from datetime import datetime
 import typing
 
 import disnake
@@ -45,22 +46,22 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии",
     )
-    async def guild(self, ctx, guild: disnake.Guild = commands.Param(lambda ctx: ctx.guild)):
+    async def guild(self, ctx):
         information = (
-            f'Участников: **{len(guild.members)}**',
-            f'Эмодзи: **{len(guild.emojis)}**',
-            f'Ролей: **{len(guild.roles)}**',
+            f'Участников: **{len(ctx.guild.members)}**',
+            f'Эмодзи: **{len(ctx.guild.emojis)}**',
+            f'Ролей: **{len(ctx.guild.roles)}**',
         )
         embed = await self.bot.embeds.simple(
-            title=f'Информация о гильдии {guild.name}',
+            title=f'Информация о гильдии {ctx.guild.name}',
             description="\n".join(information)
         )
 
-        if guild.banner:
-            embed.set_thumbnail(guild.banner.url)
+        if ctx.guild.banner:
+            embed.set_thumbnail(ctx.guild.banner.url)
 
-        if guild.icon:
-            embed.set_thumbnail(guild.icon)
+        if ctx.guild.icon:
+            embed.set_thumbnail(ctx.guild.icon)
 
         await ctx.send(embed=embed)
 
@@ -83,11 +84,10 @@ class Utilities(commands.Cog):
 
         if user in ctx.guild.members:
             user_to_member = ctx.guild.get_member(user.id)
-            message = await ctx.original_message()
             information.append(
                 f"Зашёл(-ла) на сервер: **{round(user_to_member.joined_at.timestamp())}**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
-                f"Находится дней на сервере: **{(message.created_at - user.created_at).days}**"
+                f"Находится дней на сервере: **{(datetime.utcnow() - user.created_at).days}**"
             )
 
         await ctx.send(embed=embed)
