@@ -14,7 +14,7 @@ class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.embed = self.bot.embed
+        self.embed = self.bot.embeds
 
     @commands.slash_command(
         description="Вывод аватара участника"
