@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 import typing
 
@@ -93,13 +94,12 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(
-        name="genshin-info",
-        description="Вывод информации об игроке Genshin Impact",
-        aliases=['g-player']
+    @commands.slash_command(
+        description="Получить эмодзик"
     )
-    async def genshin_player_info(self, ctx):
-        pass
+    async def emoji(self, ctx, emoji):
+        await ctx.reply(embed=await self.bot.embeds.simple(image=self.bot.get_emoji(re.findall(r'[0-9]', emoji))))
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
