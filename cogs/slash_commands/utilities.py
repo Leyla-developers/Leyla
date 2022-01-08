@@ -98,7 +98,7 @@ class Utilities(commands.Cog):
         description="Получить эмодзик"
     )
     async def emoji(self, ctx, emoji):
-        await ctx.reply(embed=await self.bot.embeds.simple(image=self.bot.get_emoji(re.findall(r'[0-9]', emoji))))
+        await ctx.send(embed=await self.bot.embeds.simple(image=self.bot.get_emoji(re.findall(r'[0-9]', emoji))))
 
 
 def setup(bot: commands.Bot):
