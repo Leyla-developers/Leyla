@@ -5,7 +5,7 @@ import typing
 import disnake
 from disnake.ext import commands
 
-from Tools.links import fotmat_links_for_avatar
+from Tools.links import fotmat_links_for_avatar, emoji_converter
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 
@@ -98,12 +98,13 @@ class Utilities(commands.Cog):
         description="Получить эмодзик"
     )
     async def emoji(self, interaction, emoji):
+        get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))
         await interaction.send(
             embed=await self.bot.embeds.simple(
-                title=f"Эмодзи **{emoji}**", 
-                image=f"https://cdn.discordapp.com/emojis/{int(''.join(re.findall(r'[0-9]', emoji)))}.webp?size=480&quality=lossless"
-                )
+                title=f"Эмодзи **{emoji}**",
+                image=await emoji_converter('webp', f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless')
             )
+        )
 
 
 def setup(bot: commands.Bot):
