@@ -21,7 +21,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод аватара участника"
     )
-    async def avatar(self, interaction: commands.Context, user: disnake.User=None):
+    async def avatar(self, interaction, user: disnake.User=None):
         user = user if user else interaction.author
         embed = await self.embed.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
