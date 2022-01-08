@@ -101,7 +101,7 @@ class Utilities(commands.Cog):
         await interaction.send(
             embed=await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**", 
-                image=f"https://cdn.discordapp.com/emojis/{int(''.join(re.findall(r'[0-9]', emoji)))}.webp?size=44&quality=lossless"
+                image=f"https://cdn.discordapp.com/emojis/{int(''.join(re.findall(r'[0-9]', emoji)))}.webp?size=480&quality=lossless"
                 )
             )
 
