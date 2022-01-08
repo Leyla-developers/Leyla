@@ -32,7 +32,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description='Перевод в/из азбуки морзе.'
     )
-    async def morse(self, interaction: commands.Context, variant: typing.Literal['to', 'from'], *, code):
+    async def morse(self, interaction, variant: typing.Literal['to', 'from'], *, code):
         if variant == 'to':
             morse = Decoder().to_morse(code)
         elif variant == 'from':
