@@ -85,9 +85,8 @@ class Utilities(commands.Cog):
         if user in ctx.guild.members:
             user_to_member = ctx.guild.get_member(user.id)
             second_information = [
-                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R>**",
+                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
-                f"Находится дней на сервере: **{(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days}**"
             ]
 
         embed.description = "\n".join(main_information) + "\n" + "\n".join(second_information) if user in ctx.guild.members else "\n".join(main_information)
