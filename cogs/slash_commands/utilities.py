@@ -78,14 +78,14 @@ class Utilities(commands.Cog):
         embed.set_footer(text=f"ID: {user.id}")
         
         main_information = [
-            f"Зарегистрировался: **{round(user.created_at.timestamp())}**",
+            f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>**",
             f"Полный никнейм: **{str(user)}**",
         ]
 
         if user in ctx.guild.members:
             user_to_member = ctx.guild.get_member(user.id)
             second_information = [
-                f"Зашёл(-ла) на сервер: **{round(user_to_member.joined_at.timestamp())}**",
+                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R>**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
                 f"Находится дней на сервере: **{(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days}**"
             ]
@@ -94,6 +94,6 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
- 
