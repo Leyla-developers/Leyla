@@ -5,7 +5,7 @@ import typing
 import disnake
 from disnake.ext import commands
 
-from Tools.links import fotmat_links_for_avatar, emoji_converter
+from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 
@@ -102,6 +102,7 @@ class Utilities(commands.Cog):
         await interaction.send(
             embed=await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
+                description=await emoji_formats(f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless'),
                 image=await emoji_converter('webp', f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless')
             )
         )
