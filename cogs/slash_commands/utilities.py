@@ -93,6 +93,13 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(
+        name="genshin-info",
+        description="Вывод информации об игроке Genshin Impact",
+        aliases=['g-player']
+    )
+    async def genshin_player_info(self, ctx):
+        pass
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

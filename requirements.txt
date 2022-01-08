@@ -5,3 +5,4 @@ disnake
 disnake-jishaku
 motor
 dnspython
+genshin
