@@ -99,13 +99,17 @@ class Utilities(commands.Cog):
     )
     async def emoji(self, interaction, emoji):
         get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))
-        await interaction.send(
-            embed=await self.bot.embeds.simple(
+        url = f"https://cdn.discordapp.com/emojis/{get_emoji_id}.webp?size=480&quality=lossless"
+        embed = await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
-                description=await emoji_formats(f'https://cdn.discordapp.com/emojis/{get_emoji_id}.webp?size=480&quality=lossless'),
-                image=await emoji_converter('webp', f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless')
+                image=await emoji_converter('webp', url)
             )
+        embed.description = f'[PNG]({dict(await emoji_formats(url))["png"]}) | [JPEG]({dict(await emoji_formats(url))["jpeg"]}) | [WEBP]({dict(await emoji_formats(url))["webp"]})' if not 'gif' in dict(await emoji_formats(url)) else + f" | [GIF]({dict(await emoji_formats(url))['gif']})",
+
+        await interaction.send(
+            embed=embed
         )
+
 
 
 def setup(bot: commands.Bot):
