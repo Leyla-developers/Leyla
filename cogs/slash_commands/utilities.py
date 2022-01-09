@@ -102,7 +102,7 @@ class Utilities(commands.Cog):
         await interaction.send(
             embed=await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
-                description=await emoji_formats(f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless'),
+                description=await emoji_formats(f'https://cdn.discordapp.com/emojis/{get_emoji_id}.webp?size=480&quality=lossless'),
                 image=await emoji_converter('webp', f'https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless')
             )
         )
