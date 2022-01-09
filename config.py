@@ -25,4 +25,4 @@ class Config:
             data = await self.DB.guilds.find_one({"_id": guild_id})
         else:
             data = self.DEFAULT_GUILD_DATA
-        return data.get(key) if key is not None else data
+        return data.get(key) if key else data
