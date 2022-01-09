@@ -104,7 +104,7 @@ class Utilities(commands.Cog):
                 title=f"Эмодзи **{emoji}**",
                 image=await emoji_converter('webp', url)
             )
-        embed.description = f'[PNG]({dict(await emoji_formats(url))["png"]}) | [JPEG]({dict(await emoji_formats(url))["jpeg"]}) | [WEBP]({dict(await emoji_formats(url))["webp"]})' if not 'gif' in dict(await emoji_formats(url)) else + f" | [GIF]({dict(await emoji_formats(url))['gif']})",
+        # embed.description = f'[PNG]({dict(await emoji_formats(url))["png"]}) | [JPEG]({dict(await emoji_formats(url))["jpeg"]}) | [WEBP]({dict(await emoji_formats(url))["webp"]})' if not 'gif' in dict(await emoji_formats(url)) else + f" | [GIF]({dict(await emoji_formats(url))['gif']})",
 
         await interaction.send(
             embed=embed
