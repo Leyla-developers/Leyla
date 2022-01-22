@@ -12,6 +12,9 @@ class Moderation(commands.Cog):
     async def role_check(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
         if ctx.author.top_role.position <= member.top_role.position:
             return False
+
+        elif ctx.author == member:
+            return False
         
         else:
             return True
