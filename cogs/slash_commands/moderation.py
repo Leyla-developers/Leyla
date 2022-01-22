@@ -9,7 +9,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def role_check(ctx: disnake.ApplicationCommandInteraction, member):
+    async def role_check(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
         if ctx.author.top_role.position <= member.top_role.position:
             return False
         
