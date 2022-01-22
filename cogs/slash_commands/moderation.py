@@ -20,9 +20,9 @@ class Moderation(commands.Cog):
         description="Можете теперь спокойно выдавать предупреждения uwu."
     )
     @commands.has_permissions(ban_members=True)
-    async def warn(self, ctx, member: disnake.Member, *, reason: str = None):
+    async def warn(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
-        embed = await self.bot.embeds.simple(thumbnail=ctx.message.author.display_avatar.url)
+        embed = await self.bot.embeds.simple(thumbnail=ctx.author.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason}")
         
         if await self.role_check(ctx):
