@@ -30,7 +30,7 @@ class Moderation(commands.Cog):
             await self.bot.config.DB.moderation.insert_one({"_id": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
         
         else:
-            raise commands.MissingPermissions()
+            raise commands.MissingPermissions(missing_permissions=['ban_members'])
 
         await ctx.send(embed=embed)
 
