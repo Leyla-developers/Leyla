@@ -12,10 +12,8 @@ class Moderation(commands.Cog):
     async def role_check(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
         if ctx.author.top_role.position <= member.top_role.position:
             return False
-
         elif ctx.author == member:
             return False
-        
         else:
             return True
 
@@ -23,7 +21,7 @@ class Moderation(commands.Cog):
         description="Можете теперь спокойно выдавать предупреждения uwu."
     )
     @commands.has_permissions(ban_members=True)
-    async def warn(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member, *, reason: str = None):
+    async def warn(self, ctx, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
         embed = await self.bot.embeds.simple(thumbnail=ctx.author.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason}")
