@@ -23,7 +23,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def warn(self, ctx, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
-        embed = await self.bot.embeds.simple(thumbnail=ctx.author.display_avatar.url)
+        embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason}")
         
         if await self.role_check(ctx, member=member):
@@ -42,10 +42,10 @@ class Moderation(commands.Cog):
         embed = await self.bot.embeds.simple(
             title=f"Вилкой в глаз или... {member.name}", 
             description="\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})]), 
-            thumbnail=ctx.author.display_avatar.url,
+            thumbnail=member.display_avatar.url,
             footer={
                 "text": "Предупреждения участника", 
-                "icon_url": ctx.author.display_avatar.url
+                "icon_url": member.display_avatar.url
             }
         )
         await ctx.send(embed=embed)
