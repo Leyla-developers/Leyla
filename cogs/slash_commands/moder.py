@@ -45,7 +45,7 @@ class Moderation(commands.Cog):
             thumbnail=member.display_avatar.url,
             footer={
                 "text": "Предупреждения участника", 
-                "icon_url": member.display_avatar.url
+                "icon_url": self.bot.user.avatar.url
             }
         )
         await ctx.send(embed=embed)
