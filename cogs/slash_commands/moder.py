@@ -39,7 +39,7 @@ class Moderation(commands.Cog):
         description="Просмотр всех предупреждений участник"
     )
     async def warns(self, ctx, member: disnake.Member = commands.Param(lambda ctx: ctx.author)):
-        embed = await self.bot.embeds.simple(title=f"Вилкой в глаз или... {member.mention}", description=[f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find()], thumbnail=ctx.author.display_avatar.url)
+        embed = await self.bot.embeds.simple(title=f"Вилкой в глаз или... {member.name}", description="".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find()]), thumbnail=ctx.author.display_avatar.url)
         await ctx.send(embed=embed)
 
 def setup(bot):
