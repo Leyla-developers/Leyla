@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict
 
 import disnake
 from disnake import Embed, Integration
@@ -11,7 +11,7 @@ class Embeds(Embed):
     def __init__(self, default_color) -> None:
         self.default_color = default_color
 
-    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, image: str=None, thumbnail: str=None, **kwargs):
+    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, image: str=None, thumbnail: str=None, footer: Dict=None, **kwargs):
         embed = Embed(**kwargs)
 
         embed.color = self.default_color if not ctx else await Config().get_guild_data(guild=ctx.guild.id, key='color')
@@ -24,5 +24,8 @@ class Embeds(Embed):
 
         if thumbnail:
             embed.set_thumbnail(url=thumbnail)
+
+        if kwargs.get('footer'):
+            embed.set_footer(text=footer('text'), icon_url=footer('icon_url'))
 
         return embed

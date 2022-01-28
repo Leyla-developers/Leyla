@@ -36,10 +36,15 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.slash_command(
-        description="Просмотр всех предупреждений участник"
+        description="Просмотр всех предупреждений участника"
     )
     async def warns(self, ctx, member: disnake.Member = commands.Param(lambda ctx: ctx.author)):
-        embed = await self.bot.embeds.simple(title=f"Вилкой в глаз или... {member.name}", description="".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find()]), thumbnail=ctx.author.display_avatar.url)
+        embed = await self.bot.embeds.simple(
+            title=f"Вилкой в глаз или... {member.name}", 
+            description="".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find()]), 
+            thumbnail=ctx.author.display_avatar.url,
+            footer={"text": "Предупреждения участника", "icon_url": ctx.author.display_avatar.url}
+        )
         await ctx.send(embed=embed)
 
 def setup(bot):
