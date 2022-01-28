@@ -26,7 +26,7 @@ class Moderation(commands.Cog):
         embed = await self.bot.embeds.simple(thumbnail=ctx.author.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason}")
         
-        if await self.role_check(ctx, member):
+        if await self.role_check(member):
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.bot.config.DB.moderation.insert_one({"_id": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
         
@@ -43,7 +43,10 @@ class Moderation(commands.Cog):
             title=f"Вилкой в глаз или... {member.name}", 
             description="".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find()]), 
             thumbnail=ctx.author.display_avatar.url,
-            footer={"text": "Предупреждения участника", "icon_url": ctx.author.display_avatar.url}
+            footer={
+                "text": "Предупреждения участника", 
+                "icon_url": ctx.author.display_avatar.url
+            }
         )
         await ctx.send(embed=embed)
 
