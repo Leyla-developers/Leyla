@@ -37,7 +37,7 @@ class FunSlashCommands(commands.Cog):
         ],
         name='avatar-overlay'
     )
-    async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnakes.User = commands.Param(lambda inter: inter.author)):
+    async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = self.bot.embeds.simple(title=f'`{user}` За шо сидит?', image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
         return await inter.send(embed=embed)
 
