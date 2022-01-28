@@ -16,7 +16,7 @@ RP_DESCRIPTIONS = {
     'bite': 'Сделал(-а) кусь {user}',
     'highfive': 'Дал(-а) пять {user}',
     'kill': 'Убил(-а) {user}',
-    'wave': 'Привет'
+    'wave': ''
 }
 
 RP_DESCRIPTIONS_MYSELF = {
