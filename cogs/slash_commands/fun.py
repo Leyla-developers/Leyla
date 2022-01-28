@@ -47,7 +47,7 @@ class FunSlashCommands(commands.Cog):
                 'choice', 'Выберите тянку OwO', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=[disnake.OptionChoice('megumin'), disnake.OptionChoice('shinobu'), disnake.OptionChoice('awoo')]
+                choices=['megumin', 'shinobu', 'awoo']
             )
         ],
         name='anime-girl'
