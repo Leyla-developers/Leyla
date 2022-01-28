@@ -14,8 +14,7 @@ RP_DESCRIPTIONS = {
     'nom': 'Покормил(-а) {user}',
     'slap': 'Дал(-а) пощечину {user}',
     'bite': 'Сделал(-а) кусь {user}',
-    'highfive': 'Дал(-а) пять {user}',
-    'wave': ''
+    'highfive': 'Дал(-а) пять {user}'
 }
 
 RP_DESCRIPTIONS_MYSELF = {

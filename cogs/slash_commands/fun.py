@@ -6,6 +6,11 @@ from disnake.ext import commands
 from services import waifu_pics
 
 
+OVERLAY_DESCRIPTIONS = {
+    'jail': '{user} За шо сидим?',
+}
+
+
 class FunSlashCommands(commands.Cog):
 
     def __init__(self, bot):
@@ -20,7 +25,7 @@ class FunSlashCommands(commands.Cog):
         description='Случайное число в заданном диапазоне'
     )
     async def number(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
-        embed = await self.bot.embeds.simple(title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
+        embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
         embed.add_field(name='Ваше число...', value=randint(a, b))
         return await inter.send(embed=embed)
 
@@ -38,7 +43,7 @@ class FunSlashCommands(commands.Cog):
         name='avatar-overlay'
     )
     async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
-        embed = await self.bot.embeds.simple(title=f'`{user}` За шо сидит?', image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
+        embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
         return await inter.send(embed=embed)
 
     @commands.slash_command(
@@ -54,7 +59,7 @@ class FunSlashCommands(commands.Cog):
         name='anime-girl'
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
-        embed = await self.bot.embeds.simple(title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
+        embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
         return await inter.send(embed=embed)
 
 
