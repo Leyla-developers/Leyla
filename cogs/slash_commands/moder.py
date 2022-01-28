@@ -28,7 +28,7 @@ class Moderation(commands.Cog):
         
         if await self.role_check(ctx, member=member):
             embed.description = f"**{member.name}** было выдано предупреждение"
-            await self.bot.config.DB.moderation.insert_one({"_id": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
+            await self.bot.config.DB.moderation.insert_one({"guild": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
         
         else:
             raise commands.MissingPermissions(missing_permissions=['ban_members'])
