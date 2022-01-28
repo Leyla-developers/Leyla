@@ -25,7 +25,7 @@ class Embeds(Embed):
         if thumbnail:
             embed.set_thumbnail(url=thumbnail)
 
-        if kwargs.get('footer'):
+        if footer:
             embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
 
         return embed
