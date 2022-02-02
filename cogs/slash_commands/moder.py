@@ -2,6 +2,7 @@ import random
 
 import disnake
 from disnake.ext import commands
+from Tools.exceptions import CustomError
 
 
 class Moderation(commands.Cog):
@@ -39,16 +40,19 @@ class Moderation(commands.Cog):
         description="Просмотр всех предупреждений участника"
     )
     async def warns(self, ctx, member: disnake.Member = commands.Param(lambda ctx: ctx.author)):
-        embed = await self.bot.embeds.simple(
-            title=f"Вилкой в глаз или... {member.name}", 
-            description="\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})]), 
-            thumbnail=member.display_avatar.url,
-            footer={
-                "text": "Предупреждения участника", 
-                "icon_url": self.bot.user.avatar.url
-            }
-        )
-        await ctx.send(embed=embed)
+        if member.bot:
+            raise CustomError("Невозможно просмотреть предупреждения **бота**")
+        else:
+            embed = await self.bot.embeds.simple(
+                title=f"Вилкой в глаз или... Предупреждения {member.name}", 
+                description="\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})]) if await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id, "member": member.id}) != 0 else "Предупреждения отсутствуют\n\n**Если вы получили предупреждение, то его можно попросить снять модераторов.**", 
+                thumbnail=member.display_avatar.url,
+                footer={
+                    "text": "Предупреждения участника", 
+                    "icon_url": self.bot.user.avatar.url
+                }
+            )
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
