@@ -43,15 +43,20 @@ class Moderation(commands.Cog):
         if member.bot:
             raise CustomError("Невозможно просмотреть предупреждения **бота**")
         else:
-            embed = await self.bot.embeds.simple(
-                title=f"Вилкой в глаз или... Предупреждения {member.name}", 
-                description="\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})]) if await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id, "member": member.id}) != 0 else "Предупреждения отсутствуют\n\n**Если вы получили предупреждение, то его можно попросить снять модераторов.**", 
-                thumbnail=member.display_avatar.url,
-                footer={
-                    "text": "Предупреждения участника", 
-                    "icon_url": self.bot.user.avatar.url
-                }
-            )
+            if await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id}) == 0:
+                raise CustomError("У вас отсутствуют предупреждения.")
+            else:
+                warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})])
+    
+                embed = await self.bot.embeds.simple(
+                    title=f"Вилкой в глаз или... Предупреждения {member.name}", 
+                    description=warn_description, 
+                    thumbnail=member.display_avatar.url,
+                    footer={
+                        "text": "Предупреждения участника", 
+                        "icon_url": self.bot.user.avatar.url
+                    }
+                )
             await ctx.send(embed=embed)
 
 def setup(bot):
