@@ -38,6 +38,9 @@ class OnErrors(commands.Cog):
         if type(cmd_error) == CustomError:
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
+        if not type(cmd_error) in DESCRIPTIONS.keys():
+            embed.add_field(name="Описание ошибки", value=cmd_error)
+
         await ctx.response.send_message(embed=embed, ephemeral=True, view=SupportButton())
 
 def setup(bot):
