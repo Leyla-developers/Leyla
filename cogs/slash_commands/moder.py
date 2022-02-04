@@ -23,7 +23,7 @@ class Moderation(commands.Cog):
     async def warn(self, ctx, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
         embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
-        embed.set_footer(text=f"ID: {warn_id} | {reason}")
+        embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
         
         if await self.role_check(ctx, member):
             embed.description = f"**{member.name}** было выдано предупреждение"
