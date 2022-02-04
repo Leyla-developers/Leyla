@@ -35,7 +35,7 @@ class OnErrors(commands.Cog):
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
 
-        if not type(cmd_error) in DESCRIPTIONS.keys():
+        if type(cmd_error) == CustomError:
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         await ctx.response.send_message(embed=embed, ephemeral=True, view=SupportButton())
