@@ -43,7 +43,7 @@ class Moderation(commands.Cog):
         if member.bot:
             raise CustomError("Невозможно просмотреть предупреждения **бота**")
         else:
-            if await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id}) == 0:
+            if await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
                 raise CustomError("У вас отсутствуют предупреждения.")
             else:
                 warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.moderation.find({"guild": ctx.guild.id})])
