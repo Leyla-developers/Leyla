@@ -11,9 +11,7 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     async def role_check(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
-        if ctx.author.top_role.position <= member.top_role.position:
-            return False
-        elif ctx.author == member:
+        if ctx.author == member:
             return False
         else:
             return True
@@ -27,12 +25,14 @@ class Moderation(commands.Cog):
         embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason}")
         
-        if await self.role_check(ctx, member=member):
+        if await self.role_check(ctx, member):
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.bot.config.DB.moderation.insert_one({"guild": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
-        
         else:
-            raise commands.MissingPermissions(missing_permissions=['ban_members'])
+            if ctx.author.top_role.position <= member.top_role.position:
+                raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
+            else:
+                raise commands.MissingPermissions(missing_permissions=['ban_members'])
 
         await ctx.send(embed=embed)
 

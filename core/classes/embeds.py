@@ -11,7 +11,14 @@ class Embeds(Embed):
     def __init__(self, default_color) -> None:
         self.default_color = default_color
 
-    async def simple(self, ctx: Union[Context, disnake.ApplicationCommandInteraction]=None, image: str=None, thumbnail: str=None, footer: dict=None, **kwargs):
+    async def simple(
+        self, 
+        ctx: Union[Context, disnake.ApplicationCommandInteraction] = None, 
+        image: str = None, 
+        thumbnail: str = None, 
+        footer: dict = None, 
+        **kwargs
+    ):
         embed = Embed(**kwargs)
 
         embed.color = self.default_color if not ctx else await Config().get_guild_data(guild=ctx.guild.id, key='color')
