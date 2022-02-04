@@ -9,7 +9,7 @@ class SupportButton(disnake.ui.View):
 
     @disnake.ui.button(
         label="Сервер поддержки", 
-        style=disnake.ButtonStyle.blurple,
+        style=disnake.ButtonStyle.green,
         emoji="<:invite:918571630224089118>"
     )
     async def support_server(self, button, inter):
