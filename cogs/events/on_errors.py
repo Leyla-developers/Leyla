@@ -34,12 +34,11 @@ class OnErrors(commands.Cog):
 
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
-        
+
         if not type(cmd_error) in DESCRIPTIONS.keys():
             embed.add_field(name="Описание ошибки", value=cmd_error)
-            view = SupportButton()
 
-        await ctx.response.send_message(embed=embed, ephemeral=True, view=view if view else None)
+        await ctx.response.send_message(embed=embed, ephemeral=True, view=SupportButton())
 
 def setup(bot):
     bot.add_cog(OnErrors(bot))
