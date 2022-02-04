@@ -39,7 +39,7 @@ class OnErrors(commands.Cog):
             embed.add_field(name="Описание ошибки", value=cmd_error)
             view = SupportButton()
 
-        await ctx.response.send_message(embed=embed, ephemeral=True, view=view or None)
+        await ctx.response.send_message(embed=embed, ephemeral=True, view=view if view else None)
 
 def setup(bot):
     bot.add_cog(OnErrors(bot))
