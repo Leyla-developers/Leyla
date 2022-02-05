@@ -67,9 +67,12 @@ class Moderation(commands.Cog):
             raise CustomError("Вы не можете снять предупреждение с себя.")
         else:
             await self.bot.config.DB.moderation.delete_one({"guild": ctx.guild.id, "member": member.id, "warn_id": warn_id})
-            await ctx.send(embed=await self.bot.embeds.simple(description="предупреждение участника было снято", footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}))
-
-
+            await ctx.send(embed=await self.bot.embeds.simple(
+                title=f"Снятие предупреждения с {member.name}", 
+                description="Предупреждение участника было снято! :з", 
+                footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}
+            )
+        )
 
 
 def setup(bot):
