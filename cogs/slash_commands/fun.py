@@ -1,3 +1,4 @@
+from aiohttp import ClientSession
 from random import randint
 
 import disnake
@@ -45,8 +46,11 @@ class FunSlashCommands(commands.Cog):
         description="Накладывает разные эффекты на аватар."
     )
     async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
-        embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
-        return await inter.send(embed=embed)
+        async with ClientSession() as session:
+            async with session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}') as response:
+                image_bytes = await response.read()
+                embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
+                await inter.send(embed=embed)
 
     @commands.slash_command(
         options=[
