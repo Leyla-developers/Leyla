@@ -10,7 +10,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def role_check(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
+    async def checker(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
         if ctx.author == member:
             return False
         else:
@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
         embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
         
-        if await self.role_check(ctx, member):
+        if await self.checker(ctx, member):
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.bot.config.DB.moderation.insert_one({"guild": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
         else:
@@ -58,6 +58,19 @@ class Moderation(commands.Cog):
                     }
                 )
             await ctx.send(embed=embed)
+
+    @commands.slash_command(
+        description="Удаление предупреждений участника"
+    )
+    async def unwarn(self, ctx, member: disnake.Member, warn_id: int):
+        if not self.checker(ctx, member):
+            raise CustomError("Вы не можете снять предупреждение с себя.")
+        else:
+            await self.bot.config.DB.moderation.delete_one({"guild": ctx.guild.id, "member": member.id, "warn_id": warn_id})
+            await ctx.send(embed=await ctx.embed(decription="предупреждение участника было снято", footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}))
+
+
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
