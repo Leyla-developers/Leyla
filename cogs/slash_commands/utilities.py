@@ -8,10 +8,8 @@ from disnake.ext import commands
 from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
-import emoji
+import emoji as emj
 
-
-TEST_GUILD = 885541278908043304
 
 class Utilities(commands.Cog):
 
@@ -99,7 +97,7 @@ class Utilities(commands.Cog):
         description="Получить эмодзик"
     )
     async def emoji(self, inter, emoji):
-        if emoji == emoji.emojize(emoji, use_aliases=True):
+        if emoji == emj.emojize(emoji, use_aliases=True):
             await inter.send(emoji)
         else:
             get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))

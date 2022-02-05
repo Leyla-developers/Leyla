@@ -17,7 +17,6 @@ class FunSlashCommands(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(
-        guild_ids=[885541278908043304],
         options=[
             disnake.Option(name='a', type=disnake.OptionType.integer, description='Число от:'),
             disnake.Option(name='b', type=disnake.OptionType.integer, description='Число до:')
@@ -30,7 +29,6 @@ class FunSlashCommands(commands.Cog):
         return await inter.send(embed=embed)
 
     @commands.slash_command(
-        guild_ids=[885541278908043304],
         options=[
             disnake.Option(
                 'overlay', 'выберите наложение', 
@@ -40,14 +38,14 @@ class FunSlashCommands(commands.Cog):
             ),
             disnake.Option('user', 'Выберите пользователя', type=disnake.OptionType.user, required=False)
         ],
-        name='avatar-overlay'
+        name='avatar-overlay',
+        description="Накладывает разные эффекты на аватар."
     )
     async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}')
         return await inter.send(embed=embed)
 
     @commands.slash_command(
-        guild_ids=[885541278908043304],
         options=[
             disnake.Option(
                 'choice', 'Выберите тянку OwO', 
@@ -56,7 +54,8 @@ class FunSlashCommands(commands.Cog):
                 choices=['megumin', 'shinobu', 'awoo']
             )
         ],
-        name='anime-girl'
+        name='anime-girl',
+        description="Аниме девочки о"
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
         embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
