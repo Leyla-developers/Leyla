@@ -97,7 +97,7 @@ class Utilities(commands.Cog):
         description="Получить эмодзик"
     )
     async def emoji(self, inter, emoji):
-        if  in emj.UNICODE_EMOJI_ALIAS_ENGLISH:
+        if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH:
             await inter.send(emoji)
         else:
             get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))
