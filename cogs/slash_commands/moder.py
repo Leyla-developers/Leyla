@@ -17,17 +17,16 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def warn(self, ctx, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
-        embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
+        embed = await self.bot.embeds.simple(title=f"(>-<)!!! {member.name} предупреждён!")
         embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
         
         if ctx.author == member:
+            raise CustomError("Зачем вы пытаетесь себя предупредить?")
+        elif ctx.author.top_role.position <= member.top_role.position:
+            raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
+        else:
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.bot.config.DB.warns.insert_one({"guild": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
-        else:
-            if ctx.author.top_role.position <= member.top_role.position:
-                raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
-            else:
-                raise commands.MissingPermissions(missing_permissions=['ban_members'])
 
         await ctx.send(embed=embed)
 
@@ -37,22 +36,21 @@ class Moderation(commands.Cog):
     async def warns(self, ctx, member: disnake.Member = commands.Param(lambda ctx: ctx.author)):
         if member.bot:
             raise CustomError("Невозможно просмотреть предупреждения **бота**")
+        elif await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
+            raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
-            if await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
-                raise CustomError("У вас/участника отсутствуют предупреждения.")
-            else:
-                warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": ctx.guild.id})])
-    
-                embed = await self.bot.embeds.simple(
-                    title=f"Вилкой в глаз или... Предупреждения {member.name}", 
-                    description=warn_description, 
-                    thumbnail=member.display_avatar.url,
-                    footer={
-                        "text": "Предупреждения участника", 
-                        "icon_url": self.bot.user.avatar.url
-                    }
-                )
-            await ctx.send(embed=embed)
+            warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": ctx.guild.id})])
+
+            embed = await self.bot.embeds.simple(
+                title=f"Вилкой в глаз или... Предупреждения {member.name}", 
+                description=warn_description, 
+                thumbnail=member.display_avatar.url,
+                footer={
+                    "text": "Предупреждения участника", 
+                    "icon_url": self.bot.user.avatar.url
+                }
+            )
+        await ctx.send(embed=embed)
 
     @commands.slash_command(
         description="Удаление предупреждений участника"
