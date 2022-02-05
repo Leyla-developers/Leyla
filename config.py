@@ -14,6 +14,7 @@ class Config:
 
     async def get_guild_data(self, guild: Union[Guild, int], key: str=None) -> dict:
         guild_id = guild.id if isinstance(guild, Guild) else guild
+
         if await self.DB.guilds.count_documents({"_id": guild_id}) != 0:
             data = await self.DB.guilds.find_one({"_id": guild_id})
         else:

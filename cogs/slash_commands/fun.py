@@ -26,7 +26,7 @@ class FunSlashCommands(commands.Cog):
     )
     async def number(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
         if b < a or a == b:
-            raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно') # Я мастер объя
+            raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно') # Я мастер объянсять
         embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
         embed.add_field(name='Ваше число...', value=randint(a, b))
         return await inter.send(embed=embed)
