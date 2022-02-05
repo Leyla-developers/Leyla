@@ -24,6 +24,7 @@ class FunSlashCommands(commands.Cog):
         description='Случайное число в заданном диапазоне'
     )
     async def number(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
+        
         embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
         embed.add_field(name='Ваше число...', value=randint(a, b))
         return await inter.send(embed=embed)
