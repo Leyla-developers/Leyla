@@ -71,6 +71,8 @@ class Moderation(commands.Cog):
                 footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}
             )
         )
+        elif await self.bot.config.DB.moderation.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
+            raise CustomError("У этого чудика нет предупреждений(")
         else:
             raise CustomError("Вы не можете снять предупреждение с себя.")
 
