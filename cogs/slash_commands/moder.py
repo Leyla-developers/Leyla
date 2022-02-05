@@ -63,9 +63,7 @@ class Moderation(commands.Cog):
         description="Удаление предупреждений участника"
     )
     async def unwarn(self, ctx, member: disnake.Member, warn_id: int):
-        if not self.checker(ctx, member):
-            raise CustomError("Вы не можете снять предупреждение с себя.")
-        else:
+        if self.checker(ctx, member):
             await self.bot.config.DB.moderation.delete_one({"guild": ctx.guild.id, "member": member.id, "warn_id": warn_id})
             await ctx.send(embed=await self.bot.embeds.simple(
                 title=f"Снятие предупреждения с {member.name}", 
@@ -73,7 +71,8 @@ class Moderation(commands.Cog):
                 footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}
             )
         )
-
+        else:
+            raise CustomError("Вы не можете снять предупреждение с себя.")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
