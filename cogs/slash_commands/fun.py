@@ -3,6 +3,7 @@ from random import randint
 import disnake
 from disnake.ext import commands
 
+from Tools.exceptions import CustomError
 from services import waifu_pics
 
 
@@ -24,7 +25,8 @@ class FunSlashCommands(commands.Cog):
         description='Случайное число в заданном диапазоне'
     )
     async def number(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
-        
+        if b < a or a == b:
+            raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно') # Я мастер объя
         embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
         embed.add_field(name='Ваше число...', value=randint(a, b))
         return await inter.send(embed=embed)
