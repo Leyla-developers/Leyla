@@ -10,11 +10,6 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def checker(self, ctx: disnake.ApplicationCommandInteraction, member: disnake.Member):
-        if ctx.author == member:
-            return False
-        else:
-            return True
 
     @commands.slash_command(
         description="Можете теперь спокойно выдавать предупреждения uwu."
@@ -25,7 +20,7 @@ class Moderation(commands.Cog):
         embed = await self.bot.embeds.simple(thumbnail=member.display_avatar.url)
         embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
         
-        if await self.checker(ctx, member):
+        if ctx.author == member:
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.bot.config.DB.warns.insert_one({"guild": ctx.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
         else:
@@ -63,7 +58,13 @@ class Moderation(commands.Cog):
         description="Удаление предупреждений участника"
     )
     async def unwarn(self, ctx, member: disnake.Member, warn_id: int):
-        if self.checker(ctx, member):
+        if ctx.author == member:
+            raise CustomError("Вы не можете снять предупреждение с себя.")
+        elif await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
+            raise CustomError("У этого чудика нет предупреждений(")
+        elif await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "warn_id": warn_id}) == 0:
+            raise CustomError("Такого warn-ID не существует.")
+        else:
             await self.bot.config.DB.warns.delete_one({"guild": ctx.guild.id, "member": member.id, "warn_id": warn_id})
             await ctx.send(embed=await self.bot.embeds.simple(
                 title=f"Снятие предупреждения с {member.name}", 
@@ -71,12 +72,6 @@ class Moderation(commands.Cog):
                 footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}
             )
         )
-        elif await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "member": member.id}) == 0:
-            raise CustomError("У этого чудика нет предупреждений(")
-        elif await self.bot.config.DB.warns.count_documents({"guild": ctx.guild.id, "warn_id": warn_id}) == 0:
-            raise CustomError("")
-        else:
-            raise CustomError("Вы не можете снять предупреждение с себя.")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
