@@ -49,8 +49,10 @@ class FunSlashCommands(commands.Cog):
         async with ClientSession() as session:
             async with session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={str(user.avatar)}') as response:
                 image_bytes = await response.read()
-                embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'attachment://overlay.{"png" if overlay != "triggered" else "gif"}')
-                await inter.send(embed=embed, file=disnake.File(image_bytes, embed.image))
+                image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
+                embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'attachment://{image_filename}')
+                await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
+            return await session.close()
 
     @commands.slash_command(
         options=[
@@ -62,7 +64,7 @@ class FunSlashCommands(commands.Cog):
             )
         ],
         name='anime-girl',
-        description="Аниме девочки о"
+        description="Аниме девочки"
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
         embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
