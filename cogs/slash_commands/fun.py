@@ -64,7 +64,7 @@ class FunSlashCommands(commands.Cog):
             )
         ],
         name='anime-girl',
-        description="Аниме девочки"
+        description="Аниме тянки"
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
         embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))

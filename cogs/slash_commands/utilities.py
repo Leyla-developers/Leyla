@@ -96,7 +96,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Получить эмодзик"
     )
-    async def emoji(self, inter, emoji):
+    async def emoji(self, inter, *, emoji):
         if emoji in emj.EMOJI_ALIAS_UNICODE_ENGLISH:
             await inter.send(emoji)
         else:
