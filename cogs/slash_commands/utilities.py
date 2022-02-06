@@ -136,7 +136,7 @@ class Utilities(commands.Cog):
                 self, 
                 inter, 
                 title='BotiCord', 
-                description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощью" if "error" in x else x["message"], 
+                description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in x else x["message"], 
                 url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
             )
 

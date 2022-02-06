@@ -67,7 +67,7 @@ class Moderation(commands.Cog):
             await inter.send(embed=await self.bot.embeds.simple(
                 title=f"Снятие предупреждения с {member.name}", 
                 description="Предупреждение участника было снято! :з", 
-                footer={"text": f"Модератор: {member.name}", "icon_url": member.display_avatar.url}
+                footer={"text": f"Модератор: {inter.author.name}", "icon_url": inter.author.display_avatar.url}
             )
         )
 
