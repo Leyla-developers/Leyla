@@ -46,11 +46,12 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии",
     )
-    async def guild(self, inter):
+    async def guild(self, inter, guild: disnake.Guild = commands.Param(lambda inter: inter.guild)):
         information = (
-            f'Участников: **{len(inter.guild.members)}**',
-            f'Эмодзи: **{len(inter.guild.emojis)}**',
-            f'Ролей: **{len(inter.guild.roles)}**',
+            f'Участников: **{len(guild.members)}**',
+            f'Эмодзи: **{len(guild.emojis)}**',
+            f'Количество ролей: **{len(guild.roles)}**',
+            f'Ботов на сервере: **{len(list(lambda user: user.bot, guild.members))}**'
         )
         embed = await self.bot.embeds.simple(
             title=f'Информация о гильдии {inter.guild.name}',
@@ -124,7 +125,8 @@ class Utilities(commands.Cog):
 
         async with self.bot.session.post(
             'https://api.boticord.top/v1/server', 
-            headers={'Authorization': os.environ['BCORD']}, json=data
+            headers={'Authorization': os.environ['BCORD']}, 
+            json=data
         ) as response:
             x = await response.json()
         
@@ -139,6 +141,7 @@ class Utilities(commands.Cog):
                 description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощью" if "error" in x else x["message"], 
                 url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
             )
+
             await inter.respond(embed=embed)
 
 def setup(bot: commands.Bot):
