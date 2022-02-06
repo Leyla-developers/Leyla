@@ -15,14 +15,12 @@ class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.embed = self.bot.embeds
 
     @commands.slash_command(
         description="Вывод аватара участника"
     )
-    async def avatar(self, inter, user: disnake.User=None):
-        user = user if user else inter.author
-        embed = await self.embed.simple(
+    async def avatar(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
+        embed = await self.bot.embeds.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
             image=user.display_avatar.url
         )
@@ -37,7 +35,7 @@ class Utilities(commands.Cog):
         elif variant == 'from':
             morse = Decoder().from_morse(code)
 
-        embed = await self.embed.simple(
+        embed = await self.bot.embeds.simple(
             title='Decoder/Encoder морзе.',
             description=morse
         )
@@ -46,23 +44,23 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии",
     )
-    async def guild(self, inter: disnake.ApplicationCommandInteraction, guild: disnake.Guild = commands.Param(lambda inter: inter.guild)):
+    async def guild(self, inter: disnake.ApplicationCommandInteraction):
         information = (
-            f'Участников: **{len(guild.members)}**',
-            f'Эмодзи: **{len(guild.emojis)}**',
-            f'Количество ролей: **{len(guild.roles)}**',
-            f'Ботов на сервере: **{len(list(lambda user: user.bot, guild.members))}**'
+            f'Участников: **{len(inter.guild.members)}**',
+            f'Эмодзи: **{len(inter.guild.emojis)}**',
+            f'Количество ролей: **{len(inter.guild.roles)}**',
+            f'Ботов на сервере: **{len(list(lambda user: user.bot, inter.guild.members))}**'
         )
         embed = await self.bot.embeds.simple(
-            title=f'Информация о гильдии {guild.name}',
+            title=f'Информация о гильдии {inter.guild.name}',
             description="\n".join(information)
         )
 
-        if guild.banner:
-            embed.set_thumbnail(guild.banner.url)
+        if inter.guild.banner:
+            embed.set_thumbnail(inter.guild.banner.url)
 
-        if guild.icon:
-            embed.set_thumbnail(guild.icon)
+        if inter.guild.icon:
+            embed.set_thumbnail(inter.guild.icon)
 
         await inter.send(embed=embed)
 
