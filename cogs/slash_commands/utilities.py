@@ -49,7 +49,7 @@ class Utilities(commands.Cog):
             f'Участников: **{len(inter.guild.members)}**',
             f'Эмодзи: **{len(inter.guild.emojis)}**',
             f'Количество ролей: **{len(inter.guild.roles)}**',
-            f'Ботов на сервере: **{len(list(lambda user: user.bot, inter.guild.members))}**'
+            f'Ботов на сервере: **{len(list(filter(lambda user: user.bot, inter.guild.members)))}**'
         )
         embed = await self.bot.embeds.simple(
             title=f'Информация о гильдии {inter.guild.name}',
