@@ -46,7 +46,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии",
     )
-    async def guild(self, inter, guild: disnake.Guild = commands.Param(lambda inter: inter.guild)):
+    async def guild(self, inter: disnake.ApplicationCommandInteraction, guild: disnake.Guild = commands.Param(lambda inter: inter.guild)):
         information = (
             f'Участников: **{len(guild.members)}**',
             f'Эмодзи: **{len(guild.emojis)}**',
@@ -54,15 +54,15 @@ class Utilities(commands.Cog):
             f'Ботов на сервере: **{len(list(lambda user: user.bot, guild.members))}**'
         )
         embed = await self.bot.embeds.simple(
-            title=f'Информация о гильдии {inter.guild.name}',
+            title=f'Информация о гильдии {guild.name}',
             description="\n".join(information)
         )
 
-        if inter.guild.banner:
-            embed.set_thumbnail(inter.guild.banner.url)
+        if guild.banner:
+            embed.set_thumbnail(guild.banner.url)
 
-        if inter.guild.icon:
-            embed.set_thumbnail(inter.guild.icon)
+        if guild.icon:
+            embed.set_thumbnail(guild.icon)
 
         await inter.send(embed=embed)
 
