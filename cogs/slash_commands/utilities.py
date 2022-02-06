@@ -109,7 +109,7 @@ class Utilities(commands.Cog):
             await inter.send(embed=embed)
 
     @commands.slash_command(description="Данная команда может поднять сервер в топе на boticord'e")
-    async def up(self, inter):
+    async def up(self, inter: disnake.ApplicationCommandInteraction):
         data = {
             "serverID": str(inter.guild.id),
             "up": 1,
