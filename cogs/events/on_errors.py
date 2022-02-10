@@ -15,7 +15,7 @@ PERMISSIONS = {
     "administrator": "Администратор",
     "ban_members": "Банить участников",
     "kick_members": "Выгонять участников",
-    "manage_guild": "Управлять гильдией"
+    "manage_guild": "Управлять сервером"
 }
 
 class OnErrors(commands.Cog):
