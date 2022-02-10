@@ -15,6 +15,9 @@ class CapsLockAutoMod(commands.Cog):
         if not data:
             return
 
+        if message.author.bot:
+            return
+
         if percent >= data['percent']:
             match data['action']:
                 case "warn":
@@ -25,6 +28,12 @@ class CapsLockAutoMod(commands.Cog):
 
                 case "timeout":
                     await message.author.timeout(duration=data['action']['duration'])
+
+            if not data['message']:
+                ...
+
+            else:
+                await message.channel.send(data['message'])
                 
             await message.delete()
 
