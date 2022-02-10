@@ -2,9 +2,7 @@ import disnake
 from disnake.ext import commands
 
 
-# TODO: Re-write it
-
-class OnMessages(commands.Cog):
+class CapsLockAutoMod(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -20,7 +18,7 @@ class OnMessages(commands.Cog):
         if percent >= data['percent']:
             match data['action']:
                 case "warn":
-                    await self.bot.config.DB.warns.insert_one({"guild": message.guild.id, "member": message.author.id, "reason": "Много капса (Авто-модерация)", "warn_id": __import__('random').randint(10000, 99999)})
+                    await self.bot.config.DB.warns.insert_one({"guild": message.guild.id, "member": message.author.id, "reason": "Выключи caps lock! | (Автомодерация)", "warn_id": __import__('random').randint(10000, 99999)})
                 
                 case "ban":
                     await message.author.ban(reason="Caps lock")
@@ -28,6 +26,5 @@ class OnMessages(commands.Cog):
                 case "timeout":
                     await message.author.timeout(duration=data['action']['duration'])
 
-
 def setup(bot):
-    bot.add_cog(OnMessages(bot))
+    bot.add_cog(CapsLockAutoMod(bot))
