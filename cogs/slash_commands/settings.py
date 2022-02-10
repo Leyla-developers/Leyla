@@ -12,6 +12,7 @@ class Settings(commands.Cog):
 
     
     @commands.slash_command(description="Настрой-ка меня, Сен-пай u-u.")
+    @commands.has_permissions(administrator=True)
     async def settings(self, inter):
         ...
 
