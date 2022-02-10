@@ -25,9 +25,7 @@ class Settings(commands.Cog):
         if await self.bot.config.DB.automod.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent, "message": message})
         else:
-            if dict(await self.bot.config.DB.automod.find_one({"_id": inter.guild.id}))['action'] == action:
-                raise CustomError("Сейчас и так стоит это наказание >~<")
-            elif action == "timeout": 
+            if action == "timeout": 
                 data = {
                     "timeout": {
                         "duration": 43200
