@@ -21,9 +21,9 @@ class Settings(commands.Cog):
         ...
 
     @automoderation.sub_command(description="Настройка наказания для любителей покричать (Caps Lock)")
-    async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50):
+    async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None):
         if await self.bot.config.DB.automod.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent})
+            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent, "message": message})
         else:
             if dict(await self.bot.config.DB.automod.find_one({"_id": inter.guild.id}))['action'] == action:
                 raise CustomError("Сейчас и так стоит это наказание >~<")
@@ -33,9 +33,9 @@ class Settings(commands.Cog):
                         "duration": 43200
                     }
                 }
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data}})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message}})
             else:
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action}})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(

@@ -25,6 +25,8 @@ class CapsLockAutoMod(commands.Cog):
 
                 case "timeout":
                     await message.author.timeout(duration=data['action']['duration'])
+                
+            await message.delete()
 
 def setup(bot):
     bot.add_cog(CapsLockAutoMod(bot))
