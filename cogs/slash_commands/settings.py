@@ -32,9 +32,9 @@ class Settings(commands.Cog):
                         "duration": 43200
                     }
                 }
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"action": data})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"action": {"$set": data}})
             else:
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"action": {action}})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"action": {"$set": {action}}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
