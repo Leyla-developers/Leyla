@@ -1,7 +1,7 @@
 from typing import Union
 
 import disnake
-from disnake import Embed, Integration
+from disnake import Embed
 from disnake.ext.commands import Context
 from config import Config
 
@@ -13,18 +13,19 @@ class Embeds(Embed):
 
     async def simple(
         self, 
-        ctx: Union[Context, disnake.ApplicationCommandInteraction] = None, 
+        interaction: Union[Context, disnake.ApplicationCommandInteraction] = None, 
         image: str = None, 
         thumbnail: str = None, 
-        footer: dict = None, 
+        footer: dict = None,
+        fields: list = None,
         **kwargs
     ):
         embed = Embed(**kwargs)
 
-        embed.color = self.default_color if not ctx else await Config().get_guild_data(guild=ctx.guild.id, key='color')
+        embed.color = self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color')
 
-        if ctx:
-            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
+        if interaction:
+            embed.set_author(name=interaction.author.display_name, icon_url=interaction.author.display_avatar.url)
 
         if image:
             embed.set_image(url=image)
@@ -34,5 +35,9 @@ class Embeds(Embed):
 
         if footer:
             embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
+
+        if fields:
+            for field in fields:
+                embed.add_field(name=field.get('name'), value=field.get('value'))
 
         return embed

@@ -23,7 +23,7 @@ class Decoder:
             'Ч': '---.', 'Ш': '----', 'Щ': '--.-', 'Ъ': '.--.-.',
             'Ы': '-.--', 'Ь': '-..-', 'Э': '..-..', 'Ю': '..--', 'Я': '.-.-'
         }
-        self.morse_reverse = {value:key for key, value in self.morse_dict.items()}
+        self.morse_reverse = {value: key for key, value in self.morse_dict.items()}
 
     def to_morse(self, string):
         return " ".join(self.morse_dict.get(i.upper()) for i in string)        
