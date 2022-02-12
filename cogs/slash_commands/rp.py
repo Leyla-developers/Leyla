@@ -43,7 +43,7 @@ RP_DESCRIPTIONS_LEYLA = {
     'highfive': '🖐️'
 }
 
-class RolePlay(commands.Cog):
+class RP(commands.Cog):
 
     COG_EMOJI = '🎭'
 
@@ -73,4 +73,4 @@ class RolePlay(commands.Cog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(RolePlay(bot))
+    bot.add_cog(RP(bot))
