@@ -21,17 +21,44 @@ class Settings(commands.Cog):
         ...
 
     @settings.sub_command_group()
-    async def levels(self, inter):
+    async def level(self, inter):
         ...
 
-    @levels.sub_command(description="Настройка системы уровней")
+    @automoderation.sub_command(description="Настройка наказания для любителей покричать (Caps Lock)")
+    async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None):
+        if await self.bot.config.DB.automod.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent, "message": message})
+        else:
+            if action == "timeout": 
+                data = {
+                    "timeout": {
+                        "duration": 43200
+                    }
+                }
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message}})
+            else:
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message}})
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(automoderation)**', 
+                description=f"Установлено наказание в случае превышения капса",
+                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
+            )
+        )
+
+    @automoderation.sub_command()
+    async def test(self, inter):
+        await inter.send('хуй')
+
+    @level.sub_command(description="Настройка системы уровней")
     async def mode(self, inter, _mode: Literal['Включить', 'Выключить']):
         mode = {
             "Включить": True,
             "Выключить": False
         }
 
-        if not await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}):
+        if not await self.bot.config.DB.level.find_one({"_id": inter.guild.id}):
             await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "mode": mode[_mode]})
 
         if mode[_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
@@ -42,7 +69,7 @@ class Settings(commands.Cog):
         
         await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(ranks)**", description="Режим уровней успешно изменён."))
 
-    @levels.sub_command(description="Настройка сообщения при повышении уровня")
+    @level.sub_command(description="Настройка сообщения при повышении уровня")
     async def message(self, inter, message):
         if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "message": message})
@@ -55,7 +82,7 @@ class Settings(commands.Cog):
             )
         )
 
-    @levels.sub_command(
+    @level.sub_command(
         description="Выбор канала в который будут приходить оповещения о повышении уровня",
         options=[
             disnake.Option(
