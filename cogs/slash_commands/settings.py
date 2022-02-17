@@ -74,19 +74,13 @@ class Settings(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(ranks)**', 
-                description="Установлено новое сообщение о повышении уровня\n**Сообщение:**\n{message}"
+                description=f"Установлено новое сообщение о повышении уровня\n**Сообщение:**\n{message}"
             )
         )
 
     @level.sub_command(
         description="Выбор канала в который будут приходить оповещения о повышении уровня",
-        options=[
-            disnake.Option(
-                name='channel', description='Выбор канала',
-                type=disnake.OptionType.channel,
-                required=True,
-            )
-        ]
+        # options=[disnake.Option(name='channel', description='Выбор канала',type=disnake.OptionType.channel,required=True,)]
     )
     async def channel(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
