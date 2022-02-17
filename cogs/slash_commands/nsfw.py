@@ -31,7 +31,6 @@ NSFW_DESCRIPTIONS = [
     'tentacles',
 ]
 
-
 class NSFW(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
@@ -52,7 +51,7 @@ class NSFW(commands.Cog):
     async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
             inter,
-            image=hmtai.useHM("2_9", choice)
+            image=hmtai.useHM("29", choice)
         )
         return await inter.send(embed=embed)
 
