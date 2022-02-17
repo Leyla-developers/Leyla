@@ -34,7 +34,7 @@ NSFW_DESCRIPTIONS = [
 ]
 
 
-class RolePlay(commands.Cog):
+class NSFW(commands.Cog):
 
     COG_EMOJI = '<:blurple_lock:918571630358319145>'
 
@@ -62,4 +62,4 @@ class RolePlay(commands.Cog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(RolePlay(bot))
+    bot.add_cog(NSFW(bot))
