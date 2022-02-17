@@ -43,7 +43,7 @@ class OnErrors(commands.Cog):
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         if isinstance(cmd_error, commands.NSFWChannelRequired):
-            embed.add_field(name="Поэтому воспользуйтесь одним из NSFW-каналов", value="\n".join([i.mention for i in ctx.guild.text_channels]))
+            embed.add_field(name="Поэтому воспользуйтесь одним из NSFW-каналов", value="\n".join([i.mention for i in ctx.guild.text_channels if i.is_nsfw()]))
 
         await ctx.response.send_message(embed=embed, ephemeral=True, view=SupportButton())
 
