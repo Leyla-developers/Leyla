@@ -1,10 +1,10 @@
 import disnake
 from disnake.ext import commands
-
 from services import waifu_pics
+import hmtai
 
 
-RP_DESCRIPTIONS = {
+NSFW_DESCRIPTIONS = {
     'hentai': 'pwp',
     'pussy': '(///////)',
     'boobs': 'o-o',
@@ -24,19 +24,17 @@ class RolePlay(commands.Cog):
         description='Взаимодействовать с пользователем',
         options=[
             disnake.Option(
-                'choice', 'Выбор действия', 
+                'choice', 'Выбор картинки', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()]
+                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS.keys()]
             ),
-            disnake.Option('user', 'Пользователь', type=disnake.OptionType.user)
         ]
     )
-    async def nsfw(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User = commands.Param(lambda inter: inter.author), choice: str = None):
+    async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
             inter,
-            description=f'***{RP_DESCRIPTIONS[choice].format(user=user)}***',
-            image=await waifu_pics.get_image('nsfw', choice)
+            image=hmtai.useHM("2_4", NSFW_DESCRIPTIONS.get(choice))
         )
         return await inter.send(embed=embed)
 

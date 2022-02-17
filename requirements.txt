@@ -6,3 +6,4 @@ disnake-jishaku
 motor
 dnspython
 emoji
+hmtai

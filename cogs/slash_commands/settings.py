@@ -47,7 +47,7 @@ class Settings(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Leyla settings **(automoderation)**', 
-                description=f"Установлено наказание в случае превышения капса",
+                description=f"Настройки были успешно сохранены и применены",
                 footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
             )
         )
