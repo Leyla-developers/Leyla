@@ -31,7 +31,7 @@ class Ranks(commands.Cog):
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
                 channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
-                message = {
+                message_format = {
                     "[xp]": data['xp'],
                     "[lvl]": data['lvl'],
                     "[member]": message.author.name,
@@ -42,7 +42,7 @@ class Ranks(commands.Cog):
                 if await self.formula(message, message.author):
                     lvl = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))['lvl']
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
-                    await message.guild.get_channel(channel_id).send(message[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id})['message'])])
+                    await message.guild.get_channel(channel_id).send(message_format[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id})['message'])])
                 else:
                     await sleep(5)
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)}})
