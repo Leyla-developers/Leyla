@@ -31,6 +31,7 @@ class RolePlay(commands.Cog):
             ),
         ]
     )
+    @commands.is_nsfw()
     async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
             inter,
