@@ -4,32 +4,32 @@ from services import waifu_pics
 import hmtai
 
 
-NSFW_DESCRIPTIONS = [
-    'ass',
-    'bdsm',
-    'cum',
-    'creampie',
-    'femdom',
-    'hentai',
-    'incest',
-    'masturbation',
-    'public',
-    'ero',
-    'orgy',
-    'elves',
-    'yuri',
-    'pantsu',
-    'glasses',
-    'cuckold',
-    'blowjob',
-    'boobjob',
-    'foot',
-    'hnt_gifs',
-    'vagina',
-    'ahegao',
-    'uniform',
-    'tentacles',
-]
+NSFW_DESCRIPTIONS = {
+    'ass': 'Зопки :³',
+    'bdsm': 'БДСМ (Асуждаю)',
+    'cum': 'КониТИВАААА (Слишком много йогуртика)',
+    'creampie': 'Да.',
+    'femdom': 'Девушки тоже умеют...',
+    'hentai': 'Просто хентай',
+    'incest': '×Агрессивные звуки осуждения×',
+    'masturbation': 'Мальчики не одни любят др×чить(',
+    'public': 'Эээ.. Ладно.',
+    'ero': 'ПаЛюБуЙтЕсЬ',
+    'orgy': 'Оргия',
+    'elves': 'Эльфики uwu',
+    'yuri': 'Девочка и девочка, хмм...',
+    'pantsu': "(Мы, если честно, сами не знаем, что это.)",
+    'glasses': 'В очках тоже неплохо)',
+    'cuckold': 'Куколд',
+    'blowjob': 'Блоуджоб',
+    'boobjob': 'Работа грудью, что)))',
+    'foot': 'Ношшшшшшшшшки',
+    'hnt_gifs': 'Ещё больше хентая',
+    'vagina': 'Дыротька, не моя, нет(',
+    'ahegao': 'Ахегао, что ещё говорить?',
+    'uniform': 'Школьницы и не только.. ой.',
+    'tentacles': 'Щупальца',
+}
 
 class NSFW(commands.Cog):
 
