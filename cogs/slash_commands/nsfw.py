@@ -4,13 +4,34 @@ from services import waifu_pics
 import hmtai
 
 
-NSFW_DESCRIPTIONS = {
-    'hentai': 'pwp',
-    'pussy': '(///////)',
-    'boobs': 'o-o',
-    'ass': 'p-q',
-    'anal': 'qwp',
-}
+NSFW_DESCRIPTIONS = [
+    'ass',
+    'bdsm',
+    'cum',
+    'creampie',
+    'manga',
+    'femdom',
+    'hentai',
+    'incest',
+    'masturbation',
+    'public',
+    'ero',
+    'orgy',
+    'elves',
+    'yuri',
+    'pantsu',
+    'glasses',
+    'cuckold',
+    'blowjob',
+    'boobjob',
+    'foot',
+    'thighs',
+    'vagina',
+    'ahegao',
+    'uniform',
+    'gangbang',
+    'tentacles',
+]
 
 
 class RolePlay(commands.Cog):
@@ -35,7 +56,7 @@ class RolePlay(commands.Cog):
     async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
             inter,
-            image=hmtai.useHM("2_4", NSFW_DESCRIPTIONS.get(choice))
+            image=hmtai.useHM("2_9", choice)
         )
         return await inter.send(embed=embed)
 
