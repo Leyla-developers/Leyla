@@ -1,32 +1,33 @@
 import disnake
 from disnake.ext import commands
-from services import waifu_pics
 import hmtai
 
 
 NSFW_DESCRIPTIONS = {
-    'Зопки :³': 'ass',
-    'БДСМ (Асуждаю)': 'bdsm',
-    'КониТИВАААА (Слишком много йогуртика)': 'cum',
-    'Да.': 'creampie', 
-    'Девушки тоже умеют...': 'femdom', 
-    'Просто хентай': 'hentai',
-    '×Агрессивные звуки осуждения×': 'incest',
-    'Мальчики не одни любят др×чить(': 'masturbation',
-    'Эээ.. Ладно.': 'public', 
-    'ПаЛюБуЙтЕсЬ': 'ero', 
-    'Оргия': 'orgy', 
-    'Эльфики uwu': 'elves', 
-    'Девочка и девочка, хмм...': 'yuri', 
-    '(Мы, если честно, сами не знаем, что это.)': 'pantsu', 
-    'В очках тоже неплохо)': 'glasses', 
-    'Куколд': 'cuckold', 'Блоуджоб': 'blowjob', 
-    'Работа грудью, что)))': 'boobjob', 
-    'Ношшшшшшшшшки': 'foot', 'Ещё больше хентая': 
-    'hnt_gifs', 'Дыротька, не моя, нет(': 'vagina', 
-    'Ахегао, что ещё говорить?': 'ahegao', 
-    'Школьницы и не только.. ой.': 'uniform', 
-    'Щупальца': 'tentacles'
+    'Зопки :³ (ass)': 'ass',
+    'БДСМ (Асуждаю) (bdsm)': 'bdsm',
+    'КониТИВАААА (Слишком много йогуртика) (cum)': 'cum',
+    'Да. (creampie)': 'creampie', 
+    'Девушки тоже умеют... (femdom)': 'femdom', 
+    'Просто хентай (hentai)': 'hentai',
+    '×Агрессивные звуки осуждения× (incest)': 'incest',
+    'Мальчики не одни любят др×чить( (masturbation)': 'masturbation',
+    'Эээ.. Ладно. (public)': 'public', 
+    'ПаЛюБуЙтЕсЬ (ero)': 'ero', 
+    'Оргия (orgy)': 'orgy', 
+    'Эльфики uwu (elves)': 'elves', 
+    'Девочка и девочка, хмм... (yuri)': 'yuri', 
+    '(Мы, если честно, сами не знаем, что это.) (pantsu)': 'pantsu', 
+    'В очках тоже неплохо) (glasses)': 'glasses', 
+    'Куколд (cuckold)': 'cuckold', 
+    'Блоуджоб (blowjob)': 'blowjob', 
+    'Работа грудью, что))) (boobjob)': 'boobjob', 
+    'Ношшшшшшшшшки (foor)': 'foot', 
+    'Ещё больше хентая (hentai gifs)': 'hnt_gifs', 
+    'Дыротька, не моя, нет( (vagina)': 'vagina', 
+    'Ахегао, что ещё говорить? (ahegao)': 'ahegao', 
+    'Школьницы и не только.. ой. (uniform)': 'uniform', 
+    'Щупальца (tentacles)': 'tentacles'
 }
 
 class NSFW(commands.Cog):
