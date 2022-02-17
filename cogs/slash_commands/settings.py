@@ -55,7 +55,7 @@ class Settings(commands.Cog):
         }
 
         if not dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
-            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "mode": mode[system_mode]})
+            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"mode": mode[system_mode]}})
 
         if mode[system_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
             raise CustomError(f"На данный момент система уровней стоит такая же, как вы указали.")
