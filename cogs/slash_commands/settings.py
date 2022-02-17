@@ -48,20 +48,20 @@ class Settings(commands.Cog):
         )
 
     @level.sub_command(description="Настройка системы уровней")
-    async def mode(self, inter, _mode: Literal['Включить', 'Выключить']):
+    async def mode(self, inter, system_mode: Literal['Включить', 'Выключить']):
         mode = {
             "Включить": True,
             "Выключить": False
         }
 
         if not await self.bot.config.DB.level.find_one({"_id": inter.guild.id}):
-            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "mode": mode[_mode]})
+            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "mode": mode[system_mode]})
 
-        if mode[_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
+        if mode[system_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
             raise CustomError(f"На данный момент система уровней стоит такая же, как вы указали.")
 
         else:
-            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"mode": mode[_mode]}})
+            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"mode": mode[system_mode]}})
         
         await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(ranks)**", description="Режим уровней успешно изменён."))
 
