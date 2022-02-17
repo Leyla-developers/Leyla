@@ -2,6 +2,7 @@ from asyncio import sleep
 
 import disnake
 from disnake.ext import commands
+from Tools.exceptions import CustomError
 
 
 class Ranks(commands.Cog):
@@ -47,6 +48,13 @@ class Ranks(commands.Cog):
                     await sleep(5)
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)}})
 
+    @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
+    async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
+        if member.bot:
+            raise CustomError("Боты не имеют этой привелегии :(")
+        else:
+            data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
+            await inter.send(embed=await self.bot.embeds.simple(title=f"Опыт и уровень {member.name}", description=f"Опыт: **{data['xp']}**\nУровень: **{data['lvl']}**"))
 
 def setup(bot):
     bot.add_cog(Ranks(bot))

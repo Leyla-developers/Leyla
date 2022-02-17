@@ -21,7 +21,7 @@ class Leyla(commands.Bot):
                 try:
                     self.load_extension(cog)
                 except Exception as e:
-                    print(f'{folder}.{cog} fucked up (с) Huela', e)
+                    print(f'{folder}.{cog} fucked up by Huela', e)
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
