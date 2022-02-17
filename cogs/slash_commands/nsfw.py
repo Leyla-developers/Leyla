@@ -43,7 +43,7 @@ class NSFW(commands.Cog):
                 'choice', 'Выбор картинки', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS]
+                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS.keys()]
             ),
         ]
     )
@@ -51,7 +51,7 @@ class NSFW(commands.Cog):
     async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
             inter,
-            image=hmtai.useHM("29", choice)
+            image=hmtai.useHM("29", NSFW_DESCRIPTIONS[choice])
         )
         return await inter.send(embed=embed)
 
