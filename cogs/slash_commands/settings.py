@@ -78,31 +78,6 @@ class Settings(commands.Cog):
             )
         )
 
-    @level.sub_command(
-        description="Выбор канала в который будут приходить оповещения о повышении уровня",
-        options=[
-            disnake.Option(
-                name='channel', description='Выбор канала',
-                type=disnake.OptionType.channel,
-                required=True,
-            )
-        ]
-    )
-    async def channel(self, inter, channel: disnake.TextChannel):
-        if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "channel": channel.id})
-        if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id, "channel": channel.id}) != 0:
-            raise CustomError("Сейчас и так выбран этот канал")
-        else:
-            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
-
-        await inter.send(embed=await self.bot.embeds.simple(
-                title="Leyla settings **(ranks)**", 
-                description="Вы успешно установили канал, в котором будет говориться и о повышении уровня участников",
-                fields=[{"name": "Канал", "value": channel.mention}]
-            )
-        )
-
     
 def setup(bot):
     bot.add_cog(Settings(bot))
