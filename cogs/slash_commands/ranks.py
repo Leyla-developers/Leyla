@@ -28,7 +28,7 @@ class Ranks(commands.Cog):
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
 
         else:
-            if dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id}))['mode']:
+            if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
                 channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
                 message = {
