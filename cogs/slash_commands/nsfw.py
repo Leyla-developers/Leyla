@@ -9,7 +9,6 @@ NSFW_DESCRIPTIONS = [
     'bdsm',
     'cum',
     'creampie',
-    'manga',
     'femdom',
     'hentai',
     'incest',
@@ -29,7 +28,6 @@ NSFW_DESCRIPTIONS = [
     'vagina',
     'ahegao',
     'uniform',
-    'gangbang',
     'tentacles',
 ]
 
