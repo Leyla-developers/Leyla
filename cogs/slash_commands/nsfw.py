@@ -24,7 +24,7 @@ NSFW_DESCRIPTIONS = [
     'blowjob',
     'boobjob',
     'foot',
-    'thighs',
+    'hnt_gifs',
     'vagina',
     'ahegao',
     'uniform',
