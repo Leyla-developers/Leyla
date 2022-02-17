@@ -46,7 +46,7 @@ class NSFW(commands.Cog):
                 'choice', 'Выбор картинки', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS.keys()]
+                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS]
             ),
         ]
     )
