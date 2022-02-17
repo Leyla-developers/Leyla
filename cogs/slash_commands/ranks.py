@@ -46,7 +46,7 @@ class Ranks(commands.Cog):
                     await message.guild.get_channel(channel_id).send(message_format[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id})['message'])])
                 else:
                     await sleep(5)
-                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)}})
+                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)+data['xp']}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
     async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
