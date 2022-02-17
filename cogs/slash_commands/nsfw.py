@@ -36,8 +36,6 @@ NSFW_DESCRIPTIONS = [
 
 class NSFW(commands.Cog):
 
-    COG_EMOJI = '<:blurple_lock:918571630358319145>'
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
