@@ -8,7 +8,8 @@ DESCRIPTIONS = {
     commands.BotMissingPermissions: "У меня нет прав на это(",
     commands.UserNotFound: "Этот человечек не найден, проверь ID/Тег/Никнейм на правильность :eyes:",
     commands.MemberNotFound: "Этот человечек не найден на этом сервере, проверь ID/Тег/Никнейм на правильность :eyes:",
-    CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо."
+    CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
+    commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться("
 }
 
 PERMISSIONS = {
@@ -40,6 +41,9 @@ class OnErrors(commands.Cog):
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
             embed.add_field(name="Описание ошибки", value=cmd_error)
+
+        if isinstance(cmd_error, commands.NSFWChannelRequired):
+            embed.add_field(name="Поэтому воспользуйтесь одним из NSFW-каналов", value="\n".join([i.mention for i in ctx.guild.text_channels]))
 
         await ctx.response.send_message(embed=embed, ephemeral=True, view=SupportButton())
 
