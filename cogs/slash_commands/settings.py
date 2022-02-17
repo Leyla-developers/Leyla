@@ -54,7 +54,7 @@ class Settings(commands.Cog):
             "Выключить": False
         }
 
-        if not await self.bot.config.DB.level.find_one({"_id": inter.guild.id}):
+        if not dict(await self.bot.config.DB.level.find_one({"_id": inter.guild.id}))['mode']:
             await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "mode": mode[system_mode]})
 
         if mode[system_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
