@@ -18,6 +18,9 @@ class CapsLockAutoMod(commands.Cog):
         if message.author.bot:
             return
 
+        if data['administrator_ignore']:
+            return
+
         if percent >= data['percent']:
             match data['action']:
                 case "warn":

@@ -25,9 +25,14 @@ class Settings(commands.Cog):
         ...
 
     @automoderation.sub_command(description="Настройка наказания для любителей покричать (Caps Lock)")
-    async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None):
+    async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
+        admin_ignore = {
+            "Игнорировать": True,
+            "Не игнорировать": False, 
+        }
+
         if await self.bot.config.DB.automod.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent, "message": message})
+            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "percent": percent, "message": message, "admin_ignore": admin_ignore[administrator_ignore]})
         else:
             if action == "timeout": 
                 data = {
@@ -35,9 +40,9 @@ class Settings(commands.Cog):
                         "duration": 43200
                     }
                 }
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message}})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
             else:
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message}})
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
