@@ -82,7 +82,7 @@ class Settings(commands.Cog):
         description="Выбор канала в который будут приходить оповещения о повышении уровня",
         options=[
             disnake.Option(
-                'channel', 'Выбор канала',
+                name='channel', description='Выбор канала',
                 type=disnake.OptionType.channel,
                 required=True,
             )
