@@ -18,3 +18,23 @@ class SupportButton(disnake.ui.View):
     )
     async def support_server(self, button, inter):
         await inter.response.send_message("Сервер поддержки: https://discord.gg/43zapTjgvm", ephemeral=True)
+
+class Warns(disnake.ui.View):
+
+    def __init__(self):
+        super().__init__()
+
+    @disnake.ui.button(
+        label="Предупреждения",
+        style=disnake.ButtonStyle.red
+    )
+    async def warns(self, button, inter):
+        warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in Config().DB.warns.find({"guild": inter.guild.id})])
+        
+        async with aiohttp.ClientSession().post(
+            'https://www.toptal.com/developers/hastebin/documents', 
+            data=warn_data
+        ) as response:
+            pastebin_data = await response.json()
+
+        await inter.response.send_message(f"Ваша ссылка: [Клик](https://www.toptal.com/developers/hastebin/{pastebin_data['key']})", ephemeral=True)
