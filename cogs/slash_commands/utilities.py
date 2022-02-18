@@ -115,9 +115,8 @@ class Utilities(commands.Cog):
             "up": 1,
             "status": 1,
             "serverName": inter.guild.name,
-            "serverAvatar": str(inter.guild.icon),
-            "serverMembersAllCount": inter.guild.member_count,
-            "serverMembersOnlineCount": 0,
+            "serverAvatar": inter.guild.icon.url if inter.guild.icon else None,
+            "serverMembersAllCount": len(inter.guild.members),
             "serverOwnerID": str(inter.guild.owner_id),
         }
 

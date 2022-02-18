@@ -33,7 +33,7 @@ class CapsLockAutoMod(commands.Cog):
                     await message.author.timeout(duration=data['action']['duration'])
 
             if not data['message']:
-                ...
+                pass
 
             else:
                 await message.channel.send(data['message'])

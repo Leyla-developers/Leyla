@@ -21,7 +21,6 @@ class Embeds(Embed):
         **kwargs
     ):
         embed = Embed(**kwargs)
-
         embed.color = self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color')
 
         if interaction:
