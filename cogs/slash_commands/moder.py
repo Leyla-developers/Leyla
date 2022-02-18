@@ -3,6 +3,7 @@ import random
 import disnake
 from disnake.ext import commands
 from Tools.exceptions import CustomError
+from Tools.buttons import Warns
 
 
 class Moderation(commands.Cog):
@@ -52,7 +53,7 @@ class Moderation(commands.Cog):
                 }
             )
 
-        await inter.send(embed=embed, view=)
+        await inter.send(embed=embed, view=Warns())
 
     @commands.slash_command(
         description="Удаление предупреждений участника"
