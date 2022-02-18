@@ -128,19 +128,17 @@ class Utilities(commands.Cog):
         ) as response:
             x = await response.json()
         
-            if not response.status == 200:
-                pass
+            if not response.ok:
+                return
+            else:
+                server = data["serverID"]
+                embed = await self.bot.embeds.simple(
+                    title='BotiCord',
+                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in x else x["message"], 
+                    url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
+                )
 
-            server = data["serverID"]
-            embed = await self.bot.embeds.simple(
-                self, 
-                inter, 
-                title='BotiCord', 
-                description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in x else x["message"], 
-                url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
-            )
-
-            await inter.respond(embed=embed)
+                await inter.respond(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
