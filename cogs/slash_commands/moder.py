@@ -40,8 +40,9 @@ class Moderation(commands.Cog):
         elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
-            data = random.choices([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})], k=10)
-            warn_description = "\n".join(data) if len(data) > 10 else "\n".join(data) + "\n\nЧтобы просмотреть все свои предупреждения, нажмите на кнопку ниже/"
+            random_array = [f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})]
+            data = random.choices(random_array, k=10 if len(random_array) >= 10 else None)
+            warn_description = "\n".join(data) if len(data) > 10 else "\n".join(data) + "\n\nЧтобы просмотреть все свои предупреждения, нажмите на кнопку ниже."
 
             embed = await self.bot.embeds.simple(
                 title=f"Вилкой в глаз или... Предупреждения {member.name}",
