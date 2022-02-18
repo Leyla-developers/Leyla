@@ -8,7 +8,7 @@ import aiohttp
 
 class SupportButton(disnake.ui.View):
     
-    def __init__(self):
+    def __init__(self, member):
         super().__init__()
 
     @disnake.ui.button(
@@ -29,7 +29,7 @@ class Warns(disnake.ui.View):
         style=disnake.ButtonStyle.red
     )
     async def warns(self, button, inter):
-        warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in Config().DB.warns.find({"guild": inter.guild.id})])
+        warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in Config().DB.warns.find({"guild": inter.guild.id, "member": self.id})])
         
         async with aiohttp.ClientSession().post(
             'https://www.toptal.com/developers/hastebin/documents', 
