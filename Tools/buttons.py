@@ -2,6 +2,8 @@ from os import environ
 
 import disnake
 from disnake.ext import commands
+from config import Config
+import aiohttp
 
 
 class SupportButton(disnake.ui.View):
@@ -27,9 +29,9 @@ class Warns(disnake.ui.View):
         style=disnake.ButtonStyle.red
     )
     async def warns(self, button, inter):
-        warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id})])
+        warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in Config().DB.warns.find({"guild": inter.guild.id})])
         
-        async with self.bot.session.post(
+        async with aiohttp.ClientSession().post(
             'https://pastebin.com/api/api_post.php', 
             data={"api_dev_key": environ["PASTEBIN"], "api_paste_code": "hi", "api_paste_private": "0", "api_option": "paste"}
         ) as response:
