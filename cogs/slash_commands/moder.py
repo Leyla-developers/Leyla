@@ -1,4 +1,5 @@
 import random
+from tkinter.messagebox import NO
 
 import disnake
 from disnake.ext import commands
@@ -40,12 +41,12 @@ class Moderation(commands.Cog):
         elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
-            data = [f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})]
-            warn_description = "\n".join(data)
+            data = random.choices([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})], k=10)
+            warn_description = "\n".join(data) if len(data) > 10 else "\n".join(data) + "\n\nЧтобы просмотреть все свои предупреждения, нажмите на кнопку ниже/"
 
             embed = await self.bot.embeds.simple(
                 title=f"Вилкой в глаз или... Предупреждения {member.name}",
-                description=warn_description if len(data) <= 10 else "Нажмите на кнопку ниже, чтобы просмотреть свои предупреждения",
+                description=warn_description,
                 thumbnail=member.display_avatar.url,
                 footer={
                     "text": "Предупреждения участника", 
@@ -53,7 +54,12 @@ class Moderation(commands.Cog):
                 }
             )
 
-        await inter.send(embed=embed, view=Warns(member))
+        if len(data) < 10:
+            view = None
+        else:
+            view = Warns(member)
+
+        await inter.send(embed=embed, view=view)
 
     @commands.slash_command(
         description="Удаление предупреждений участника"

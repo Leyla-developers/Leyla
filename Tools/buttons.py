@@ -26,8 +26,8 @@ class Warns(disnake.ui.View):
         self.member = member
 
     @disnake.ui.button(
-        label="Предупреждения",
-        style=disnake.ButtonStyle.red
+        label="Все редупреждения",
+        style=disnake.ButtonStyle.blurple
     )
     async def warns(self, button, inter):
         warn_data = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in Config().DB.warns.find({"guild": inter.guild.id, "member": self.member.id})])
