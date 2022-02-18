@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
         elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
-            warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id})])
+            warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})])
             warns = "\n".join(textwrap.wrap(warn_description, 64, replace_whitespace=False))
             embeds = [
                 await self.bot.embeds.simple(
