@@ -1,5 +1,4 @@
 import random
-from tkinter.messagebox import NO
 
 import disnake
 from disnake.ext import commands
