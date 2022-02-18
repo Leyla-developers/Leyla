@@ -42,7 +42,7 @@ class Moderation(commands.Cog):
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
             warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id})])
-            warns = "\n".join(textwrap.wrap(warn_description, 128, replace_whitespace=False))
+            warns = "\n".join(textwrap.wrap(warn_description, 64, replace_whitespace=False))
             embeds = [
                 await self.bot.embeds.simple(
                     title=f"Вилкой в глаз или... Предупреждения {member.name}",
