@@ -53,7 +53,7 @@ class Moderation(commands.Cog):
                 }
             )
 
-        await inter.send(embed=embed, view=)
+        await inter.send(embed=embed, view=Warns())
 
     @commands.slash_command(
         description="Удаление предупреждений участника"
