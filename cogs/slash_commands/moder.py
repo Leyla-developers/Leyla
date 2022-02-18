@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
             random_array = [f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})]
-            data = random.choices(random_array, k=10 if len(random_array) >= 10 else None)
+            data = random.choices(random_array, k=10 if len(random_array) >= 10 else len(random_array))
             warn_description = "\n".join(data) if len(data) > 10 else "\n".join(data) + "\n\nЧтобы просмотреть все свои предупреждения, нажмите на кнопку ниже."
 
             embed = await self.bot.embeds.simple(
