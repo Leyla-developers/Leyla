@@ -3,8 +3,6 @@ import random
 import disnake
 from disnake.ext import commands
 from Tools.exceptions import CustomError
-from Tools.paginator import Paginator
-import textwrap
 
 
 class Moderation(commands.Cog):
@@ -41,20 +39,20 @@ class Moderation(commands.Cog):
         elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
-            warn_description = "\n".join([f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})])
-            embeds = [
-                await self.bot.embeds.simple(
-                    title=f"Вилкой в глаз или... Предупреждения {member.name}",
-                    description=warn_description,
-                    thumbnail=member.display_avatar.url,
-                    footer={
-                        "text": "Предупреждения участника", 
-                        "icon_url": self.bot.user.avatar.url
-                    }
-                ) for _ in warn_description
-            ]
+            data = [f"{i['reason']} | {i['warn_id']}" async for i in self.bot.config.DB.warns.find({"guild": inter.guild.id, 'member': member.id})]
+            warn_description = "\n".join(data)
 
-        await inter.send(embed=embeds[0], view=Paginator(embeds))
+            embed = await self.bot.embeds.simple(
+                title=f"Вилкой в глаз или... Предупреждения {member.name}",
+                description=warn_description if len(data) <= 10 else "Нажмите на кнопку ниже, чтобы просмотреть свои предупреждения",
+                thumbnail=member.display_avatar.url,
+                footer={
+                    "text": "Предупреждения участника", 
+                    "icon_url": self.bot.user.avatar.url
+                }
+            )
+
+        await inter.send(embed=embed, view=)
 
     @commands.slash_command(
         description="Удаление предупреждений участника"
