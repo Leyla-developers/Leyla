@@ -33,7 +33,7 @@ class Warns(disnake.ui.View):
         
         async with aiohttp.ClientSession().post(
             'https://pastebin.com/api/api_post.php', 
-            data={"api_dev_key": environ["PASTEBIN"], "api_paste_code": "hi", "api_paste_private": "0", "api_option": "paste"}
+            data={"api_dev_key": environ["PASTEBIN"], "api_paste_code": warn_data, "api_paste_private": "0", "api_option": "paste"}
         ) as response:
             pastebin_data = await response.read()
 
