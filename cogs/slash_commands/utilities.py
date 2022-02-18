@@ -138,7 +138,7 @@ class Utilities(commands.Cog):
                     url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
                 )
 
-                await inter.respond(embed=embed)
+                await inter.send(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
