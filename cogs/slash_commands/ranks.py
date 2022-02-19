@@ -54,7 +54,13 @@ class Ranks(commands.Cog):
             raise CustomError("Боты не имеют этой привелегии :(")
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
-            await inter.send(embed=await self.bot.embeds.simple(title=f"Опыт и уровень {member.name}", description=f"Опыт: **{data['xp']}**\nУровень: **{data['lvl']}**"))
+            await inter.send(embed=await self.bot.embeds.simple(
+                    title=f"Опыт и уровень {member.name}", 
+                    description=f"Опыт: **{data['xp']}**\nУровень: **{data['lvl']}**",
+                    thumbnail=member.display_avatar.url,
+                    footer={"text": "Я люблю ананасы", "icon_url": self.bot.user.avatar.url}
+                )
+            )
 
 def setup(bot):
     bot.add_cog(Ranks(bot))
