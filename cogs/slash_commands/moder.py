@@ -53,12 +53,7 @@ class Moderation(commands.Cog):
                 }
             )
 
-        if len(data) < 10:
-            view = None
-        else:
-            view = Warns(member)
-
-        await inter.send(embed=embed, view=view)
+        await inter.send(embed=embed, view=Warns(member))
 
     @commands.slash_command(
         description="Удаление предупреждений участника"
