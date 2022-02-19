@@ -38,4 +38,4 @@ class Warns(disnake.ui.View):
         ) as response:
             pastebin_data = await response.json()
 
-        await inter.response.send_message(f"Ваша ссылка: [Клик](https://www.toptal.com/developers/hastebin/{pastebin_data['key']})", ephemeral=True)
+        await inter.response.send_message(f"Ваша ссылка: [нажмите, чтобы просмотреть все предупреждения](https://www.toptal.com/developers/hastebin/{pastebin_data['key']})", ephemeral=True)
