@@ -26,7 +26,7 @@ class Warns(disnake.ui.View):
         self.member = member
 
     @disnake.ui.button(
-        label="Все редупреждения",
+        label="Все предупреждения",
         style=disnake.ButtonStyle.blurple
     )
     async def warns(self, button, inter):
