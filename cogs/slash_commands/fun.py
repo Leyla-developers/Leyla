@@ -25,9 +25,9 @@ class FunSlashCommands(commands.Cog):
         ],
         description='Случайное число в заданном диапазоне'
     )
-    async def number(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
+    async def random(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
         if b < a or a == b:
-            raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно') # Я мастер объянсять
+            raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно owo') # Я мастер объянсять
         embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
         embed.add_field(name='Ваше число...', value=randint(a, b))
         return await inter.send(embed=embed)
@@ -57,10 +57,10 @@ class FunSlashCommands(commands.Cog):
     @commands.slash_command(
         options=[
             disnake.Option(
-                'choice', 'Выберите тянку OwO', 
+                'choice', 'Выберите девАтЬку owo', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=['megumin', 'shinobu', 'awoo']
+                choices=['megumin', 'shinobu', 'awoo', 'neko', 'poke']
             )
         ],
         name='anime-girl',
