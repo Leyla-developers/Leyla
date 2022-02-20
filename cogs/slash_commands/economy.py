@@ -47,8 +47,11 @@ class Economy(commands.Cog):
     
     @economic.sub_command(description="Просмотреть баланс участника")
     async def balance(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
-        data = dict(await self.bot.config.DB.economic.find_one({"guild": inter.guild.id, "member": member.id}))
-        await inter.send(embed=await self.bot.embeds.simple(description=f"Баланс {member.name} :о\nПо нашим данным, у него(-её) **{data['balance']}** монет"))
+        if await self.bot.config.DB.economic.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
+            raise CustomError(f"А у {member.name} нет денЯк.")
+        else:
+            data = dict(await self.bot.config.DB.economic.find_one({"guild": inter.guild.id, "member": member.id}))
+            await inter.send(embed=await self.bot.embeds.simple(description=f"Баланс {member.name} :о\nПо нашим данным, у него(-её) **{data['balance']}** монет"))
 
 
 def setup(bot):
