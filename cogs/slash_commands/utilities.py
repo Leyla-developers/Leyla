@@ -17,7 +17,7 @@ class Utilities(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(
-        name="Аватарка"
+        name="Аватарка",
         description="Вывод аватара участника"
     )
     async def avatar(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
