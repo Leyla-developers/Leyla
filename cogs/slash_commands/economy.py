@@ -45,7 +45,7 @@ class Economy(commands.Cog):
 
                 await inter.send(embed=embed)
     
-    @commands.command(description="Просмотреть баланс участника")
+    @economic.sub_command(description="Просмотреть баланс участника")
     async def balance(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
         data = dict(await self.bot.config.DB.economic.find_one({"guild": inter.guild.id, "member": member.id}))
         await inter.send(embed=await self.bot.embeds.simple(description=f"Баланс {member.name} :о\nПо нашим данным, у него(-её) **{data['balance']}** монет"))
