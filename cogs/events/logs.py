@@ -41,7 +41,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=await self.bot.embeds.simple(
                     title="Изменённое сообщение.",
-                    description=f'До: {before.content}\nПосле: {after.content}',
+                    description=f'**До:** {before.content}\n**После:** {after.content}',
                     footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(after.guild)).name}", "icon_url": after.guild.icon.url if after.guild.icon.url else None},
                     fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{str(after.author)}]"}],
                     url=after.jump_url,
