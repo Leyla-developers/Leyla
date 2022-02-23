@@ -28,17 +28,20 @@ class Settings(commands.Cog):
     async def autoroles(self, inter):
         ...
 
-    @autoroles.sub_command(description="Настройка авторолей")
-    async def roles(self, inter, role: disnake.Role):
+    @autoroles.sub_command(name="add-role", description="Настройка авторолей")
+    async def add_roles(self, inter, role: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
             await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": [role.id]})
         else:
-            await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
+            if role.id in dict(await self.bot.config.DB.autoroles.find_one({"guild": inter.guild.id}))['roles']:
+                raise CustomError("Роль уже установлена")
+            else:
+                await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
 
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(autoroles)**', 
                 description="Роль при входе на сервер установлена", 
-                footer={'text': f'Роль: {role.mention}', 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
+                footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
             )
         )
     
