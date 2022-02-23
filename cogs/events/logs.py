@@ -35,7 +35,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if await not self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
+        if not await self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
         elif after.content == before.content: return
         elif len(after.content) > 4096 or len(before.content) > 4096: return 
         else:
