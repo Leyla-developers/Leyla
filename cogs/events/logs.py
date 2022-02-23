@@ -16,12 +16,12 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if not self.get_channel(message.guild.id):
+        if not self.get_channel(message.guild):
             raise CustomError("Канал логирования не был настроен.")
         else:
-            await self.bot.get_channel(await self.get_channel(message.guild.id)).send(embed=await self.bot.embeds.simple(
+            await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
                     description='Канал логирования был успешно включен!', 
-                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild.id)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None}
+                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None}
                 )
             )
 
