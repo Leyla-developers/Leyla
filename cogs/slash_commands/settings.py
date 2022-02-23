@@ -29,7 +29,7 @@ class Settings(commands.Cog):
         ...
 
     @autoroles.sub_command(description="Настройка авторолей")
-    async def roles(self, inter, roles: commands.Greedy[disnake.Role]):
+    async def roles(self, inter, roles: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
             await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": roles})
         else:
