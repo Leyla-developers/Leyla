@@ -9,7 +9,6 @@ class Settings(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
     
     @commands.slash_command(description="Настрой-ка меня, Сен-пай u-u.")
     @commands.has_permissions(administrator=True)
@@ -27,6 +26,16 @@ class Settings(commands.Cog):
     @settings.sub_command_group(description="Автороли")
     async def autoroles(self, inter):
         ...
+
+    @settings.sub_command()
+    async def nsfw(self, inter, channel: disnake.TextChannel):
+        if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "channel": channel.id})
+        else:
+            await self.bot.config.DB.nsfw.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был установлен, картинка отсылается каждые 30 секунд."))
+
 
     @autoroles.sub_command(name="add-role", description="Настройка авторолей")
     async def add_roles(self, inter, role: disnake.Role):

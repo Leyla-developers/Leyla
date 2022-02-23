@@ -5,6 +5,7 @@ from datetime import datetime
 from disnake.ext import commands
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
+from .classes.time_posting import LeylaTasks
 
 
 class Leyla(commands.Bot):
@@ -15,6 +16,7 @@ class Leyla(commands.Bot):
         self.uptime = datetime.utcnow()
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
+        self.times = LeylaTasks(self)
 
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):
