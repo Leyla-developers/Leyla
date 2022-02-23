@@ -20,7 +20,8 @@ class Logs(commands.Cog):
             raise CustomError("Канал логирования не был настроен.")
         else:
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
-                    description='Канал логирования был успешно включен!', 
+                    title="Удалённое сообщение.",
+                    description=message.content, 
                     footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None}
                 )
             )
