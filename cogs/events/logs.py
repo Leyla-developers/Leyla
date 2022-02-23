@@ -8,6 +8,9 @@ class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, member):
+        if member.bot: return
+
     async def get_channel(self, guild):
         if await self.bot.config.DB.logs.count_documents({"guild": guild.id}) == 0:
             return False
@@ -22,7 +25,24 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удалённое сообщение.",
                     description=message.content, 
-                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None}
+                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
+                    fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
+                    url=message.channel.jump_url
+                )
+            )
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if not self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
+        elif after.content == before.content: return
+        elif len(after.content) > 4096 or len(before.content) > 4096: return 
+        else:
+            await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Изменённое сообщение.",
+                    description=f'До: {before.content}\nПосле: {after.content}',
+                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(after.guild)).name}", "icon_url": after.guild.icon.url if after.guild.icon.url else None},
+                    fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{after.author.name}]"}],
+                    url=after.jump_url
                 )
             )
 
