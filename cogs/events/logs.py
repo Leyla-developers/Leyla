@@ -8,8 +8,8 @@ class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def cog_check(self, inter):
-        if inter.author.bot: return
+    async def cog_check(self, ctx):
+        if ctx.author.bot: return
 
     async def get_channel(self, guild):
         if await self.bot.config.DB.logs.count_documents({"guild": guild.id}) == 0:

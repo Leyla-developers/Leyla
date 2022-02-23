@@ -22,7 +22,7 @@ class Embeds(Embed):
         **kwargs
     ):
         embed = Embed(**kwargs)
-        embed.color = self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color') if not color else color
+        embed.color = self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color')
 
         if interaction:
             embed.set_author(name=interaction.author.display_name, icon_url=interaction.author.display_avatar.url)
