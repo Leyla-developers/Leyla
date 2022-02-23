@@ -27,7 +27,9 @@ class Logs(commands.Cog):
                     description=message.content, 
                     footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
                     fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
-                    url=message.channel.jump_url
+                    url=message.channel.jump_url,
+                    thumbnail=message.author.display_avatar.url,
+                    color=disnake.Colour.red()
                 )
             )
 
@@ -41,8 +43,10 @@ class Logs(commands.Cog):
                     title="Изменённое сообщение.",
                     description=f'До: {before.content}\nПосле: {after.content}',
                     footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(after.guild)).name}", "icon_url": after.guild.icon.url if after.guild.icon.url else None},
-                    fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{after.author.name}]"}],
-                    url=after.jump_url
+                    fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{str(after.author)}]"}],
+                    url=after.jump_url,
+                    thumbnail=after.author.display_avatar.url,
+                    color=disnake.Colour.dark_orange()
                 )
             )
 
