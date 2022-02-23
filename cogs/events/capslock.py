@@ -18,10 +18,10 @@ class CapsLockAutoMod(commands.Cog):
         if message.author.bot:
             return
 
-        if data['administrator_ignore']:
-            return
-
         if percent >= data['percent']:
+            if data['administrator_ignore']:
+                return
+
             match data['action']:
                 case "warn":
                     await self.bot.config.DB.warns.insert_one({"guild": message.guild.id, "member": message.author.id, "reason": "Выключи caps lock! | (Автомодерация)", "warn_id": __import__('random').randint(10000, 99999)})
