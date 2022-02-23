@@ -25,7 +25,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удалённое сообщение.",
                     description=message.content, 
-                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(message.guild)).name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
+                    footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
                     fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
                     url=message.channel.jump_url,
                     thumbnail=message.author.display_avatar.url,
@@ -42,7 +42,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=await self.bot.embeds.simple(
                     title="Изменённое сообщение.",
                     description=f'**До:** {before.content}\n**После:** {after.content}',
-                    footer={"text": f"Канал: {self.bot.get_channel(await self.get_channel(after.guild)).name}", "icon_url": after.guild.icon.url if after.guild.icon.url else None},
+                    footer={"text": f"Канал: {after.channel.name}", "icon_url": after.guild.icon.url if after.guild.icon.url else None},
                     fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{str(after.author)}]"}],
                     url=after.jump_url,
                     thumbnail=after.author.display_avatar.url,
