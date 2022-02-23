@@ -24,6 +24,15 @@ class Settings(commands.Cog):
     async def level(self, inter):
         ...
 
+    @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
+    async def logs_channel(self, inter, channel: disnake.TextChannel):
+        if await self.bot.config.DB.logs.count_documents({"guild": inter.guild.id}) == 0:
+            await self.bot.config.DB.logs.insert_one({"guild": inter.guild.id, "channel": channel.id})
+        else:
+            await self.bot.config.DB.logs.update_one({"guild": inter.guild.id}, {"$set": {"channel": channel.id}})
+        
+        await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(logs)**", description="Канал логов был установлен", fields=[{"name": "Канал", "value": channel.mention}]))
+
     @automoderation.sub_command(description="Настройка наказания для любителей покричать (Caps Lock)")
     async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
         admin_ignore = {
