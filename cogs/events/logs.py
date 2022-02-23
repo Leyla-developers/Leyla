@@ -19,7 +19,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if not self.get_channel(message.guild):
+        if not await self.get_channel(message.guild):
             raise CustomError("Канал логирования не был настроен.")
         else:
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
@@ -35,7 +35,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if not self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
+        if await not self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
         elif after.content == before.content: return
         elif len(after.content) > 4096 or len(before.content) > 4096: return 
         else:
