@@ -24,6 +24,19 @@ class Settings(commands.Cog):
     async def level(self, inter):
         ...
 
+    @settings.sub_command_group(description="Автороли")
+    async def autoroles(self, inter):
+        ...
+
+    @autoroles.sub_command(description="Настройка авторолей")
+    async def roles(self, inter, roles: commands.Greedy[disnake.Role]):
+        if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
+            await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": roles})
+        else:
+            await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": roles}})
+
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(autoroles)**', description="Роль при входе на сервер установлена", fields=[{'name': 'Роли', 'value': ', '.join(roles)}]))
+    
     @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.logs.count_documents({"guild": inter.guild.id}) == 0:
