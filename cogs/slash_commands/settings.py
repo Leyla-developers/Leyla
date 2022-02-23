@@ -29,13 +29,13 @@ class Settings(commands.Cog):
         ...
 
     @autoroles.sub_command(description="Настройка авторолей")
-    async def roles(self, inter, roles: disnake.Role):
+    async def roles(self, inter, role: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
-            await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": roles})
+            await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": [role.id]})
         else:
-            await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": roles}})
+            await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
 
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(autoroles)**', description="Роль при входе на сервер установлена", fields=[{'name': 'Роли', 'value': ', '.join(roles)}]))
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(autoroles)**', description="Роль при входе на сервер установлена", footer={'text': f'Роль: {role.mention}'}))
     
     @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
