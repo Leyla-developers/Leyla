@@ -35,7 +35,12 @@ class Settings(commands.Cog):
         else:
             await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
 
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(autoroles)**', description="Роль при входе на сервер установлена", footer={'text': f'Роль: {role.mention}'}))
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(autoroles)**', 
+                description="Роль при входе на сервер установлена", 
+                footer={'text': f'Роль: {role.mention}', 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
+            )
+        )
     
     @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
