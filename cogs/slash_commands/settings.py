@@ -28,6 +28,7 @@ class Settings(commands.Cog):
         ...
 
     @settings.sub_command()
+    @commands.is_nsfw()
     async def nsfw(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "channel": channel.id})
