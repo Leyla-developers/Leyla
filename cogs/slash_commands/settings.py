@@ -54,6 +54,8 @@ class Settings(commands.Cog):
                 footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
             )
         )
+
+    # @autoroles.sub_command(name='remove-role', description='')
     
     @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
@@ -96,13 +98,13 @@ class Settings(commands.Cog):
     async def mode(self, inter, system_mode: Literal['Включить', 'Выключить']):
         mode = {
             "Включить": True,
-            "Выключить": False
+            "Выключить": False,
         }
 
         if not dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
             await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"mode": mode[system_mode]}})
 
-        if mode[system_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
+        elif mode[system_mode] == dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
             raise CustomError(f"На данный момент система уровней стоит такая же, как вы указали.")
 
         else:
