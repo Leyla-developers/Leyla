@@ -9,6 +9,12 @@ class Settings(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_check(self, inter):
+        if not inter.author.guild_permissions.administrator:
+            raise commands.MissingPermissions(['administrator'])
+        else:
+            return True
     
     @commands.slash_command(description="Настрой-ка меня, Сен-пай u-u.")
     @commands.has_permissions(administrator=True)
