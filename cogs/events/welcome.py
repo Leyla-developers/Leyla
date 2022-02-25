@@ -22,7 +22,12 @@ class Welcome(commands.Cog):
                         '[guildMembers]': len(member.guild.members),
                     }
 
-                    await member.guild.get_channel(data['channel']).send(message[data['message']])
+                    for i in message.keys():
+                        ...
+                        for j in message.values():
+                            ...
+
+                    await member.guild.get_channel(data['channel']).send(data['message'].replace(i, j))
 
 def setup(bot):
     bot.add_cog(Welcome(bot))
