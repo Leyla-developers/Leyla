@@ -15,19 +15,12 @@ class Welcome(commands.Cog):
             if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['channel']:
                 if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['message']:
                     data = dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))
-                    message = {
-                        "[memberMention]": member.mention,
-                        '[member]': member.name,
-                        '[guild]': member.guild.name,
-                        '[guildMembers]': str(len(member.guild.members)),
-                    }
+                    data['message'].replace('[memberMention]', member.mention)
+                    data['message'].replace('[member]', member.name)
+                    data['message'].replace('[guild]', member.guild.name)
+                    data['message'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    for i in message.keys():
-                        ...
-                        for j in message.values():
-                            ...
-
-                    await member.guild.get_channel(data['channel']).send(data['message'].replace(i, j))
+                    await member.guild.get_channel(data['channel']).send(data['message'])
 
 def setup(bot):
     bot.add_cog(Welcome(bot))
