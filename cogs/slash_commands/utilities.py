@@ -140,7 +140,7 @@ class Utilities(commands.Cog):
 
                 await inter.send(embed=embed)
 
-    @commands.slash_command(name='emoji-random')
+    @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
         emoji = random.choice(self.bot.emojis)
         await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[{'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
