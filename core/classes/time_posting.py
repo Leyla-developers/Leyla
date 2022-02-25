@@ -43,6 +43,6 @@ class LeylaTasks:
     async def nsfw(self):
         async for i in self.bot.config.DB.nsfw.find():
             if self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).is_nsfw():
-                self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).send(hmtai.useHM('29', random.choice(self.NSFWS)))
+                await self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).send(hmtai.useHM('29', random.choice(self.NSFWS)))
             else:
                 return
