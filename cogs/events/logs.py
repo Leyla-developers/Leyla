@@ -8,9 +8,6 @@ class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        if ctx.author.bot: return
-
     async def get_channel(self, guild):
         if await self.bot.config.DB.logs.count_documents({"guild": guild.id}) == 0:
             return False
@@ -21,6 +18,7 @@ class Logs(commands.Cog):
     async def on_message_delete(self, message):
         if not await self.get_channel(message.guild):
             raise CustomError("Канал логирования не был настроен.")
+        elif message.author.bot: return
         else:
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удалённое сообщение.",
@@ -37,7 +35,8 @@ class Logs(commands.Cog):
     async def on_message_edit(self, before, after):
         if not await self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
         elif after.content == before.content: return
-        elif len(after.content) > 4096 or len(before.content) > 4096: return 
+        elif len(after.content) > 4096 or len(before.content) > 4096: return
+        elif after.author.bot: return
         else:
             await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=await self.bot.embeds.simple(
                     title="Изменённое сообщение.",

@@ -23,7 +23,7 @@ class Ranks(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
         if await self.bot.config.DB.levels.count_documents({"_id": message.guild.id}) == 0:
-            await self.bot.config.DB.levels.insert_one({"_id": message.guild.id, "mode": False, "channel": None})
+            await self.bot.config.DB.levels.insert_one({"_id": message.guild.id, "mode": False, "channel": None, "roles": None})
 
         if await self.bot.config.DB.levels.count_documents({"guild": message.guild.id, "member": message.author.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
@@ -43,10 +43,14 @@ class Ranks(commands.Cog):
                 if await self.formula(message, message.author):
                     lvl = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))['lvl']
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
-                    await message.guild.get_channel(channel_id).send(message_format[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id})['message'])])
-                else:
-                    await sleep(5)
-                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)+data['xp']}})
+                    await message.guild.get_channel(channel_id).send(message_format[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id}))['message']])
+                    if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
+                        level_role_data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']
+                        reverse_levels = {value: key for key, value in level_role_data.items()}
+                        await message.author.add_roles(message.guild.get_role(int(reverse_levels[[i for i in level_role_data.values() if lvl >= int(i)][0]])))
+                    else:
+                        await sleep(5)
+                        await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)+data['xp']}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
     async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):

@@ -19,7 +19,7 @@ class CapsLockAutoMod(commands.Cog):
             return
 
         if percent >= data['percent']:
-            if data['administrator_ignore']:
+            if data['admin_ignore']:
                 return
 
             match data['action']:

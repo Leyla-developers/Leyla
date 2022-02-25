@@ -33,6 +33,14 @@ class Settings(commands.Cog):
     async def autoroles(self, inter):
         ...
 
+    @settings.sub_command_group(description="Логи")
+    async def logs(self, inter):
+        ...
+
+    @settings.sub_command_group(description="Велкомер")
+    async def welcome(self, inter):
+        ...
+
     @settings.sub_command()
     @commands.is_nsfw()
     async def nsfw(self, inter, channel: disnake.TextChannel):
@@ -43,9 +51,8 @@ class Settings(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был установлен, картинка отсылается каждые 30 секунд."))
 
-
     @autoroles.sub_command(name="add-role", description="Настройка авторолей")
-    async def add_roles(self, inter, role: disnake.Role):
+    async def add_autoroles(self, inter, role: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
             await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": [role.id]})
         else:
@@ -61,9 +68,23 @@ class Settings(commands.Cog):
             )
         )
 
-    # @autoroles.sub_command(name='remove-role', description='')
-    
-    @settings.sub_command(name="log-channel", description="Настройка кАнальчика для логов")
+    @autoroles.sub_command(name='remove-role', description='Удаляет роль с авторолей')
+    async def remove_autorrole(self, inter, role: disnake.Role):
+        if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
+            raise CustomError('А где? Авторолей здесь нет ещё(')
+        elif not role.id in dict(await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}))['roles']:
+            raise CustomError("Эта роль не стоит в авторолях!")
+        else:
+            await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$pull": {"roles": role.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(autoroles)**', 
+                description="Роль была убрана с авторолей!", 
+                fields=[{'name': 'Роль', 'value': role.mention}]
+            )
+        )
+
+    @logs.sub_command(name="channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.logs.count_documents({"guild": inter.guild.id}) == 0:
             await self.bot.config.DB.logs.insert_one({"guild": inter.guild.id, "channel": channel.id})
@@ -71,6 +92,19 @@ class Settings(commands.Cog):
             await self.bot.config.DB.logs.update_one({"guild": inter.guild.id}, {"$set": {"channel": channel.id}})
         
         await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(logs)**", description="Канал логов был установлен", fields=[{"name": "Канал", "value": channel.mention}]))
+
+    @logs.sub_command(name="remove", description="Убирает кАнал логов")
+    async def log_channel_remove(self, inter):
+        if await self.bot.config.DB.logs.count_documents({"guild": inter.guild.id}) == 0:
+            raise CustomError("Канала логов на этом сервере и так нет :thinking:")
+        else:
+            await self.bot.config.DB.logs.delete_one({"guild": inter.guild.id})
+        
+        await inter.send(embed=await self.bot.embeds.simple(
+                title="Leyla settings **(logs)**", 
+                description="Канал логов был убран отседа u-u",
+            )
+        )
 
     @automoderation.sub_command(description="Настройка наказания для любителей покричать (Caps Lock)")
     async def capslock(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], percent: int = 50, message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
@@ -147,6 +181,83 @@ class Settings(commands.Cog):
             )
         )
 
-    
+    @level.sub_command(name='role', description="Настройка ролей, которые будут даваться за определённый уровень")
+    async def level_roles(self, inter, role: disnake.Role, level: int):
+        if str(level) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
+            raise CustomError('Уже есть роль, настроенная на этот уровень!')
+        else:
+            data = {
+                str(role.id): str(level)
+            }
+            await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
+        
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**'))
+
+    @level.sub_command(name='role-remove', description="Настройка ролей, которые будут даваться за определённый уровень")
+    async def level_roles_remove(self, inter, role: disnake.Role):
+        if str(role) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
+            await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$pull": {"roles": role}})
+        else:
+            raise CustomError("Роль, которую вы указали, не удалось найти в авто-ролях((")
+        
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль была успешно убрана!", fields=[{'name': 'Роль', 'value': role.mention}]))
+
+    @welcome.sub_command(name='channel', description='Устанавливает канал приветствий u-u')
+    async def welcome_channel(self, inter, channel: disnake.TextChannel):
+        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "channel": channel.id})
+        else:
+            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(welcomer)**', 
+                description="Канал успешно был установлен!", 
+                fields=[{'name': 'Канал', 'value': channel.mention}]
+            )
+        )
+
+    @welcome.sub_command(name="welcome-message", description="Тут вы можете установить абсолютно любое сообщение о приветствии участников!")
+    async def welcome_message(self, inter, message: str):
+        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "message": message})
+        else:
+            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"message": message}})
+        
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(welcomer)**', 
+                description="Сообщение успешно был установлено!", 
+                fields=[{'name': 'Сообщение', 'value': message}],
+                footer={"text": "Хочу быть наказаной, накажи меня, Сенпай("}
+            )
+        )
+
+    @welcome.sub_command(name="goodbye-message", description="Тут вы можете установить абсолютно любое сообщение об уходе участников :(")
+    async def goodbye_message(self, inter, message: str):
+        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "goodbye_message": message})
+        else:
+            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"goodbye_message": message}})
+        
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(welcomer)**', 
+                description="Сообщение успешно был установлено!", 
+                fields=[{'name': 'Сообщение', 'value': message}],
+            )
+        )
+
+    @welcome.sub_command(name='goodbye-channel', description='Устанавливает канал прощаний(')
+    async def goodbye_channel(self, inter, channel: disnake.TextChannel):
+        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "goodbye_channel": channel.id})
+        else:
+            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"goodbye_channel": channel.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(
+                title='Leyla settings **(welcomer)**', 
+                description="Канал успешно был установлен!", 
+                fields=[{'name': 'Канал', 'value': channel.mention}]
+            )
+        )
+
 def setup(bot):
     bot.add_cog(Settings(bot))

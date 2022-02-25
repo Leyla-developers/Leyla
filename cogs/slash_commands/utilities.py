@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 import typing
 import os
+import random
 
 import disnake
 from disnake.ext import commands
@@ -138,6 +139,11 @@ class Utilities(commands.Cog):
                 )
 
                 await inter.send(embed=embed)
+
+    @commands.slash_command(name='emoji-random')
+    async def random_emoji(self, inter):
+        emoji = random.choice(self.bot.emojis)
+        await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[{'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
