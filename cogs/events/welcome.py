@@ -19,7 +19,7 @@ class Welcome(commands.Cog):
                         "[memberMention]": member.mention,
                         '[member]': member.name,
                         '[guild]': member.guild.name,
-                        '[guildMembers]': len(member.guild.members),
+                        '[guildMembers]': str(len(member.guild.members)),
                     }
 
                     for i in message.keys():
