@@ -227,7 +227,7 @@ class Settings(commands.Cog):
                 title='Leyla settings **(welcomer)**', 
                 description="Сообщение успешно был установлено!", 
                 fields=[{'name': 'Сообщение', 'value': message}],
-                footer={"text": "Хочу быть наказаной, накажи меня, Сенпай("}
+                footer={"text": "Хочу быть наказаной, накажи меня, Сенпай(", 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
             )
         )
 
