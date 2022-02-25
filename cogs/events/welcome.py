@@ -7,7 +7,7 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.litener()
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         if await self.bot.config.DB.welcome.count_documents({"_id": member.guild.id}) == 0:
             return
