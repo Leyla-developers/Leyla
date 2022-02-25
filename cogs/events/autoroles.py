@@ -12,7 +12,7 @@ class Autoroles(commands.Cog):
             return
         else:
             for role in dict(await self.bot.config.DB.autoroles.find_one({"guild": member.guild.id}))['roles']:
-                await member.add_roles(role)
+                await member.add_roles(member.guild.get_role(role))
 
 def setup(bot):
     bot.add_cog(Autoroles(bot))
