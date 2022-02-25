@@ -202,60 +202,34 @@ class Settings(commands.Cog):
         
         await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль была успешно убрана!", fields=[{'name': 'Роль', 'value': role.mention}]))
 
-    @welcome.sub_command(name='channel', description='Устанавливает канал приветствий u-u')
-    async def welcome_channel(self, inter, channel: disnake.TextChannel):
+    @welcome.sub_command(name='setup', description='Устанавливает канал приветствий u-u')
+    async def welcome_setup(self, inter, welcome_channel: disnake.TextChannel, goodbye_channel: disnake.TextChannel, welcome_message: str = None, goodbye_message: str = None):
         if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "channel": channel.id})
-        else:
-            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
-
-        await inter.send(embed=await self.bot.embeds.simple(
-                title='Leyla settings **(welcomer)**', 
-                description="Канал успешно был установлен!", 
-                fields=[{'name': 'Канал', 'value': channel.mention}]
+            await self.bot.config.DB.welcome.insert_one(
+                {
+                    "_id": inter.guild.id, 
+                    "welcome_channel": welcome_channel.id, 
+                    "goodbye_channel": goodbye_channel.id, 
+                    "welcome_message": welcome_message, 
+                    "goodbye_message": goodbye_message,
+                }
             )
-        )
-
-    @welcome.sub_command(name="welcome-message", description="Тут вы можете установить абсолютно любое сообщение о приветствии участников!")
-    async def welcome_message(self, inter, message: str):
-        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "message": message})
         else:
-            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"message": message}})
-        
-        await inter.send(embed=await self.bot.embeds.simple(
-                title='Leyla settings **(welcomer)**', 
-                description="Сообщение успешно был установлено!", 
-                fields=[{'name': 'Сообщение', 'value': message}],
-                footer={"text": "Хочу быть наказаной, накажи меня, Сенпай(", 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
+            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, 
+                {
+                    "$set": {
+                        "welcome_channel": welcome_channel.id,
+                        "welcome_message": welcome_message,
+                        "goodbye_message": goodbye_message,
+                        "goodbye_channel": goodbye_channel.id,
+                    }
+                }
             )
-        )
-
-    @welcome.sub_command(name="goodbye-message", description="Тут вы можете установить абсолютно любое сообщение об уходе участников :(")
-    async def goodbye_message(self, inter, message: str):
-        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "goodbye_message": message})
-        else:
-            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"goodbye_message": message}})
-        
-        await inter.send(embed=await self.bot.embeds.simple(
-                title='Leyla settings **(welcomer)**', 
-                description="Сообщение успешно был установлено!", 
-                fields=[{'name': 'Сообщение', 'value': message}],
-            )
-        )
-
-    @welcome.sub_command(name='goodbye-channel', description='Устанавливает канал прощаний(')
-    async def goodbye_channel(self, inter, channel: disnake.TextChannel):
-        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.welcome.insert_one({"_id": inter.guild.id, "goodbye_channel": channel.id})
-        else:
-            await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, {"$set": {"goodbye_channel": channel.id}})
 
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(welcomer)**', 
-                description="Канал успешно был установлен!", 
-                fields=[{'name': 'Канал', 'value': channel.mention}]
+                description="Настройки велкомера применены успешно!!", 
+                fields=[{'name': 'Каналы', 'value': f'{welcome_channel.mention} / {goodbye_channel.mention}'}]
             )
         )
 

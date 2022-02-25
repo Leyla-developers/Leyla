@@ -12,15 +12,15 @@ class Welcome(commands.Cog):
         if await self.bot.config.DB.welcome.count_documents({"_id": member.guild.id}) == 0:
             return
         else:
-            if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['channel']:
-                if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['message']:
+            if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['welcome_channel']:
+                if dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))['welcome_message']:
                     data = dict(await self.bot.config.DB.welcome.find_one({"_id": member.guild.id}))
-                    data['message'] = data['message'].replace('[memberMention]', member.mention)
-                    data['message'] = data['message'].replace('[member]', member.name)
-                    data['message'] = data['message'].replace('[guild]', member.guild.name)
-                    data['message'] = data['message'].replace('[guildMembers]', str(len(member.guild.members)))
+                    data['welcome_message'] = data['welcome_message'].replace('[memberMention]', member.mention)
+                    data['welcome_message'] = data['welcome_message'].replace('[member]', member.name)
+                    data['welcome_message'] = data['welcome_message'].replace('[guild]', member.guild.name)
+                    data['welcome_message'] = data['welcome_message'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    await member.guild.get_channel(data['channel']).send(data['message'])
+                    await member.guild.get_channel(data['welcome_channel']).send(data['welcome_message'])
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
