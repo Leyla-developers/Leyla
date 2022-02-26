@@ -183,22 +183,23 @@ class Settings(commands.Cog):
 
     @level.sub_command(name='role', description="Настройка ролей, которые будут даваться за определённый уровень")
     async def level_roles(self, inter, role: disnake.Role, level: int):
-        if str(level) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
-            raise CustomError('Уже есть роль, настроенная на этот уровень!')
-        else:
-            data = {
-                str(role.id): str(level)
-            }
-            await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
+        if dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles'] is not None:
+            if str(role.id) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
+                raise CustomError("На эту роль уже есть уровень!")
+            else:
+                data = {
+                    str(role.id): str(level)
+                }
+                await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})          
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**'))
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль успешно поставлена!"))
 
     @level.sub_command(name='role-remove', description="Настройка ролей, которые будут даваться за определённый уровень")
     async def level_roles_remove(self, inter, role: disnake.Role):
         if str(role) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
             await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$pull": {"roles": role}})
         else:
-            raise CustomError("Роль, которую вы указали, не удалось найти в авто-ролях((")
+            raise CustomError("Роль, которую вы указали, не удалось найти в лвл-ролях((")
         
         await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль была успешно убрана!", fields=[{'name': 'Роль', 'value': role.mention}]))
 
