@@ -33,6 +33,8 @@ class Ranks(commands.Cog):
             data = data.replace("[channel]", message.channel.mention)
 
             return await message.guild.get_channel(channel_id).send(data)
+        else:
+            return False
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
@@ -47,10 +49,6 @@ class Ranks(commands.Cog):
 
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 if await self.formula(message, message.author):
-                    if await self.get_level_up_message(message):
-                        await self.get_level_up_message(message)
-                        return
-
                     if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
                         level_role_data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']
                         reverse_levels = {value: key for key, value in level_role_data.items()}
@@ -58,6 +56,7 @@ class Ranks(commands.Cog):
 
                     lvl = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))['lvl']
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
+                    await self.get_level_up_message(message)
 
                 else:
                     await sleep(5)
