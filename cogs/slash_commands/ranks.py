@@ -42,6 +42,8 @@ class Ranks(commands.Cog):
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
 
         else:
+            data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
+
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 if await self.formula(message, message.author):
                     if await self.get_level_up_message(message):
