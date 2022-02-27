@@ -24,7 +24,7 @@ class Ranks(commands.Cog):
         if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
             channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
-            data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id}))['message']
+            data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']
             data = data.replace("[xp]", data['xp'])
             data = data.replace("[lvl]", data['lvl']+1)
             data = data.replace("[member]", message.author.name)
