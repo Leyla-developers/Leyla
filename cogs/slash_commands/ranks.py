@@ -23,7 +23,7 @@ class Ranks(commands.Cog):
     async def get_level_up_message(self, message):
         if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']:
             user_data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
-            channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
+            channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel'] if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel'] else message.channel.id
             data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']
 
             data = data.replace("[xp]", str(user_data['xp']))
