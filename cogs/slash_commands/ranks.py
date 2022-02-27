@@ -25,8 +25,8 @@ class Ranks(commands.Cog):
             data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
             channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
             data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']
-            data = data.replace("[xp]", data['xp'])
-            data = data.replace("[lvl]", data['lvl']+1)
+            data = data.replace("[xp]", str(data['xp']))
+            data = data.replace("[lvl]", str(data['lvl']+1))
             data = data.replace("[member]", message.author.name)
             data = data.replace("[memberMention]", message.author.mention)
             data = data.replace("[channel]", message.channel.mention)
