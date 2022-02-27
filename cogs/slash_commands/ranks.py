@@ -44,6 +44,9 @@ class Ranks(commands.Cog):
         if await self.bot.config.DB.levels.count_documents({"guild": message.guild.id, "member": message.author.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
 
+        if message.author.bot: 
+            return
+
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
 
@@ -66,6 +69,8 @@ class Ranks(commands.Cog):
     async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
         if member.bot:
             raise CustomError("Боты не имеют этой привелегии :(")
+        elif await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}) is None:
+            raise CustomError("Этот человечек ещё не общался тут(")
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
             await inter.send(embed=await self.bot.embeds.simple(
