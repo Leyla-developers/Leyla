@@ -49,6 +49,7 @@ class Ranks(commands.Cog):
                 if await self.formula(message, message.author):
                     if await self.get_level_up_message(message):
                         await self.get_level_up_message(message)
+                        return
 
                     if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
                         level_role_data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']
