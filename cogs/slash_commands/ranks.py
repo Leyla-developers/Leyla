@@ -32,18 +32,17 @@ class Ranks(commands.Cog):
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
                 channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel']
-                message_format = {
-                    "[xp]": data['xp'],
-                    "[lvl]": data['lvl'],
-                    "[member]": message.author.name,
-                    "[memberMention]": message.author.mention,
-                    "[channel]": message.channel.mention
-                }
+                data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id}))['message']
+                data = data.replace("[xp]", data['xp'])
+                data = data.replace("[lvl]", data['lvl'])
+                data = data.replace("[member]", message.author.name)
+                data = data.replace("[memberMention]", message.author.mention)
+                data = data.replace("[channel]", message.channel.mention)
 
                 if await self.formula(message, message.author):
                     lvl = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))['lvl']
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
-                    await message.guild.get_channel(channel_id).send(message_format[dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id}))['message']])
+                    await message.guild.get_channel(channel_id).send(data)
                     if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
                         level_role_data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']
                         reverse_levels = {value: key for key, value in level_role_data.items()}
