@@ -203,6 +203,15 @@ class Settings(commands.Cog):
         
         await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль была успешно убрана!", fields=[{'name': 'Роль', 'value': role.mention}]))
 
+    @level.sub_command(name="help", description="Справка по уровням (Сообщение при повышении уровня)")
+    async def level_help(self, inter):
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Справка по велкомеру (/settings welcome ...)",
+                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[xp] - Количество опыта, нужного до следующего уровня\n[lvl] - Показывает уровень, который участник получил при повышении."
+            )
+        )
+
     @welcome.sub_command(name='setup', description='Устанавливает канал приветствий u-u')
     async def welcome_setup(self, inter, welcome_channel: disnake.TextChannel, goodbye_channel: disnake.TextChannel, welcome_message: str = None, goodbye_message: str = None):
         if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
@@ -231,6 +240,15 @@ class Settings(commands.Cog):
                 title='Leyla settings **(welcomer)**', 
                 description="Настройки велкомера применены успешно!!", 
                 fields=[{'name': 'Каналы', 'value': f'{welcome_channel.mention} / {goodbye_channel.mention}'}]
+            )
+        )
+
+    @welcome.sub_command(name="help", description="Справка по велкомеру (Сообщение при входе/выходе)")
+    async def welcome_help(self, inter):
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Справка по велкомеру (/settings welcome ...)", 
+                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[guild] - Название сервера\n[guildMembers] - Количество участников, после захода человека на Ваш сервер."
             )
         )
 
