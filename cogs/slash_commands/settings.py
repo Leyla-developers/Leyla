@@ -207,7 +207,7 @@ class Settings(commands.Cog):
     async def level_help(self, inter):
         await inter.send(
             embed=await self.bot.embeds.simple(
-                title="Справка по велкомеру (/settings welcome ...)",
+                title="Справка по уровневым сообщениям (/settings level ...)",
                 description="**[memberMention]** - Упоминание участника, который зашёл\n**[member]** - Никнейм и тег зашедшего участника\n**[xp]** - Количество опыта, нужного до следующего уровня\n**[lvl]** - Показывает уровень, который участник получил при повышении."
             ), ephemeral=True
         )
