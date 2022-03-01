@@ -19,9 +19,10 @@ class Embeds(Embed):
         footer: dict = None,
         fields: list = None,
         color: disnake.Colour = None,
+        ephemeral: bool = None,
         **kwargs
     ):
-        embed = Embed(**kwargs)
+        embed = Embed(**kwargs, ephemeral=True if ephemeral else False)
         embed.color = self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color')
 
         if interaction:
