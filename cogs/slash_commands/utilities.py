@@ -10,6 +10,7 @@ from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 import emoji as emj
+from bs4 import BeautifulSoup
 
 
 class Utilities(commands.Cog):
@@ -144,6 +145,30 @@ class Utilities(commands.Cog):
     async def random_emoji(self, inter):
         emoji = random.choice(self.bot.emojis)
         await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[{'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
+
+    @commands.slash_command(name="random-anime", description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
+    async def random_anime(self, inter):
+        url = 'https://animego.org'
+
+        async with self.bot.session(
+            headers={
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/80.0.4170.91',
+                'cookie': os.environ['COOKIE']
+            }) as session:
+            async with session.get(f'{url}/anime/random') as res:
+                soup = BeautifulSoup(await res.text(), 'html.parser')
+                name = soup.select('.anime-title')[0].find('h1', class_=False).text
+                img = soup.find('div', class_='anime-poster').find('img', class_=False).get('src')
+                desc = soup.find('div', class_='description').text
+                url = f'{url}{res.url._val.path}'
+                await session.close()
+        desc = re.sub('\n', '', desc, 1)
+        await inter.send(await self.bot.embeds.simple(
+                description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
+                thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
+            )
+        )
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
