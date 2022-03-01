@@ -165,7 +165,7 @@ class Utilities(commands.Cog):
                 url = f'{url}{res.url._val.path}'
                 await session.close()
         desc = re.sub('\n', '', desc, 1)
-        await inter.send(await self.bot.embeds.simple(
+        await inter.send(embed=await self.bot.embeds.simple(
                 description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
                 thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
             )
