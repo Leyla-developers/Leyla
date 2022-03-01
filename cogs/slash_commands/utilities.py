@@ -4,6 +4,7 @@ import typing
 import os
 import random
 
+import aiohttp
 import disnake
 from disnake.ext import commands
 from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
@@ -150,7 +151,7 @@ class Utilities(commands.Cog):
     async def random_anime(self, inter):
         url = 'https://animego.org'
 
-        async with self.bot.session(
+        async with aiohttp.ClientSession(
             headers={
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/80.0.4170.91',
