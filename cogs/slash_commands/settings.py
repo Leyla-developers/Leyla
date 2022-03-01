@@ -208,7 +208,8 @@ class Settings(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title="Справка по велкомеру (/settings welcome ...)",
-                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[xp] - Количество опыта, нужного до следующего уровня\n[lvl] - Показывает уровень, который участник получил при повышении."
+                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[xp] - Количество опыта, нужного до следующего уровня\n[lvl] - Показывает уровень, который участник получил при повышении.",
+                ephemeral=True
             )
         )
 
@@ -248,7 +249,8 @@ class Settings(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title="Справка по велкомеру (/settings welcome ...)", 
-                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[guild] - Название сервера\n[guildMembers] - Количество участников, после захода человека на Ваш сервер."
+                description="[memberMention] - Упоминание участника, который зашёл\n[member] - Никнейм и тег зашедшего участника\n[guild] - Название сервера\n[guildMembers] - Количество участников, после захода человека на Ваш сервер.",
+                ephemeral=True
             )
         )
 
