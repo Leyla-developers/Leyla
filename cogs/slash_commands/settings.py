@@ -191,9 +191,9 @@ class Settings(commands.Cog):
             if str(role.id) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
                 raise CustomError("На эту роль уже есть уровень!")
             else:
-                await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
         else:
-            await self.bot.config.DB.insert_one({"_id": inter.guild.id, "roles": [data]})
+            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "roles": [data]})
         
         await inter.send(
             embed=await self.bot.embeds.simple(
