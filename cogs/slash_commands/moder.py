@@ -74,5 +74,14 @@ class Moderation(commands.Cog):
             )
         )
 
+    @commands.sub_command()
+    async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
+        if member:
+            check = lambda m: m.author
+
+        cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
+
+        await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
