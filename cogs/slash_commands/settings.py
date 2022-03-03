@@ -193,7 +193,7 @@ class Settings(commands.Cog):
             else:
                 await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
         else:
-            await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "roles": [data]})
+            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$set": {"roles": [data]}})
         
         await inter.send(
             embed=await self.bot.embeds.simple(
