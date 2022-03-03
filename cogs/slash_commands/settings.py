@@ -183,16 +183,25 @@ class Settings(commands.Cog):
 
     @level.sub_command(name='role', description="Настройка ролей, которые будут даваться за определённый уровень")
     async def level_roles(self, inter, role: disnake.Role, level: int):
+        data = {
+            str(role.id): str(level)
+        }
+
         if dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles'] is not None:
             if str(role.id) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
                 raise CustomError("На эту роль уже есть уровень!")
             else:
-                data = {
-                    str(role.id): str(level)
-                }
-                await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})          
+                await self.bot.config.DB.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
+        else:
+            await self.bot.config.DB.insert_one({"_id": inter.guild.id, "roles": data})
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль успешно поставлена!"))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(ranks)**', 
+                description="Роль успешно поставлена!",
+                fields=[{"name": "Роль", "value": role.mention}, {"name": "Уровень", "value": level}]
+            )
+        )
 
     @level.sub_command(name='role-remove', description="Настройка ролей, которые будут даваться за определённый уровень")
     async def level_roles_remove(self, inter, role: disnake.Role):
