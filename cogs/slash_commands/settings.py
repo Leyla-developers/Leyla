@@ -190,7 +190,7 @@ class Settings(commands.Cog):
         if dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles'] is not None:
             for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
                 if str(level) in list(i.values()):
-                    raise CustomError("На этот уровень уже есть роль(-и)")
+                    raise CustomError("На этот уровень уже есть роль")
             else:
                 await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"roles": data}})
         else:
