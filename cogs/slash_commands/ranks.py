@@ -12,7 +12,7 @@ class Ranks(commands.Cog):
 
     async def formula(self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member):
         data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
-        need_xp = int(((data['lvl'] * 23 / 100) / 0.5) * 1000)
+        need_xp = 5*(data['lvl']**2)+50*data['lvl']+100
 
         if data['xp'] >= need_xp:
             return True
@@ -26,7 +26,7 @@ class Ranks(commands.Cog):
             channel_id = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel'] if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['channel'] else message.channel.id
             data = dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['message']
 
-            data = data.replace("[xp]", str(int(((user_data['lvl'] * 23 / 100) / 0.5) * 1000)))
+            data = data.replace("[xp]", str(5*(user_data['lvl']**2)+50*user_data['lvl']+100))
             data = data.replace("[lvl]", str(user_data['lvl']))
             data = data.replace("[member]", message.author.name)
             data = data.replace("[memberMention]", message.author.mention)
@@ -62,8 +62,8 @@ class Ranks(commands.Cog):
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
                     await self.get_level_up_message(message)
                 else:
-                    await sleep(5)
-                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(2, 5)+data['xp']}})
+                    await sleep(60)
+                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(1, 3)+data['xp']}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
     async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):

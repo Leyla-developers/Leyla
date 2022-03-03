@@ -200,7 +200,7 @@ class Settings(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title='Leyla settings **(ranks)**', 
                 description="Роль успешно поставлена!",
-                fields=[{"name": "Роль", "value": role.mention}, {"name": "Уровень", "value": level}]
+                fields=[{"name": "Роль", "value": role.mention, "inline": True}, {"name": "Уровень", "value": level, "inline": True}]
             )
         )
 
