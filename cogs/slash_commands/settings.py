@@ -144,7 +144,7 @@ class Settings(commands.Cog):
             "name": "Канал оповещений", "value": inter.guild.get_channel(all_level_data['channel']).mention if all_level_data['channel'] and all_level_data['channel'] in inter.guild.text_channels else "Канал не указан", "inline": True,
         },
         {
-            "name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if i in [i.id for i in inter.guild.roles]]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"
+            "name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if int(i) in [i.id for i in inter.guild.roles]]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"
         },
         {
             "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено"
