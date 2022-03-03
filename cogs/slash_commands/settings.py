@@ -134,6 +134,31 @@ class Settings(commands.Cog):
             )
         )
 
+    @level.sub_command(name="info", description="Вся информация о ваших настройках в уровнях")
+    async def level_info(self, inter):
+        all_level_data = dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))
+        fields_data = [{
+            "name": "Режим", "value": "Включен" if all_level_data['mode'] else "Выключен", "inline": True,
+        },
+        {
+            "name": "Канал оповещений", "value": inter.guild.get_channel(all_level_data['channel']).mention if all_level_data['channel'] and all_level_data['channel'] in inter.guild.text_channels else "Канал не указан", "inline": True,
+        },
+        {
+            "name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if i in inter.guild.roles]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"
+        },
+        {
+            "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено"
+        }]
+        embed = await self.bot.embeds.simple(
+            title=f"Информация о системе уровней на {inter.guild.name}",
+            thumbnail=inter.guild.icon.url if inter.guild.icon.url else None,
+            footer={"text": inter.guild.id, "icon_url": inter.author.avatar.url if inter.author.avatar.url else None},
+            image=inter.guild.banner.url if inter.guild.banner.url else None,
+            fields=fields_data
+        )
+        
+        await inter.send(embed=embed)
+
     @level.sub_command(description="Настройка системы уровней")
     async def mode(self, inter, system_mode: Literal['Включить', 'Выключить']):
         mode = {
