@@ -151,9 +151,9 @@ class Settings(commands.Cog):
         }]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
-            thumbnail=inter.guild.icon.url if inter.guild.icon.url else None,
-            footer={"text": inter.guild.id, "icon_url": inter.author.avatar.url if inter.author.avatar.url else None},
-            image=inter.guild.banner.url if inter.guild.banner.url else None,
+            thumbnail=inter.guild.icon.url if inter.guild.icon else None,
+            footer={"text": inter.guild.id, "icon_url": inter.author.avatar.url if inter.author.avatar else None},
+            image=inter.guild.banner.url if inter.guild.banner else None,
             fields=fields_data
         )
         
