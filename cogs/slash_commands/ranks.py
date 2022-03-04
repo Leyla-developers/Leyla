@@ -10,6 +10,12 @@ class Ranks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, inter):
+        if dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']:
+            return True
+        else:
+            return False
+
     async def formula(self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member):
         data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
         need_xp = 5*(data['lvl']**2)+50*data['lvl']+100
