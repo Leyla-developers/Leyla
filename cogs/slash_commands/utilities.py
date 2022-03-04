@@ -98,7 +98,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Получить эмодзик"
     )
-    async def emoji(self, inter, emoji: disnake.Emoji):
+    async def emoji(self, inter, emoji):
         if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH:
             await inter.send(emoji)
         else:
