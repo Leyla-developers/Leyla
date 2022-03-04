@@ -103,7 +103,7 @@ class Utilities(commands.Cog):
             await inter.send(emoji)
         else:
             get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))
-            url = f"https://cdn.discordapp.com/emojis/{get_emoji_id}.webp?size=480&quality=lossless"
+            url = f"https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless"
             embed = await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
                 image=await emoji_converter('webp', url),
