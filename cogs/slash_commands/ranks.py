@@ -77,6 +77,8 @@ class Ranks(commands.Cog):
             raise CustomError("Боты не имеют этой привелегии :(")
         elif await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}) is None:
             raise CustomError("Этот человечек ещё не общался тут(")
+        elif not await self.cog_check(self, inter):
+            raise CustomError("Система уровней не включена здесь!")
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
             await inter.send(embed=await self.bot.embeds.simple(
