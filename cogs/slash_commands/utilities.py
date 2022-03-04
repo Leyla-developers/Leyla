@@ -106,7 +106,8 @@ class Utilities(commands.Cog):
             url = f"https://cdn.discordapp.com/emojis/{get_emoji_id}.webp?size=480&quality=lossless"
             embed = await self.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
-                image=await emoji_converter('webp', url)
+                image=await emoji_converter('webp', url),
+                fields=[{"name": "Немного информации", "value": "Анимированный" if 'gif' in await emoji_converter('webp', url) else "Не анимирован"}]
             )
 
             await inter.send(embed=embed)
