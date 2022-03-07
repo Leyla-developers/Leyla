@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 import disnake
 from disnake.ext import commands
@@ -39,6 +39,10 @@ class Settings(commands.Cog):
 
     @settings.sub_command_group(description="Велкомер")
     async def welcome(self, inter):
+        ...
+
+    @settings.sub_command_group(name='reaction-role', description="Роли за реакцию")
+    async def reaction_role(self, inter):
         ...
 
     @settings.sub_command()
@@ -285,6 +289,22 @@ class Settings(commands.Cog):
                 title="Справка по велкомеру (/settings welcome ...)", 
                 description="**[memberMention]** - Упоминание участника, который зашёл\n**[member]** - Никнейм и тег зашедшего участника\n**[guild]** - Название сервера\n**[guildMembers]** - Количество участников, после захода человека на Ваш сервер."
             ), ephemeral=True
+        )
+
+    @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
+    async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji: disnake.PartialEmoji):
+        if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
+            await self.bot.config.DB.emojirole.insert_one({"_id": message_id.id, "emojis": [{str(emoji): [role.id]}]})
+        else:
+            await self.bot.config.DB.emojirole.update_one({"_id": message_id.id}, {"$push": {"emojis": {str(emoji): [role.id]}}})
+
+        await inter.send(
+            embed=self.bot.embeds.simple(
+                title="Leyla settings **(reaction role)**", 
+                description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль", 
+                fields=[{"name": "Роль", "value": role.id, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
+                thumbnail=inter.author.display_avatar.url
+            )
         )
 
 def setup(bot):
