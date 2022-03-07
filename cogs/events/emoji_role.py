@@ -20,10 +20,9 @@ class EmojiRole(commands.Cog):
             data = dict(await self.get_data_from_db(payload.message_id))
 
             if data['_id'] == payload.message_id:
-                if payload.emoji in data['emojis']:
-                    for i in data['emojis']:
-                        for j in i[payload.emoji]: # {'emojis': [{'here_emoji': 'role_id'}, {'again_emoji': 'role_id'}, ...]}
-                            await payload.member.add_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
+                for i in data['emojis'][payload.emoji]:
+                    for j in i: # {'emojis': [{'here_emoji': 'role_id'}, {'again_emoji': 'role_id'}, ...]}
+                        await payload.member.add_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: disnake.RawReactionActionEvent):
@@ -32,10 +31,9 @@ class EmojiRole(commands.Cog):
             data = dict(await self.get_data_from_db(payload.message_id))
 
             if data['_id'] == payload.message_id:
-                if payload.emoji in data['emojis']:
-                    for i in data['emojis']:
-                        for j in i[payload.emoji]:
-                            await payload.member.remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
+                for i in data['emojis'][payload.emoji]:
+                    for j in i:
+                        await payload.member.remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
 
 def setup(bot):
