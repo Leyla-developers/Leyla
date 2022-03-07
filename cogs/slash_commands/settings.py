@@ -293,6 +293,8 @@ class Settings(commands.Cog):
 
     @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
     async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji: disnake.PartialEmoji):
+        get_message = message_id or inter.message
+
         if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
             await self.bot.config.DB.emojirole.insert_one({"_id": message_id.id, "emojis": [{str(emoji): [role.id]}]})
         else:
@@ -306,6 +308,7 @@ class Settings(commands.Cog):
                 thumbnail=inter.author.display_avatar.url
             )
         )
+        await get_message.add_reaction(emoji)
 
 def setup(bot):
     bot.add_cog(Settings(bot))
