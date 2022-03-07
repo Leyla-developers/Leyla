@@ -74,7 +74,7 @@ class Moderation(commands.Cog):
             )
         )
 
-    @commands.sub_command()
+    @commands.slash_command()
     async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
         if member:
             check = lambda m: m.author
