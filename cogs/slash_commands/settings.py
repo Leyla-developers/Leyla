@@ -304,7 +304,7 @@ class Settings(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title="Leyla settings **(reaction role)**", 
                 description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль", 
-                fields=[{"name": "Роль", "value": role.id, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
+                fields=[{"name": "Роль", "value": role, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
                 thumbnail=inter.author.display_avatar.url
             )
         )
