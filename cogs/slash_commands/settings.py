@@ -3,6 +3,7 @@ from typing import Literal, Optional
 import disnake
 from disnake.ext import commands
 from Tools.exceptions import CustomError
+import emoji as emj
 
 
 class Settings(commands.Cog):
@@ -294,11 +295,12 @@ class Settings(commands.Cog):
     @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
     async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji: disnake.PartialEmoji):
         get_message = message_id or inter.message
+        emoji_data = emoji if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(emoji)
 
         if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
-            await self.bot.config.DB.emojirole.insert_one({"_id": message_id.id, "emojis": [{str(emoji): [role.id]}]})
+            await self.bot.config.DB.emojirole.insert_one({"_id": message_id.id, "emojis": [{emoji_data: [role.id]}]})
         else:
-            await self.bot.config.DB.emojirole.update_one({"_id": message_id.id}, {"$push": {"emojis": {str(emoji): [role.id]}}})
+            await self.bot.config.DB.emojirole.update_one({"_id": message_id.id}, {"$push": {"emojis": {emoji_data: [role.id]}}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(

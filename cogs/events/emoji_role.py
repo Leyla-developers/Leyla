@@ -1,5 +1,6 @@
 import disnake
 from disnake.ext import commands
+import emoji as emj
 
 
 class EmojiRole(commands.Cog):
@@ -20,11 +21,12 @@ class EmojiRole(commands.Cog):
         if member.bot: return
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
+            emoji_data = payload.emoji if payload.emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(payload.emoji)
 
             if data['_id'] == payload.message_id:
                 for i in data['emojis']:
-                    if str(payload.emoji) in i.keys():
-                        for j in i[str(payload.emoji)]: # {'emojis': [{'here_emoji': ['role_id']}, {'again_emoji': ['role_id']}, ...]}
+                    if emoji_data in i.keys():
+                        for j in i[emoji_data]: # {'emojis': [{'here_emoji': ['role_id']}, {'again_emoji': ['role_id']}, ...]}
                             await member.add_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
     @commands.Cog.listener()
@@ -33,13 +35,13 @@ class EmojiRole(commands.Cog):
 
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
+            emoji_data = payload.emoji if payload.emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(payload.emoji)
 
             if data['_id'] == payload.message_id:
                 for i in data['emojis']:
-                    if str(payload.emoji) in i.keys():
-                        for j in i[str(payload.emoji)]:
+                    if emoji_data in i.keys():
+                        for j in i[emoji_data]:
                             await member.remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
-
 
 def setup(bot):
     bot.add_cog(EmojiRole(bot))
