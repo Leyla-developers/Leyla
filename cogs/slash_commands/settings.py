@@ -308,7 +308,7 @@ class Settings(commands.Cog):
                 description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль", 
                 fields=[{"name": "Роль", "value": role, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
                 thumbnail=inter.author.display_avatar.url
-            ), ephemral=True
+            ), ephemeral=True
         )
         await get_message.add_reaction(emoji)
 
