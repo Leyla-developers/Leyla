@@ -299,7 +299,7 @@ class Settings(commands.Cog):
             await self.bot.config.DB.emojirole.update_one({"_id": message_id.id}, {"$push": {"emojis": {str(emoji): [role.id]}}})
 
         await inter.send(
-            embed=self.bot.embeds.simple(
+            embed=await self.bot.embeds.simple(
                 title="Leyla settings **(reaction role)**", 
                 description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль", 
                 fields=[{"name": "Роль", "value": role.id, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
