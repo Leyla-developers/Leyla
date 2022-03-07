@@ -293,7 +293,7 @@ class Settings(commands.Cog):
         )
 
     @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
-    async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji: disnake.PartialEmoji):
+    async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji):
         get_message = message_id or inter.message
         emoji_data = emoji if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(emoji)
 
