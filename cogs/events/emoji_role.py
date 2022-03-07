@@ -15,7 +15,9 @@ class EmojiRole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: disnake.RawReactionActionEvent):
-        if self.bot.get_user(payload.user_id).bot: return
+        member = await self.bot.get_guild(payload.guild_id).fetch_member(payload.user_id)
+
+        if member.bot: return
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
 
@@ -26,13 +28,15 @@ class EmojiRole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: disnake.RawReactionActionEvent):
+        member = await self.bot.get_guild(payload.guild_id).fetch_member(payload.user_id)
+
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
 
             if data['_id'] == payload.message_id:
                 for i in data['emojis']:
                     for j in i[str(payload.emoji)]:
-                        await self.bot.get_user(payload.user_id).remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
+                        await member.remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
 
 def setup(bot):
