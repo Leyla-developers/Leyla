@@ -312,5 +312,6 @@ class Settings(commands.Cog):
         )
         await get_message.add_reaction(emoji)
 
+
 def setup(bot):
     bot.add_cog(Settings(bot))
