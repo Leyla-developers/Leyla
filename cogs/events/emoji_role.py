@@ -23,7 +23,7 @@ class EmojiRole(commands.Cog):
 
             if data['_id'] == payload.message_id:
                 for i in data['emojis']:
-                    for j in i[str(payload.emoji)]: # {'emojis': [{'here_emoji': ['role_id']}, {'again_emoji': ['role_id']}, ...]}
+                    for j in i[payload.emoji]: # {'emojis': [{'here_emoji': ['role_id']}, {'again_emoji': ['role_id']}, ...]}
                         await member.add_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
     @commands.Cog.listener()
@@ -35,7 +35,7 @@ class EmojiRole(commands.Cog):
 
             if data['_id'] == payload.message_id:
                 for i in data['emojis']:
-                    for j in i[str(payload.emoji)]:
+                    for j in i[payload.emoji]:
                         await member.remove_roles(self.bot.get_guild(payload.guild_id).get_role(int(j)))
 
 
