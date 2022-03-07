@@ -26,7 +26,6 @@ class EmojiRole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: disnake.RawReactionActionEvent):
-        if payload.member.bot: return
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
 
