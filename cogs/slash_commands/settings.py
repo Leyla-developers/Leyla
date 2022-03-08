@@ -313,7 +313,7 @@ class Settings(commands.Cog):
         await get_message.add_reaction(emoji)
 
     @reaction_role.sub_command(name="remove", description="Установка роли за реакцию на сообщение")
-    async def reaction_role_remove(self, inter, message_id: int):
+    async def reaction_role_remove(self, inter, message_id: Optional[disnake.Message]):
         if await self.bot.config.DB.emojirole.count_documents({"_id": message_id}) == 0:
             raise CustomError("На этом сообщение нет ролей за реакцию")
         else:
