@@ -326,6 +326,7 @@ class Settings(commands.Cog):
                 thumbnail=inter.author.display_avatar.url
             ), ephemeral=True
         )
+        
 
 def setup(bot):
     bot.add_cog(Settings(bot))
