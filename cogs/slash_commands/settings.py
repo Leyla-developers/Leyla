@@ -314,10 +314,10 @@ class Settings(commands.Cog):
 
     @reaction_role.sub_command(name="remove", description="Удаление ролей за реакцию на сообщении")
     async def reaction_role_remove(self, inter, message_id: Optional[disnake.Message]):
-        if await self.bot.config.DB.emojirole.count_documents({"_id": message_id}) == 0:
+        if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
             raise CustomError("На этом сообщение нет ролей за реакцию")
         else:
-            await self.bot.config.DB.emojirole.delete_one({"_id": message_id})
+            await self.bot.config.DB.emojirole.delete_one({"_id": message_id.id})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
@@ -326,7 +326,7 @@ class Settings(commands.Cog):
                 thumbnail=inter.author.display_avatar.url
             ), ephemeral=True
         )
-        
+
 
 def setup(bot):
     bot.add_cog(Settings(bot))
