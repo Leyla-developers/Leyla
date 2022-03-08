@@ -312,6 +312,16 @@ class Settings(commands.Cog):
         )
         await get_message.add_reaction(emoji)
 
+    @reaction_role.sub_command(name="remove", description="Установка роли за реакцию на сообщение")
+    async def reaction_role_remove(self, inter, message_id: Optional[disnake.Message]):
+        await self.bot.config.DB.emojirole.delete_one({"_id": message_id.id})
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Leyla settings **(reaction role)**", 
+                description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль",
+                thumbnail=inter.author.display_avatar.url
+            ), ephemeral=True
+        )
 
 def setup(bot):
     bot.add_cog(Settings(bot))
