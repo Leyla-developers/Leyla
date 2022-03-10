@@ -13,6 +13,7 @@ from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 import emoji as emj
 from bs4 import BeautifulSoup
+from Tools.buttons import CurrencyButton
 
 
 class Utilities(commands.Cog):
@@ -201,7 +202,7 @@ class Utilities(commands.Cog):
                         }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
-                )
+                ), view=CurrencyButton()
             )
         else:
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует!!"))
