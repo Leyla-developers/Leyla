@@ -96,7 +96,7 @@ class Moderation(commands.Cog):
 
         await member.timeout(duration=units[unit])
         await inter.send(
-            embed=self.bot.embeds.simple(
+            embed=await self.bot.embeds.simple(
                 title='Мут! (timeout)',
                 description=f'Ротик {member.mention} был заклеен, и больше не сможет отработает!)',
                 thumbnail=inter.author.display_avatar.url,
