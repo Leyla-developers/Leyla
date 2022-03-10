@@ -104,5 +104,10 @@ class Moderation(commands.Cog):
             )
         )
 
+    @commands.slash_command(description="Перепутали участника? Могу убрать с него закляпку :)")
+    async def unmute(self, inter, member: disnake.Member):
+        await member.timeout(duration=0)
+        await inter.send(embed=await self.bot.embeds.simple(title='Мут снят!', description="Кляп с участника был снят, пусть пока радуется жизни, пока может..)"))
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
