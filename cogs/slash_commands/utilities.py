@@ -3,6 +3,7 @@ from datetime import datetime
 import typing
 import os
 import random
+import json
 
 import aiohttp
 import disnake
@@ -170,6 +171,44 @@ class Utilities(commands.Cog):
                 thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
             )
         )
+
+    @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
+    async def currency_converter(self, inter, currency: typing.Literal[
+            'AUD', 'AZN', 'GBP', 'AMD', 'BYN', 'BGN', 'BRL', 
+            'HUF', 'HKD', 'DKK', 'USD', 'EUR', 'INR', 'KZT', 
+            'CAD', 'KGS', 'CNY', 'MDL', 'NOK', 'PLN', 'RON', 
+            'XDR', 'SGD', 'TJS', 'TRY', 'TMT', 'UZS', 'UAH', 
+            'CZK', 'SEK', 'CHF', 'ZAR', 'KRW', 'JPY'
+        ]
+    ):
+        async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
+            cb_data = await response.text()
+
+        json_cb_data = json.loads(cb_data)
+        get_currency = {i:j['Name'] for i, j in json_cb_data['Valute'].items()}
+        data = json_cb_data["Valute"]
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title=f'Курс - {get_currency[currency]}',
+                description=f'{get_currency[currency]} на данный момент стоит **{round(data[currency]["Value"])}** рублей.',
+                fields=[
+                    {
+                        "name": "Абсолютная погрешность", 
+                        "value": abs(data[currency]["Value"] - round(data[currency]["Value"])), 
+                        'inline': True
+                    }, 
+                    {
+                        "name": "Прошлая стоимость", 
+                        "value": data[currency]['Previous'], 
+                        'inline': True
+                    }
+                ],
+                footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
+            )
+        )
+
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
