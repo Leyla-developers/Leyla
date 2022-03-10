@@ -100,7 +100,8 @@ class Moderation(commands.Cog):
                 title='Мут! (timeout)',
                 description=f'Ротик {member.mention} был заклеен, и больше не сможет отработать!)',
                 thumbnail=inter.author.display_avatar.url,
-                footer={'text': f'А отрабатывал(-а) хорошо?', 'icon_url': member.display_avatar.url}
+                footer={'text': f'А отрабатывал(-а) хорошо?', 'icon_url': member.display_avatar.url},
+                fields=[{"name": "Время мута", "value": f'{duration} ({unit})', 'inline': True}, {"Причина": reason if reason else "Ещё и безпричинно..."}]
             )
         )
 
