@@ -84,7 +84,7 @@ class Moderation(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
 
-    @commands.slash_command(name="", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
+    @commands.slash_command(name="timeout", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
     async def discord_timeout(self, inter, member: disnake.Member, duration: int, unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни', 'Недели'], reason: str = None):
         units = {
             "Секунды": duration,
