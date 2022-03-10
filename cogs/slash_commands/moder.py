@@ -1,4 +1,5 @@
 import random
+from typing import Literal
 
 import disnake
 from disnake.ext import commands
@@ -74,7 +75,7 @@ class Moderation(commands.Cog):
             )
         )
 
-    @commands.slash_command()
+    @commands.slash_command(description="Кто-то намусорил в чате? Помогу очистить :)")
     async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
         if member:
             check = lambda m: m.author
@@ -82,6 +83,26 @@ class Moderation(commands.Cog):
         cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
 
         await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
+
+    @commands.slash_command(name="", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
+    async def discord_timeout(self, inter, member: disnake.Member, duration: int, unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни', 'Недели'], reason: str = None):
+        units = {
+            "Секунды": duration,
+            "Минуты": duration * 60,
+            "Часы": duration * 3600,
+            "Дни": duration * 86400,
+            "Недели": duration * 604800,
+        }
+
+        await member.timeout(duration=units[unit])
+        await inter.send(
+            embed=self.bot.embeds.simple(
+                title='Мут! (timeout)',
+                description=f'Ротик {member.mention} был заклеен, и больше не сможет отработает!)',
+                thumbnail=inter.author.display_avatar.url,
+                footer={'text': f'А отрабатывал(-а) хорошо?', 'icon_url': member.display_avatar.url}
+            )
+        )
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
