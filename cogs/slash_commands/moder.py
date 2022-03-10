@@ -1,4 +1,5 @@
 import random
+import datetime
 from typing import Literal
 
 import disnake
@@ -101,7 +102,7 @@ class Moderation(commands.Cog):
                 description=f'Ротик {member.mention} был заклеен, и больше не сможет отработать!)',
                 thumbnail=inter.author.display_avatar.url,
                 footer={'text': f'А отрабатывал(-а) хорошо?', 'icon_url': member.display_avatar.url},
-                fields=[{"name": "Время мута", "value": f'{duration} ({unit})', 'inline': True}, {"name": "Причина", "value": reason if reason else "Ещё и безпричинно...", 'inline': True}]
+                fields=[{"name": "Время мута", "value": f'<t:{round(datetime.datetime.now() + datetime.timedelta(seconds=units[unit]))}:R>', 'inline': True}, {"name": "Причина", "value": reason if reason else "Ещё и безпричинно...", 'inline': True}]
             )
         )
 
