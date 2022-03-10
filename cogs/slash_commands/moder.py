@@ -98,7 +98,7 @@ class Moderation(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Мут! (timeout)',
-                description=f'Ротик {member.mention} был заклеен, и больше не сможет отработает!)',
+                description=f'Ротик {member.mention} был заклеен, и больше не сможет отработать!)',
                 thumbnail=inter.author.display_avatar.url,
                 footer={'text': f'А отрабатывал(-а) хорошо?', 'icon_url': member.display_avatar.url}
             )
