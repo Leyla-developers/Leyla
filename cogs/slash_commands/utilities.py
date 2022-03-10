@@ -173,14 +173,7 @@ class Utilities(commands.Cog):
         )
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
-    async def currency_converter(self, inter, currency: typing.Literal[
-            'AUD', 'AZN', 'GBP', 'AMD', 'BYN', 'BGN', 'BRL', 
-            'HUF', 'HKD', 'DKK', 'USD', 'EUR', 'INR', 'KZT', 
-            'CAD', 'KGS', 'CNY', 'MDL', 'NOK', 'PLN', 'RON', 
-            'XDR', 'SGD', 'TJS', 'TRY', 'TMT', 'UZS', 'UAH', 
-            'CZK', 'SEK', 'CHF', 'ZAR', 'KRW', 'JPY'
-        ]
-    ):
+    async def currency_converter(self, inter, currency):
         async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
             cb_data = await response.text()
 
@@ -188,27 +181,30 @@ class Utilities(commands.Cog):
         get_currency = {i:j['Name'] for i, j in json_cb_data['Valute'].items()}
         data = json_cb_data["Valute"]
 
-        await inter.send(
-            embed=await self.bot.embeds.simple(
-                title=f'Курс - {get_currency[currency]}',
-                description=f'{get_currency[currency]} на данный момент стоит **{round(data[currency]["Value"])}** рублей.',
-                fields=[
-                    {
-                        "name": "Абсолютная погрешность", 
-                        "value": abs(data[currency]["Value"] - round(data[currency]["Value"])), 
-                        'inline': True
-                    }, 
-                    {
-                        "name": "Прошлая стоимость", 
-                        "value": data[currency]['Previous'], 
-                        'inline': True
-                    }
-                ],
-                footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
+        if currency.upper() in data:
+            upper_currency = currency.upper()
+
+            await inter.send(
+                embed=await self.bot.embeds.simple(
+                    title=f'Курс - {get_currency[upper_currency]}',
+                    description=f'{get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"])}** рублей.',
+                    fields=[
+                        {
+                            "name": "Абсолютная погрешность", 
+                            "value": abs(data[upper_currency]["Value"] - round(data[upper_currency]["Value"])), 
+                            'inline': True
+                        }, 
+                        {
+                            "name": "Прошлая стоимость", 
+                            "value": data[upper_currency]['Previous'], 
+                            'inline': True
+                        }
+                    ],
+                    footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
+                )
             )
-        )
-
-
+        else:
+            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует!!"))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
