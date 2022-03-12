@@ -174,7 +174,7 @@ class Utilities(commands.Cog):
         )
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
-    async def currency_converter(self, inter, currency):
+    async def currency_converter(self, inter, currency, how_many: int = 0):
         async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
             cb_data = await response.text()
 
@@ -199,8 +199,9 @@ class Utilities(commands.Cog):
                             "name": "Прошлая стоимость", 
                             "value": data[upper_currency]['Previous'], 
                             'inline': True
-                        }
-                    ],
+                        }, None if how_many == 0 else {"name": f"Сколько это всего (**{how_many}**) в рублях", "value": how_many * int(data[currency.upper()]['Value'])}
+
+                    ]
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
                 ), view=CurrencyButton()
             )
