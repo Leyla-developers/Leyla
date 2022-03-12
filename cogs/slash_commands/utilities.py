@@ -199,9 +199,11 @@ class Utilities(commands.Cog):
                             "name": "Прошлая стоимость", 
                             "value": data[upper_currency]['Previous'], 
                             'inline': True
-                        }, None if how_many == 0 else {"name": f"Сколько это всего (**{how_many}**) в рублях", "value": how_many * int(data[currency.upper()]['Value'])}
-
-                    ]
+                        }, None if how_many == 0 else {
+                            "name": f"Сколько (**{how_many} {upper_currency}**) в рублях", 
+                            "value": how_many * int(data[upper_currency]['Value']),
+                        }
+                    ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
                 ), view=CurrencyButton()
             )
