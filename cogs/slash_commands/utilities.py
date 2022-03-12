@@ -201,7 +201,7 @@ class Utilities(commands.Cog):
                             'inline': True
                         }, None if how_many == 0 else {
                             "name": f"Сколько (**{how_many} {upper_currency}**) в рублях", 
-                            "value": how_many * int(data[upper_currency]['Value']),
+                            "value": how_many * round(int(data[upper_currency]['Value']), 2),
                         }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
