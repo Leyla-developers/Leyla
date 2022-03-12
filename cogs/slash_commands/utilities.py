@@ -208,7 +208,7 @@ class Utilities(commands.Cog):
                 ), view=CurrencyButton()
             )
         else:
-            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует!!"), view=CurrencyButton())
+            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
