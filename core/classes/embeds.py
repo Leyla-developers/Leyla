@@ -38,6 +38,9 @@ class Embeds(Embed):
 
         if fields:
             for field in fields:
-                embed.add_field(name=field.get('name'), value=field.get('value'), inline=field.get('inline') if field.get('inline') else None)
+                try:
+                    embed.add_field(name=field.get('name'), value=field.get('value'), inline=field.get('inline') if field.get('inline') else None)
+                except:
+                    pass
 
         return embed
