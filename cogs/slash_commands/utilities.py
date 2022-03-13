@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 import typing
+from typing import Dict, List
 import os
 import random
 import json
@@ -218,8 +219,8 @@ class Utilities(commands.Cog):
         description: str = None, 
         image: str = None, 
         thumbnail: str = None, 
-        footer: typing.Dict = None, 
-        fields: typing.List[typing.Dict] = None
+        footer: dict = None, 
+        fields: List[Dict] = None
     ):
         embed = disnake.Embed()
         if title:
