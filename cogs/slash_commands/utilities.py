@@ -236,7 +236,8 @@ class Utilities(commands.Cog):
             embed.set_footer(text=f.get('text'), icon_url=f.get('icon_url'))
         if fields:
             for i in fields:
-                embed.add_field(name=i.get('name'), value=i.get('value'))
+                j = json.loads(i)
+                embed.add_field(name=j.get('name'), value=j.get('value'))
         
         await inter.send(embed=embed)
 
