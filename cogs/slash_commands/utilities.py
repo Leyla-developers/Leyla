@@ -188,7 +188,7 @@ class Utilities(commands.Cog):
             await inter.send(
                 embed=await self.bot.embeds.simple(
                     title=f'Курс - {get_currency[upper_currency]} ({upper_currency})',
-                    description=f'{get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"])}** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
+                    description=f'{get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"])} ({data[upper_currency]["Value"]})** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
                     fields=[
                         {
                             "name": "Абсолютная погрешность", 
@@ -200,8 +200,8 @@ class Utilities(commands.Cog):
                             "value": data[upper_currency]['Previous'], 
                             'inline': True
                         }, None if how_many == 0 else {
-                            "name": f"Сколько (**{how_many} {upper_currency}**) в рублях", 
-                            "value": how_many * round(int(data[upper_currency]['Value']), 2),
+                            "name": f"Сколько **{how_many} {upper_currency}** в рублях", 
+                            "value": how_many * data[upper_currency]['Value'],
                         }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
