@@ -188,7 +188,7 @@ class Utilities(commands.Cog):
 
             await inter.send(
                 embed=await self.bot.embeds.simple(
-                    title=f'Курс - {get_currency[upper_currency]} ({upper_currency})',
+                    title=f'Курс - {get_currency[upper_currency]} ({upper_currency}) | Номинал: {data[upper_currency]["Nominal"]}',
                     description=f'Один {get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"])} ({round(data[upper_currency]["Value"], 2)})** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
                     fields=[
                         {
@@ -204,10 +204,6 @@ class Utilities(commands.Cog):
                             "name": f"Сколько **{how_many} {upper_currency}** в рублях", 
                             "value": round(how_many * data[upper_currency]['Value'], 2),
                         },
-                        {
-                            "name": f"Номинал: {get_currency[upper_currency]}",
-                            "value": f"> {data[upper_currency]['Nominal']}"
-                        }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
                 ), view=CurrencyButton()
