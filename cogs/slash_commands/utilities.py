@@ -219,7 +219,7 @@ class Utilities(commands.Cog):
         description: str = None, 
         image: str = None, 
         thumbnail: str = None, 
-        footer: dict = None, 
+        footer = None, 
         fields: List[Dict] = None
     ):
         embed = disnake.Embed()
