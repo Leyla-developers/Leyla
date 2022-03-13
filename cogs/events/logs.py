@@ -51,7 +51,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if before.name == after.name: return
+        if not await self.get_channel(after.guild): raise CustomError("Канал логирования не был настроен.")
+        elif before.name == after.name: return
         elif before.display_avatar == after.display_avatar: return
         elif before.banner == after.banner: return
         else:
@@ -65,6 +66,8 @@ class Logs(commands.Cog):
                 embed.set_image(url=after.display_avatar.url)
             elif before.name != after.name:
                 embed.description = f"Никнейм {after.name} был сменён"
+
+            await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Logs(bot))
