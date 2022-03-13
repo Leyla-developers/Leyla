@@ -203,6 +203,10 @@ class Utilities(commands.Cog):
                         }, None if how_many == 0 else {
                             "name": f"Сколько **{how_many} {upper_currency}** в рублях", 
                             "value": round(how_many * data[upper_currency]['Value'], 2),
+                        },
+                        {
+                            "name": f"Номинал {get_currency[upper_currency].lower()}",
+                            "value": f""> {data[upper_currency]['Nominal']}"
                         }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
