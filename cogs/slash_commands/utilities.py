@@ -205,7 +205,7 @@ class Utilities(commands.Cog):
                             "value": round(how_many * data[upper_currency]['Value'], 2),
                         },
                         {
-                            "name": f"Номинал {get_currency[upper_currency].lower()}",
+                            "name": f"Номинал: {get_currency[upper_currency]}",
                             "value": f"> {data[upper_currency]['Nominal']}"
                         }
                     ],
