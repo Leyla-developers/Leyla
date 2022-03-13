@@ -220,7 +220,7 @@ class Utilities(commands.Cog):
         image: str = None, 
         thumbnail: str = None, 
         footer = None, 
-        fields: List[Dict] = None
+        fields: list = None
     ):
         embed = disnake.Embed()
         if title:
