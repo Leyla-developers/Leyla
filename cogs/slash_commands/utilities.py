@@ -232,7 +232,8 @@ class Utilities(commands.Cog):
         if thumbnail:
             embed.set_thumbnail(url=thumbnail)
         if footer:
-            embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
+            f = json.loads(footer)
+            embed.set_footer(text=f.get('text'), icon_url=f.get('icon_url'))
         if fields:
             for i in fields:
                 embed.add_field(name=i.get('name'), value=i.get('value'))
