@@ -210,5 +210,33 @@ class Utilities(commands.Cog):
         else:
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
 
+    @commands.slash_command(description="Сообщение-вложение (embed). Всегда можно сделать красиво")
+    async def embed(
+        self, 
+        inter, 
+        title: str = None, 
+        description: str = None, 
+        image: str = None, 
+        thumbnail: str = None, 
+        footer: typing.Dict = None, 
+        fields: typing.List[typing.Dict] = None
+    ):
+        embed = disnake.Embed()
+        if title:
+            embed.title = title
+        if description:
+            embed.description = description
+        if image:
+            embed.set_image(url=image)
+        if thumbnail:
+            embed.set_thumbnail(url=thumbnail)
+        if footer:
+            embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
+        if fields:
+            for i in fields:
+                embed.set_field(name=i.get('name'), value=i.get('value'))
+        
+        await inter.send(embed=embed)
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

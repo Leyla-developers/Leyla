@@ -59,7 +59,7 @@ class Logs(commands.Cog):
             embed = await self.bot.embeds.simple(title=f'Изменение участника', url=f"https://discord.com/users/{after.id}")
 
             if before.banner != after.banner:
-                embed.description = f"Баннер {after.name} был сменён."
+                embed.description = f"Баннер {after.name} был сменён.\n[Прошлый баннер]({before.banner.url if before.banner else None}) | [Новый баннер]({after.banner.url if after.banner else None})"
                 embed.set_image(url=after.banner.url)
             elif before.display_avatar.url != after.display_avatar.url:
                 embed.description = f"Аватар {after.display_avatar.url} был сменён."
