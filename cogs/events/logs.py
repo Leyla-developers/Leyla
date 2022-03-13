@@ -49,5 +49,22 @@ class Logs(commands.Cog):
                 )
             )
 
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        if before.name == after.name: return
+        elif before.display_avatar == after.display_avatar: return
+        elif before.banner == after.banner: return
+        else:
+            embed = await self.bot.embeds.simple(title=f'Изменение участника', url=f"https://discord.com/users/{after.id}")
+
+            if before.banner != after.banner:
+                embed.description = f"Баннер {after.name} был сменён."
+                embed.set_image(url=after.banner.url)
+            elif before.display_avatar.url != after.display_avatar.url:
+                embed.description = f"Аватар {after.display_avatar.url} был сменён."
+                embed.set_image(url=after.display_avatar.url)
+            elif before.name != after.name:
+                embed.description = f"Никнейм {after.name} был сменён"
+
 def setup(bot):
     bot.add_cog(Logs(bot))
