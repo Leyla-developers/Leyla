@@ -235,7 +235,7 @@ class Utilities(commands.Cog):
             embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
         if fields:
             for i in fields:
-                embed.set_field(name=i.get('name'), value=i.get('value'))
+                embed.add_field(name=i.get('name'), value=i.get('value'))
         
         await inter.send(embed=embed)
 
