@@ -206,7 +206,7 @@ class Utilities(commands.Cog):
                         },
                         {
                             "name": f"Номинал {get_currency[upper_currency].lower()}",
-                            "value": f""> {data[upper_currency]['Nominal']}"
+                            "value": f"> {data[upper_currency]['Nominal']}"
                         }
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
