@@ -243,8 +243,8 @@ class Utilities(commands.Cog):
         await inter.send(embed=embed)
 
     @commands.slash_command(test_guilds=[885541278908043304])
-    async def test(self, inter: disnake.AppCmdInter):
-        await inter.send_modal('test', modal=MyModal())
+    async def test(self, inter):
+        await inter.response.send_modal('test', modal=MyModal())
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
