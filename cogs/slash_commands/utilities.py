@@ -244,7 +244,7 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(test_guilds=[885541278908043304])
     async def test(inter):
-        await inter.send('test', modal=MyModal())
+        await inter.send_modal('test', modal=MyModal())
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
