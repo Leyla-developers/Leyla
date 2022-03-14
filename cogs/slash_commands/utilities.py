@@ -188,8 +188,8 @@ class Utilities(commands.Cog):
 
             await inter.send(
                 embed=await self.bot.embeds.simple(
-                    title=f'Курс - {get_currency[upper_currency]} ({upper_currency}) | Номинал: {data[upper_currency]["Nominal"]}',
-                    description=f'Один {get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"])} ({round(data[upper_currency]["Value"], 2)})** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
+                    title=f'Курс - {get_currency[upper_currency]} ({upper_currency})',
+                    description=f'Один {get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"]) / data[upper_currency]["Nominal"]} ({round(data[upper_currency]["Value"], 2)})** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
                     fields=[
                         {
                             "name": "Абсолютная погрешность", 
