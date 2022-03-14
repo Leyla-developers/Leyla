@@ -15,7 +15,6 @@ from Tools.exceptions import CustomError
 import emoji as emj
 from bs4 import BeautifulSoup
 from Tools.buttons import CurrencyButton
-from Tools.modal import MyModal
 
 
 class Utilities(commands.Cog):
