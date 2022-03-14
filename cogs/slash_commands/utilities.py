@@ -199,7 +199,7 @@ class Utilities(commands.Cog):
                         }, 
                         {
                             "name": "Прошлая стоимость", 
-                            "value": data[upper_currency]['Previous'], 
+                            "value": data[upper_currency]['Previous'] / data[upper_currency]['Nominal'], 
                             'inline': True
                         }, None if how_many == 0 else {
                             "name": f"Сколько **{how_many} {upper_currency}** в рублях", 
@@ -211,40 +211,6 @@ class Utilities(commands.Cog):
             )
         else:
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
-
-    @commands.slash_command(description="Сообщение-вложение (embed). Всегда можно сделать красиво")
-    async def embed(
-        self, 
-        inter, 
-        title: str = None, 
-        description: str = None, 
-        image: str = None, 
-        thumbnail: str = None, 
-        footer = None, 
-        fields = None
-    ):
-        embed = disnake.Embed()
-        if title:
-            embed.title = title
-        if description:
-            embed.description = description
-        if image:
-            embed.set_image(url=image)
-        if thumbnail:
-            embed.set_thumbnail(url=thumbnail)
-        if footer:
-            f = json.loads(footer)
-            embed.set_footer(text=f.get('text'), icon_url=f.get('icon_url'))
-        if fields:
-            for i in fields:
-                j = json.loads(i)
-                embed.add_field(name=j.get('name'), value=j.get('value'))
-        
-        await inter.send(embed=embed)
-
-    @commands.slash_command(test_guilds=[885541278908043304])
-    async def test(self, inter):
-        await inter.response.send_modal(modal=MyModal())
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
