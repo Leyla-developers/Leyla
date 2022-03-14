@@ -15,6 +15,7 @@ from Tools.exceptions import CustomError
 import emoji as emj
 from bs4 import BeautifulSoup
 from Tools.buttons import CurrencyButton
+from Tools.modal import MyModal
 
 
 class Utilities(commands.Cog):
@@ -240,6 +241,10 @@ class Utilities(commands.Cog):
                 embed.add_field(name=j.get('name'), value=j.get('value'))
         
         await inter.send(embed=embed)
+
+    @commands.slash_command(test_guilds=[885541278908043304])
+    async def test(inter):
+        await inter.send('test', modal=MyModal())
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
