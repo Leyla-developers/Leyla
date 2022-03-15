@@ -19,7 +19,7 @@ class Activities(commands.Cog):
             'doodle-crew': '878067389634314250',
         }
 
-    @commands.slash_command()
+    @commands.slash_command(description="Всякие разные развлечения для голосового кАнальчика")
     async def activity(self, inter, voice_channel: disnake.VoiceChannel, activity: Literal['youtube', 'poker', 'betrayal', 'fishing', 'chess', 'letter-tile', 'word-snack', 'doodle-crew']):
         data = {
             'max_age': 604800,
