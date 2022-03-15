@@ -8,10 +8,10 @@ class Music(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.music = lavalink.Client(898664959767113729)
-        self.music.add_node('127.0.0.1', 2333, 'test', 'us', 'default-node')
+        self.bot.music = lavalink.Client(898664959767113729)
+        self.bot.music.add_node('127.0.0.1', 2333, 'test', 'us', 'default-node')
         self.bot.add_listener(self.music.voice_update_handler, 'on_socket_response')
-        self.music.add_event_hook(self.track_hook)
+        self.bot.music.add_event_hook(self.track_hook)
 
     async def track_hook(self, event):
         if isinstance(event, lavalink.events.QueueEndEvent):
