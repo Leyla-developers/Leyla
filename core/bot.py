@@ -18,9 +18,9 @@ class Leyla(commands.Bot):
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
         self.times = LeylaTasks(self)
-        self.music = lavalink.Client(self.bot.user.id)
+        self.music = lavalink.Client(self.user.id)
         self.music.add_node('localhost', 7000, 'testing', 'na', 'music-node')
-        self.add_listener(self.bot.music.voice_update_handler, 'on_socket_response')
+        self.add_listener(self.music.voice_update_handler, 'on_socket_response')
         self.music.add_event_hook(self.track_hook)
 
         for folder in listdir('cogs'):
