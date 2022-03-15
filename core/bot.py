@@ -19,7 +19,7 @@ class Leyla(commands.Bot):
         self.session = aiohttp.ClientSession()
         self.times = LeylaTasks(self)
         self.music = lavalink.Client(898664959767113729)
-        self.music.add_node('localhost', 7000, 'test', 'na')
+        self.music.add_node('localhost', 7000, 'test', 'eu')
         self.add_listener(self.music.voice_update_handler, 'on_socket_response')
         self.music.add_event_hook(self.track_hook)
 
