@@ -92,5 +92,34 @@ class Music(commands.Cog):
         else:
             raise CustomError("Ты забыл(-а) подключиться к голосовому каналу, Зайка!")
 
+    @commands.command()
+    async def play(self, ctx, *, query):
+        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        query = query.strip('<>')
+        results = await player.node.get_tracks(query)
+
+        if not results or not results['tracks']:
+            return await ctx.send('Nothing found!')
+
+        embed = disnake.Embed(color=disnake.Color.blurple())
+
+        if results['loadType'] == 'PLAYLIST_LOADED':
+            tracks = results['tracks']
+
+            for track in tracks:
+                player.add(requester=ctx.author.id, track=track)
+
+            embed.title = 'Playlist Enqueued!'
+            embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
+        else:
+            track = results['tracks'][0]
+            embed.title = 'Track Enqueued'
+            embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
+
+            track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
+            player.add(requester=ctx.author.id, track=track)
+
+        await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Music(bot))
