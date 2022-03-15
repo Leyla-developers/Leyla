@@ -10,3 +10,5 @@ hmtai
 textwrap3
 easy_pil
 bs4
+lavalink
+PyNaCl
