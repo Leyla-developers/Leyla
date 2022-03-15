@@ -30,7 +30,7 @@ class Activities(commands.Cog):
             'validate': None
         }
 
-        async with self.bot.session.post(f'https://discord.com/api/v10/channels/{voice_channel.channel.id}/invites') as response:
+        async with self.bot.session.post(f'https://discord.com/api/v10/channels/{voice_channel.id}/invites') as response:
             channel_data = await response.json()
 
         await inter.send(
