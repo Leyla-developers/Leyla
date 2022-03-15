@@ -1,6 +1,7 @@
 from os import listdir
 import aiohttp
 
+import lavalink
 from datetime import datetime
 from disnake.ext import commands
 from jishaku.modules import find_extensions_in
@@ -17,6 +18,7 @@ class Leyla(commands.Bot):
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
         self.times = LeylaTasks(self)
+        self.music = lavalink.Client(898664959767113729)
 
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):
