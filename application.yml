@@ -1,6 +1,9 @@
-server:
-  port: 7000
-  address: 0.0.0.0
+server: # REST and WS server
+  port: 2333
+  address: 127.0.0.1
+spring:
+  main:
+    banner-mode: log
 lavalink:
   server:
     password: "test"
@@ -14,7 +17,7 @@ lavalink:
       http: true
       local: false
     bufferDurationMs: 400
-    youtubePlaylistLoadLimit: 6
+    youtubePlaylistLoadLimit: 6 # Number of pages at 100 each
     youtubeSearchEnabled: true
     soundcloudSearchEnabled: true
     gc-warnings: true
@@ -26,6 +29,7 @@ metrics:
 
 sentry:
   dsn: ""
+
 logging:
   file:
     max-history: 30
