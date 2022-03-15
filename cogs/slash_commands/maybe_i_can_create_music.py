@@ -94,7 +94,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, query):
-        player = lavalink.player_manager.get(ctx.guild.id)
+        player = self.music.player_manager.get(ctx.guild.id)
         query = query.strip('<>')
         results = await player.node.get_tracks(query)
 
