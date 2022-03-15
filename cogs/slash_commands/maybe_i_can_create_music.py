@@ -82,6 +82,12 @@ class Music(commands.Cog):
         self.bot = bot
         self.music = lavalink.Client(898664959767113729)
         self.music.add_node('127.0.0.1', 2333, 'test', 'us', 'default-node')
+        self.bot.add_listener(self.music.voice_update_handler, 'on_socket_response')
+        self.bot.music.add_event_hook(self.track_hook)
+
+    async def track_hook(self, event):
+        if isinstance(event, lavalink.events.QueueEndEvent):
+            await self.bot.get_guild(int(event.player.guild_id)).disconnect(force=True)
 
     @commands.command()
     async def join(self, ctx):
