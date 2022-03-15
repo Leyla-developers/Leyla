@@ -80,7 +80,7 @@ class Music(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
         if hasattr(bot, 'lavalink'):
             self.bot.music.add_node('127.0.0.1', 2333, 'test', 'us', 'default-node')
     
@@ -103,7 +103,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, query):
-        player = self.music.player_manager.get(ctx.guild.id)
+        player = self.bot.music.player_manager.get(ctx.guild.id)
         query = query.strip('<>')
         results = await player.node.get_tracks(query)
 
