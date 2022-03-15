@@ -1,4 +1,5 @@
 from typing import Literal
+from os import environ
 
 import disnake
 from disnake.ext import commands
@@ -30,7 +31,7 @@ class Activities(commands.Cog):
             'validate': None
         }
 
-        async with self.bot.session.post(f'https://discord.com/api/v10/channels/{voice_channel.id}/invites') as response:
+        async with self.bot.session.post(f'https://discord.com/api/v10/channels/{voice_channel.id}/invites', json=data, headers={"Authorization": f"Bot {environ['TOKEN']}"}) as response:
             channel_data = await response.json()
 
         await inter.send(
