@@ -22,7 +22,8 @@ async def init_and_run_bot(token: str) -> None:
         case_insensitive=True,
         status=disnake.Status.idle,
         intents=disnake.Intents.all(),
-        sync_commands=True
+        sync_commands=True,
+        enable_debug_events=True
     )
     bot.config = config
     await bot.start(token)
