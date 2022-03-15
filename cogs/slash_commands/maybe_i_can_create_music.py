@@ -10,7 +10,7 @@ class Music(commands.Cog):
         self.bot = bot
         
         self.music = lavalink.Client(898664959767113729)
-        self.music.add_node('0.0.0.0', 2333, 'test', 'us', 'default-node')
+        self.music.add_node('0.0.0.0', 7000, 'test', 'us', 'default-node')
 
     @commands.command()
     async def join(self, ctx):
