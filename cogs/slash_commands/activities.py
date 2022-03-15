@@ -40,3 +40,6 @@ class Activities(commands.Cog):
                 footer={'text': f'ID активности: {self.apps[activity]}', 'icon_url': self.bot.user.avatar.url}
             )
         )
+
+def setup(bot):
+    bot.add_cog(Activities(bot))
