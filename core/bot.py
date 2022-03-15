@@ -41,6 +41,10 @@ class Leyla(commands.Bot):
             guild_id = int(event.player.guild_id)
             await self.connect_to(guild_id, None)
 
+    async def connect_to(self, guild_id: int, channel_id: str):
+        ws = self.bot._connection._get_websocket(guild_id)
+        await ws.voice_state(str(guild_id), channel_id)
+
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()
