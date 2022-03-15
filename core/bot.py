@@ -36,6 +36,11 @@ class Leyla(commands.Bot):
     def __delitem__(self, item: str):
         return self.remove_command(item)
 
+    async def track_hook(self, event):
+        if isinstance(event, lavalink.events.QueueEndEvent):
+            guild_id = int(event.player.guild_id)
+            await self.connect_to(guild_id, None)
+
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()
