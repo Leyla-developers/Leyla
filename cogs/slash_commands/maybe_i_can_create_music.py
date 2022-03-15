@@ -21,8 +21,8 @@ class LavalinkVoiceClient(disnake.VoiceClient):
         else:
             self.client.lavalink = lavalink.Client(client.user.id)
             self.client.lavalink.add_node(
-                    '0.0.0.0',
-                    7000,
+                    '127.0.0.1',
+                    2333,
                     'test',
                     'us',
                     'default-node')
