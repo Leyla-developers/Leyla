@@ -147,7 +147,7 @@ class Settings(commands.Cog):
         }
 
         if await self.bot.config.DB.invites.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]})
+            await self.bot.config.DB.invites.insert_one({"_id": inter.guild.id, "action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]})
         else:
             if action == "timeout": 
                 data = {
@@ -155,9 +155,9 @@ class Settings(commands.Cog):
                         "duration": 43200
                     }
                 }
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
             else:
-                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
