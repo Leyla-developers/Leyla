@@ -1,5 +1,5 @@
 from this import d
-from core.bot import Leyla
+from core import Leyla
 import html
 import re
 
