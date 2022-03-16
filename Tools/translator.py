@@ -1,19 +1,16 @@
-from this import d
-from core import Leyla
 import html
 import re
 
+import aiohttp
+
 
 class Translator:
-    
-    def __init__(self, bot: Leyla):
-        self.bot = bot
 
     def normal_data(self, text):
         return html.unescape(text)
 
     async def translate(self, text, to_lang, from_lang):
-        async with self.bot.session.get(f'https://translate.google.com/m?tl={to_lang}&sl={from_lang}&q={text}') as response:
+        async with aiohttp.ClientSession().get(f'https://translate.google.com/m?tl={to_lang}&sl={from_lang}&q={text}') as response:
             data = await response.read()
 
         data = data.decode('utf-8')
