@@ -214,13 +214,13 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
     async def trasnlate(self, inter, text, to_language, from_language):
-        data = Translator().translate(text, to_language, from_language)
-        
+        data = await Translator().translate(text, to_language, from_language)
+
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Лейла-Переводчик (Даже я знаю другие языки, а ты нет)',
                 description=data,
-                fields=[{"name": "На какой язык нужно", "value": to_language}, {"name": "С какого языка переведено", "value": from_language}],
+                fields=[{"name": "На какой язык нужно", "value": to_language, 'inline': True}, {"name": "С какого языка переведено", "value": from_language, 'inline': True}],
                 thumbnail="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png"
             )
         )
