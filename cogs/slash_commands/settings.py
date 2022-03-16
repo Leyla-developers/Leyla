@@ -140,14 +140,14 @@ class Settings(commands.Cog):
         )
 
     @automoderation.sub_command(name="anti-invite", description='Наказания для начинающих "пиар-менеджеров" :)')
-    async def anti_invite(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
+    async def anti_invite(self, inter, mode: bool, action: Literal['ban', 'timeout', 'kick', 'warn'], message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
         admin_ignore = {
             "Игнорировать": True,
             "Не игнорировать": False, 
         }
 
         if await self.bot.config.DB.invites.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.invites.insert_one({"_id": inter.guild.id, "action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]})
+            await self.bot.config.DB.invites.insert_one({"_id": inter.guild.id, "action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore], 'mode': mode})
         else:
             if action == "timeout": 
                 data = {
@@ -155,9 +155,9 @@ class Settings(commands.Cog):
                         "duration": 43200
                     }
                 }
-                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore], 'mode': mode}})
             else:
-                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+                await self.bot.config.DB.invites.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore], 'mode': mode}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
