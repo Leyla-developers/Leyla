@@ -355,5 +355,6 @@ class Settings(commands.Cog):
             ), ephemeral=True
         )
 
+
 def setup(bot):
     bot.add_cog(Settings(bot))
