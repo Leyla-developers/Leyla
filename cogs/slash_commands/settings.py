@@ -133,7 +133,35 @@ class Settings(commands.Cog):
 
         await inter.send(
             embed=await self.bot.embeds.simple(
-                title='Leyla settings **(automoderation)**', 
+                title='Leyla settings **(automoderation (caps-lock.))**', 
+                description=f"Настройки были успешно сохранены и применены",
+                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
+            )
+        )
+
+    @automoderation.sub_command(name="anti-invite", description='Наказания для начинающих "пиар-менеджеров" :)')
+    async def anti_invite(self, inter, action: Literal['ban', 'timeout', 'kick', 'warn'], message: str = None, administrator_ignore: Literal["Игнорировать", "Не игнорировать"] = "Игнорировать"):
+        admin_ignore = {
+            "Игнорировать": True,
+            "Не игнорировать": False, 
+        }
+
+        if await self.bot.config.DB.invites.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.automod.insert_one({"_id": inter.guild.id, "action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]})
+        else:
+            if action == "timeout": 
+                data = {
+                    "timeout": {
+                        "duration": 43200
+                    }
+                }
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": data, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+            else:
+                await self.bot.config.DB.automod.update_one({"_id": inter.guild.id}, {"$set": {"action": action, "message": message, "admin_ignore": admin_ignore[administrator_ignore]}})
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(automoderation (a-invites.))**', 
                 description=f"Настройки были успешно сохранены и применены",
                 footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
             )
