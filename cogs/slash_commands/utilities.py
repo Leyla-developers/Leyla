@@ -218,7 +218,7 @@ class Utilities(commands.Cog):
 
         await inter.send(
             embed=await self.bot.embeds.simple(
-                title='Google translator',
+                title='Лейла-переводчик',
                 description=data,
                 footer={"text": f'Переводено с {from_language} на {to_language}', 'icon_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png'}
             )
