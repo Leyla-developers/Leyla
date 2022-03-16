@@ -15,6 +15,7 @@ from Tools.exceptions import CustomError
 import emoji as emj
 from bs4 import BeautifulSoup
 from Tools.buttons import CurrencyButton
+from Tools.translator import Translator
 
 
 class Utilities(commands.Cog):
@@ -210,6 +211,20 @@ class Utilities(commands.Cog):
             )
         else:
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
+
+    @commands.slash_command(description="Переведу тебе всё, что можно!")
+    async def trasnlate(self, inter, text, to_language, from_language):
+        data = Translator().translate(text, to_language, from_language)
+        
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Лейла-Переводчик (Даже я знаю другие языки, а ты нет)',
+                description=data,
+                fields=[{"name": "На какой язык нужно", "value": to_language}, {"name": "С какого языка переведено", "value": from_language}],
+                thumbnail="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png"
+            )
+        )
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
