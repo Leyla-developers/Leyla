@@ -214,7 +214,7 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
     async def trasnlate(self, inter, text, to_language, from_language):
-        data = await Translator().translate(text, to_language, from_language)
+        data = await Translator().translate(text, to_language, from_language = 'ru')
 
         await inter.send(
             embed=await self.bot.embeds.simple(
