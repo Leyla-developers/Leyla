@@ -28,7 +28,8 @@ class Leyla(commands.Bot):
                     for ignore_cog in self.ignore_cogs:
                         if cog in f'cogs.{folder}.{ignore_cog}':
                             raise CustomError(f"Игнорируемый ког замечен {cog}")
-                    self.load_extension(cog)
+                    else:
+                        self.load_extension(cog)
                 except Exception as e:
                     print(f'{folder}.{cog} fucked up by Huela', e)
 
