@@ -213,8 +213,8 @@ class Utilities(commands.Cog):
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
-    async def trasnlate(self, inter, text, to_language, from_language):
-        data = await Translator().translate(text, to_language, from_language = 'ru')
+    async def trasnlate(self, inter, text, to_language, from_language = 'ru'):
+        data = await Translator().translate(text, to_language, from_language)
 
         await inter.send(
             embed=await self.bot.embeds.simple(
