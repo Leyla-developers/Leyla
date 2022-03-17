@@ -36,6 +36,7 @@ class Moderation(commands.Cog):
     @commands.slash_command(
         description="Просмотр всех предупреждений участника"
     )
+    @commands.has_permissions(ban_members=True)
     async def warns(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
         if member.bot:
             raise CustomError("Невозможно просмотреть предупреждения **бота**")
@@ -77,6 +78,7 @@ class Moderation(commands.Cog):
         )
 
     @commands.slash_command(description="Кто-то намусорил в чате? Помогу очистить :)")
+    @commands.has_permissions(manage_messages=True)
     async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
         if member:
             check = lambda m: m.author
@@ -86,6 +88,7 @@ class Moderation(commands.Cog):
         await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
 
     @commands.slash_command(name="timeout", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
+    @commands.has_permissions(ban_members=True)
     async def discord_timeout(self, inter, member: disnake.Member, duration: int, unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни', 'Недели'], reason: str = None):
         units = {
             "Секунды": duration,
@@ -107,9 +110,32 @@ class Moderation(commands.Cog):
         )
 
     @commands.slash_command(description="Перепутали участника? Могу убрать с него закляпку :)")
+    @commands.has_permissions(ban_members=True)
     async def unmute(self, inter, member: disnake.Member):
         await member.timeout(duration=0)
         await inter.send(embed=await self.bot.embeds.simple(title='Мут снят!', description="Кляп с участника был снят, пусть пока радуется жизни, пока может..)"))
+
+    @commands.slash_command(description="Помогу поставить любой медленный режим на канал")
+    @commands.has_permissions(manage_messages=True)
+    async def slowmode(self, inter, channel: disnake.TextChannel, time: int, unit: Literal['Секунды', 'Минуты', 'Часы']):
+        units = {
+            "Секунды": time,
+            "Минуты": time * 60,
+            "Часы": time * 3600,
+        }
+
+        if (unit == "Часы" and time > 6) or (unit == "Минуты" and time > 360) or (unit == "Секунды" and time > 3600):
+            raise CustomError("Больше 6-ти часов быть не может")
+        else:
+            await channel.edit(slowmode_delay=units[unit])
+        
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Ненавижу всё медленное!', 
+                description=f"Зачем вы так ограничиваете людей?(" if time > 0 else "Медленный режим был успешно убран!", 
+                fields=[{"name": "Время", "value": "Нолик :3, Вы убрали медленный режим" if time == 0 else f'{units[unit]} секунд'}]
+            )
+        )
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
