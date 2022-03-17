@@ -12,3 +12,4 @@ easy_pil
 bs4
 lavalink
 PyNaCl
+SmallGoogleTranslator
