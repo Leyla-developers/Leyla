@@ -220,7 +220,7 @@ class Utilities(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title='Лейла-переводчик',
                 description=data,
-                fields=[{"name": "Оригинальный текст", "value": text}]
+                fields=[{"name": "Оригинальный текст", "value": text}],
                 footer={"text": f'Переводено с {from_language} на {to_language}', 'icon_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png'}
             )
         )
