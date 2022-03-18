@@ -186,6 +186,7 @@ class Utilities(commands.Cog):
 
         if currency.upper() in data:
             upper_currency = currency.upper()
+            view = CurrencyButton()
 
             await inter.send(
                 embed=await self.bot.embeds.simple(
@@ -207,10 +208,10 @@ class Utilities(commands.Cog):
                         },
                     ],
                     footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
-                ), view=CurrencyButton()
+                ), view=view
             )
         else:
-            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=CurrencyButton())
+            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=view)
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
     async def trasnlate(self, inter, text, to_language, from_language = 'ru'):
