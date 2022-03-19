@@ -36,7 +36,7 @@ class Leyla(commands.Bot):
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
 
-    def __delitem__(self, item: str):
+    def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)
 
     async def on_ready(self):
