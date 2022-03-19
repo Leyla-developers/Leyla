@@ -9,7 +9,7 @@ class AntiInvite(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    DISCORD_INVITE = r'discord(?:\.com|app\.com|\.gg)[\/invite\/]?(?:[a-zA-Z0-9\-]{2,32})'
+    DISCORD_INVITE = r'(?:https*:\/\/)?(?:discord\.)?(?:com\/invite|gg)\/[\w\/]+'
 
     @commands.Cog.listener()
     async def on_message(self, message):
