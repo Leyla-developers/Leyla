@@ -48,6 +48,9 @@ class Genshin(commands.Cog):
             embed.title = character.capitalize()
             embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['description']}", 'ru') for i in data if i['name'] == character.capitalize()])
 
+            for i in fields:
+                embed.set_field(name=i.get('name'), value=i.get('value'))
+
         await inter.send(embed=embed)
 
 def setup(bot):
