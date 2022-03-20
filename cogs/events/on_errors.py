@@ -11,7 +11,7 @@ DESCRIPTIONS = {
     commands.MemberNotFound: "Этот человечек не найден на этом сервере, проверь ID/Тег/Никнейм на правильность :eyes:",
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
-    NotLoggedIn: "Авторизация не прошла успешно, если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь."
+    NotLoggedIn: "Авторизация не прошла успешно"
 }
 
 PERMISSIONS = {
@@ -37,6 +37,9 @@ class OnErrors(commands.Cog):
 
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
+
+        if type(cmd_error) == NotLoggedIn:
+            embed.add_field(name="Что нужно сделать?", value="Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
 
         if type(cmd_error) == CustomError:
             embed.add_field(name="Описание ошибки", value=cmd_error)
