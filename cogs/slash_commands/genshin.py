@@ -20,19 +20,15 @@ class Genshin(commands.Cog):
 
     @genshin_impact.sub_command(description="Информация о игроке")
     async def player(self, inter, uid, ltuid=None, ltoken=None):
-        try:
-            if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
-                await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
-            else:
-                cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-                await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] is None else cookie_data['ltoken']}})
+        if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
+            await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
+        else:
+            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
+            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] is None else cookie_data['ltoken']}})
 
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
-        except:
-            raise NotLoggedIn
 
-        else:
             data = self.gs.get_user_stats(uid)
             statistics = self.gs.get_user_stats(uid)['stats']
             fields = [
