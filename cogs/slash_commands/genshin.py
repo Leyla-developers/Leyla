@@ -95,15 +95,33 @@ class Genshin(commands.Cog):
             raise CustomError("Такого аккаунта не существует.")
 
     @genshin_impact.sub_command(name="abyss", description="Информация по витой бездне")
-    async def spiral_abyss(self, inter, uid):
-        spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
-        stats = spiral_abyss['stats']
-        embed = await self.bot.embeds.simple(title=f"Информация по витой бездне у {uid}")
+    async def spiral_abyss(self, inter, uid, ltuid=None, ltoken=None):
+        if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
+            await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
+        else:
+            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
+            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
 
-        for field, value in stats.items():
-            embed.add_field(name=field, value=value)
+        self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
-        await inter.send(embed=embed)
+        try:
+            spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
+            stats = spiral_abyss['stats']
+            embed = await self.bot.embeds.simple(title=f"Информация по витой бездне у {uid}")
 
+            for field, value in stats.items():
+                embed.add_field(name=field, value=value)
+
+            await inter.send(embed=embed)
+
+        except DataNotPublic:
+            raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
+
+        except NotLoggedIn:
+            raise CustomError("Авторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
+
+        except AccountNotFound:
+            raise CustomError("Такого аккаунта не существует.")
+            
 def setup(bot):
     bot.add_cog(Genshin(bot))
