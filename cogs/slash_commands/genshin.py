@@ -26,9 +26,9 @@ class Genshin(commands.Cog):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] is None else cookie_data['ltoken']}})
 
-            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+        self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
+        try:
             data = self.gs.get_user_stats(uid)
             statistics = self.gs.get_user_stats(uid)['stats']
             fields = [
@@ -80,6 +80,9 @@ class Genshin(commands.Cog):
                 embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
 
             await inter.send(embed=embed)
+        except:
+            raise CustomError("Информация об аккаунте не публичная, если вы владелец аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее настройки, и в категории боевых заслуг переключаете первую кнопку")
+        
 
 
 def setup(bot):
