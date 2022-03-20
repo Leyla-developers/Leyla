@@ -2,7 +2,6 @@ from typing import Literal
 
 import disnake
 from disnake.ext import commands
-from hikari import EmbedField
 from google.translator import GoogleTranslator
 from Tools.exceptions import CustomError
 
