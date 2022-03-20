@@ -26,7 +26,7 @@ class Genshin(commands.Cog):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
 
-            self.gs.set_cookie(ltuid=cookie_data['ltuid'] if cookie_data else None, ltoken=cookie_data['ltoken']if cookie_data else None)
+            self.gs.set_cookie(ltuid=cookie_data['ltuid'] if cookie_data else None, ltoken=cookie_data['ltoken'] if cookie_data else None)
 
         try:
             data = self.gs.get_user_stats(uid)
@@ -89,7 +89,7 @@ class Genshin(commands.Cog):
             raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
 
         except NotLoggedIn:
-            raise CustomError("Авторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
+            raise CustomError("**примечание:** Если вы с телефона, то это сделать невозможно, но вы можете попросить друзей или кого-либо ещё, у кого есть компьютер/ноутбук, чтобы вам всё сделали.\nАвторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
