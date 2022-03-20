@@ -30,7 +30,7 @@ class Genshin(commands.Cog):
             raise CustomError("Такого персонажа нет в игре!")
         else:
             embed.title = character.upper()
-            embed.description = [await self.google.translate_async(f"{character.capitalize()} - {i['description']}", 'ru') for i in data]
+            embed.description = ''.join([await self.google.translate_async(f"{character.capitalize()} - {i['description']}", 'ru') for i in data])
 
         await inter.send(embed=embed)
 
