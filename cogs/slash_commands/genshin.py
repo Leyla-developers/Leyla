@@ -94,6 +94,16 @@ class Genshin(commands.Cog):
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
 
+    @commands.sub_command(name="abyss", description="Информация по витой бездне")
+    async def spiral_abyss(self, inter, uid)
+        spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
+        stats = spiral_abyss['stats']
+        embed = await self.bot.embeds.simple(title=f"Информация по витой бездне у {uid}")
+
+        for field, value in stats.items():
+            embed.add_field(name=field, value=value)
+
+        await inter.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
