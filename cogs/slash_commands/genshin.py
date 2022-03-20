@@ -94,7 +94,7 @@ class Genshin(commands.Cog):
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
 
-    @commands.sub_command(name="abyss", description="Информация по витой бездне")
+    @genshin_impact.sub_command(name="abyss", description="Информация по витой бездне")
     async def spiral_abyss(self, inter, uid):
         spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
         stats = spiral_abyss['stats']
