@@ -27,11 +27,12 @@ class Genshin(commands.Cog):
                 await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
 
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            data = self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+            self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
         except:
             raise NotLoggedIn
 
         else:
+            data = self.gs.get_user_stats(uid)
             statistics = self.gs.get_user_stats(uid)['stats']
             fields = [
                 {
