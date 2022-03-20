@@ -8,7 +8,7 @@ from Tools.exceptions import CustomError
 
 class Genshin(commands.Cog):
 
-    def init(self, bot):
+    def __init__(self, bot):
         self.bot = bot
         self.translator = GoogleTranslator()
         self.characters_dict = {
@@ -40,7 +40,6 @@ class Genshin(commands.Cog):
             'Xinyan': 'Синь Янь'
         }
         self.google = GoogleTranslator()
-
 
     async def unofficial_api(self, endpoint):
         async with self.bot.session.get(f'https://genshinlist.com/api/{endpoint}') as response:
