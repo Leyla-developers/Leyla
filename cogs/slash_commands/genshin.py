@@ -29,8 +29,8 @@ class Genshin(commands.Cog):
         if not character.capitalize() in [i['name'] for i in data]:
             raise CustomError("Такого персонажа нет в игре!")
         else:
-            embed.title = character.upper()
-            embed.description = ''.join([await self.google.translate_async(f"{character.capitalize()} - {i['description']}", 'ru') for i in data])
+            embed.title = character.capitalize()
+            embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['name']['description']}", 'ru') for i in data])
 
         await inter.send(embed=embed)
 
