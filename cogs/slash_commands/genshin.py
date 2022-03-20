@@ -110,7 +110,7 @@ class Genshin(commands.Cog):
             embed = await self.bot.embeds.simple(title=f"Информация по витой бездне у {uid}")
 
             for field, value in stats.items():
-                embed.add_field(name=field, value=value)
+                embed.add_field(name=''.join(field.capitalize().split()), value=value)
 
             await inter.send(embed=embed)
 
@@ -122,6 +122,6 @@ class Genshin(commands.Cog):
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
-            
+
 def setup(bot):
     bot.add_cog(Genshin(bot))
