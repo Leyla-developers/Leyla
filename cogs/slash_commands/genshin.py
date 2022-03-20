@@ -72,10 +72,10 @@ class Genshin(commands.Cog):
                     "value": statistics['unlocked_domains'],
                     "inline": True
                 },
-                {
-                    "name": "Изучение мира",
-                    "value": f"Мондштадт: "
-                }
+                #{
+                #    "name": "Изучение мира",
+                #    "value": f"Мондштадт: "
+                #}
             ]
             embed = await self.bot.embeds.simple(title=f'Информация о {uid}')
             embed.description = f'Персонажи игрока (из профиля) [{len(data["characters"])}]: ' + ', '.join([i['name'] for i in data['characters']])
