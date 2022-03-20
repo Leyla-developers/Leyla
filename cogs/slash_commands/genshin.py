@@ -54,12 +54,12 @@ class Genshin(commands.Cog):
                 },
                 {
                     "name": "Окулы",
-                    "value": f"Анемокулы: {statistics['anemoculi']} \n Геокулы: {statistics['geoculi']} \n Электрокулы: {statistics['electroculi']}",
+                    "value": f"Анемокулы: **{statistics['anemoculi']}** \n Геокулы: **{statistics['geoculi']}** \n Электрокулы: **{statistics['electroculi']}**",
                     "inline": True,
                 },
                 {
                     "name": "Собрано сундуков",
-                    "value": f"Обычных сундуков: {statistics['common_chests']} \n Богатых сундуков: {statistics['exquisite_chests']}\nДрагоценных сундуков: {statistics['precious_chests']} \n Роскошных сундуков: {statistics['luxurious_chests']}",
+                    "value": f"Обычных сундуков: **{statistics['common_chests']}** \n Богатых сундуков: **{statistics['exquisite_chests']}**\nДрагоценных сундуков: **{statistics['precious_chests']}** \n Роскошных сундуков: **{statistics['luxurious_chests']}**",
                     "inline": True,
                 },
                 {
@@ -74,7 +74,7 @@ class Genshin(commands.Cog):
                 }
             ]
             embed = await self.bot.embeds.simple(title=f'Информация о {uid}')
-            # embed.description = 'Персонажи игрока (из профиля): ' + ', '.join(data['characters'])
+            embed.description = 'Персонажи игрока (из профиля): ' + ', '.join([i['name'] for i in data['characters']])
 
             for i in fields:
                 embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
