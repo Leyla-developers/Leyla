@@ -54,12 +54,12 @@ class Genshin(commands.Cog):
                 },
                 {
                     "name": "Окулы",
-                    "value": f"Анемокулы: {statistics['anemoculi']} | Геокулы: {statistics['geoculi']} | Электрокулы: {statistics['electroculi']}",
+                    "value": f"Анемокулы: {statistics['anemoculi']} \n Геокулы: {statistics['geoculi']} \n Электрокулы: {statistics['electroculi']}",
                     "inline": True,
                 },
                 {
                     "name": "Собрано сундуков",
-                    "value": f"Обычных сундуков: {statistics['common_chests']} | Богатых сундуков: {statistics['exquisite_chests']}\nДрагоценных сундуков: {statistics['precious_chests']} | Роскошных сундуков: {statistics['luxurious_chests']}",
+                    "value": f"Обычных сундуков: {statistics['common_chests']} \n Богатых сундуков: {statistics['exquisite_chests']}\nДрагоценных сундуков: {statistics['precious_chests']} \n Роскошных сундуков: {statistics['luxurious_chests']}",
                     "inline": True,
                 },
                 {
