@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands
-from h11 import Data
 from Tools.buttons import SupportButton
 from Tools.exceptions import CustomError
 from genshinstats.errors import NotLoggedIn, DataNotPublic
