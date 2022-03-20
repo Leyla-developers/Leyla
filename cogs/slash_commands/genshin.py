@@ -29,6 +29,22 @@ class Genshin(commands.Cog):
         if not character.capitalize() in [i['name'] for i in data]:
             raise CustomError("Такого персонажа нет в игре!")
         else:
+            fields = [
+                {
+                    "name": "Раритетность персонажа",
+                    "value": ''.join([i['rarity'] for i in data if i['name'] == character.capitalize()]),
+                    "inline": True,
+                },
+                {
+                    "name": "Пол персонажа",
+                    "value": ''.join(["Мужской" if i['gender'] == 'male' else "Женский" for i in data if i['name'] == character.capitalize()]),
+                    "inline": True
+                },
+                {
+                    "name": "Глаз бога",
+                    "value": ''.join([await self.google.translate_async(i['vision'], 'ru') for i in data if i['name'] == character.capitalize()]),
+                }
+            ]
             embed.title = character.capitalize()
             embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['description']}", 'ru') for i in data if i['name'] == character.capitalize()])
 
