@@ -49,7 +49,7 @@ class Genshin(commands.Cog):
             embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['description']}", 'ru') for i in data if i['name'] == character.capitalize()])
 
             for i in fields:
-                embed.set_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
+                embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
     
         await inter.send(embed=embed)
 
