@@ -24,7 +24,7 @@ class Genshin(commands.Cog):
             await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            if None in (ltuid, ltoken):
+            if None in (ltuid, ltoken, cookie_data.values()):
                 pass
             else:
                 await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
@@ -103,7 +103,7 @@ class Genshin(commands.Cog):
             await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id, "ltuid": ltuid, "ltoken": ltoken})
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            if None in (ltuid, ltoken):
+            if None in (ltuid, ltoken, cookie_data.values()):
                 pass
             else:
                 await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
