@@ -40,7 +40,7 @@ class Genshin(commands.Cog):
             'Xinyan': 'Синь Янь'
         }
         self.google = GoogleTranslator()
-        self.reverse_characters = {value:name for name, value in self.characters_dict}
+        self.reverse_characters = {value:name for name, value in self.characters_dict.items()}
 
     async def unofficial_api(self, endpoint):
         async with self.bot.session.get(f'https://genshinlist.com/api/{endpoint}') as response:
