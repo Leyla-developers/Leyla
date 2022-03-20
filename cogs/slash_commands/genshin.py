@@ -32,7 +32,6 @@ class Genshin(commands.Cog):
         except:
             raise NotLoggedIn
 
-
         statistics = self.gs.get_user_stats(uid)['stats']
         fields = [
             {
@@ -79,8 +78,8 @@ class Genshin(commands.Cog):
         embed = await self.bot.embeds.simple(title=f'Информация о {uid}')
         embed.description = 'Персонажи игрока (из профиля): ' + ', '.join(data['characters'])
 
-        for i in fields:
-            embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
+        #for i in fields:
+        #    embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
 
         await inter.send(embed=embed)
 
