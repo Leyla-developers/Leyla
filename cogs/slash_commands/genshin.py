@@ -32,7 +32,7 @@ class Genshin(commands.Cog):
             fields = [
                 {
                     "name": "Раритетность персонажа",
-                    "value": ''.join([i['rarity'] for i in data if i['name'] == character.capitalize()]),
+                    "value": ''.join([str(i['rarity']) for i in data if i['name'] == character.capitalize()]),
                     "inline": True,
                 },
                 {
@@ -49,8 +49,8 @@ class Genshin(commands.Cog):
             embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['description']}", 'ru') for i in data if i['name'] == character.capitalize()])
 
             for i in fields:
-                embed.set_field(name=i.get('name'), value=i.get('value'))
-
+                embed.set_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
+    
         await inter.send(embed=embed)
 
 def setup(bot):
