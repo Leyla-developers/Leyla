@@ -26,7 +26,7 @@ class Genshin(commands.Cog):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
 
-            self.gs.set_cookie(ltuid=cookie_data['ltuid'] if cookie_data else None, ltoken=cookie_data['ltoken'] if cookie_data else None)
+            self.gs.set_cookie(ltuid=cookie_data['ltuid'] if cookie_data['ltuid'] else None, ltoken=cookie_data['ltoken'] if cookie_data else None)
 
         try:
             data = self.gs.get_user_stats(uid)
@@ -97,12 +97,15 @@ class Genshin(commands.Cog):
     @genshin_impact.sub_command(name="abyss", description="Информация по витой бездне")
     async def spiral_abyss(self, inter, uid, ltuid=None, ltoken=None):
         if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
-            await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
+            await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id, "ltuid": ltuid, "ltoken": ltoken})
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
+            if None in (ltuid, ltoken):
+                pass
+            else:
+                await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
 
-        self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+            self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         try:
             spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
