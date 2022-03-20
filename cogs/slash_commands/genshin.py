@@ -19,7 +19,7 @@ class Genshin(commands.Cog):
         ...
 
     @genshin_impact.sub_command(description="Информация о игроке")
-    async def player(self, inter, uid, ltuid, ltoken):
+    async def player(self, inter, uid, ltuid=None, ltoken=None):
         try:
             if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
                 await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
@@ -32,7 +32,6 @@ class Genshin(commands.Cog):
             raise NotLoggedIn
 
         else:
-
             statistics = self.gs.get_user_stats(uid)['stats']
             fields = [
                 {
