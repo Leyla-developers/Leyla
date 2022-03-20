@@ -3,7 +3,7 @@ from typing import Literal
 
 import disnake
 import genshinstats as genshin
-from genshinstats import NotLoggedIn, DataNotPublic
+from genshinstats import NotLoggedIn, DataNotPublic, AccountNotFound
 from disnake.ext import commands
 from Tools.exceptions import CustomError
 
@@ -86,6 +86,10 @@ class Genshin(commands.Cog):
 
         except NotLoggedIn:
             raise CustomError("Авторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
+
+        except AccountNotFound:
+            raise CustomError("Такого аккаунта не существует.")
+
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
