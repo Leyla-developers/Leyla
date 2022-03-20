@@ -24,7 +24,7 @@ class Genshin(commands.Cog):
             await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] is None else cookie_data['ltoken']}})
+            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] == None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] == None else cookie_data['ltoken']}})
 
         self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
