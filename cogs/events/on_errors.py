@@ -1,7 +1,8 @@
 import disnake
 from disnake.ext import commands
 from Tools.buttons import SupportButton
-from Tools.exceptions import CustomError, DataNotPublic, NotLoggedIn
+from Tools.exceptions import CustomError
+from genshinstats.errors import DataNotPublic, NotLoggedIn
 
 DESCRIPTIONS = {
     commands.MissingPermissions: "У тебя недостаточно прав, милый \🥺",
