@@ -24,7 +24,7 @@ class Genshin(commands.Cog):
             await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] == None else cookie_data['ltuid'], "ltoken": ltoken if cookie_data['ltoken'] == None else cookie_data['ltoken']}})
+            await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
 
         self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
@@ -71,6 +71,10 @@ class Genshin(commands.Cog):
                     "name": "Разблокировано подземелий",
                     "value": statistics['unlocked_domains'],
                     "inline": True
+                },
+                {
+                    "name": "Изучение мира",
+                    "value": f"Мондштадт: "
                 }
             ]
             embed = await self.bot.embeds.simple(title=f'Информация о {uid}')
