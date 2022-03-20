@@ -81,7 +81,7 @@ class Genshin(commands.Cog):
 
             await inter.send(embed=embed)
         except:
-            raise CustomError("Информация об аккаунте не публичная, если вы владелец аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее настройки, и в категории боевых заслуг переключаете первую кнопку")
+            raise NotLoggedIn
         
 
 
