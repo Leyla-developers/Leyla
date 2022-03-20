@@ -1,8 +1,9 @@
+import statistics
 from typing import Literal
 
 import disnake
+import genshinstats as genshin
 from disnake.ext import commands
-from google.translator import GoogleTranslator
 from Tools.exceptions import CustomError
 
 
@@ -10,48 +11,66 @@ class Genshin(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.translator = GoogleTranslator()
-        self.google = GoogleTranslator()
-
-    async def unofficial_api(self, endpoint):
-        async with self.bot.session.get(f'https://genshinlist.com/api/{endpoint}') as response:
-            return await response.json()
+        self.gs = genshin
 
     @commands.slash_command(name="genshin-impact", description="Информация про что-либо из игры Genshin Impact!")
     async def genshin_impact(self, inter):
         ...
 
-    @genshin_impact.sub_command(description="Информация о персонажах игры")
-    async def characters(self, inter, character):
-        data = await self.unofficial_api('characters')
-        embed = await self.bot.embeds.simple()
-    
-        if not character.capitalize() in [i['name'] for i in data]:
-            raise CustomError("Такого персонажа нет в игре!")
-        else:
-            fields = [
-                {
-                    "name": "Раритетность персонажа",
-                    "value": ''.join([str(i['rarity']) for i in data if i['name'] == character.capitalize()]),
-                    "inline": True,
-                },
-                {
-                    "name": "Пол персонажа",
-                    "value": ''.join(["Мужской" if i['gender'] == 'male' else "Женский" for i in data if i['name'] == character.capitalize()]),
-                    "inline": True
-                },
-                {
-                    "name": "Глаз бога",
-                    "value": ''.join([await self.google.translate_async(i['vision'], 'ru') for i in data if i['name'] == character.capitalize()]),
-                }
-            ]
-            embed.title = character.capitalize()
-            embed.description = ''.join([await self.google.translate_async(f"{i['name']} - {i['description']}", 'ru') for i in data if i['name'] == character.capitalize()])
+    @genshin_impact.sub_command(description="Информация о игроке")
+    async def player(self, inter, uid):
+        data = self.gs.get_user_stats(uid)
+        statistics = self.gs.get_user_stats(uid)['stats']
+        fields = [
+            {
+                "name": "Количество персонажей",
+                "value": statistics["characters"],
+                "inline": True
+            },
+            {
+                "name": "Количество достижений",
+                "value": statistics['achievements'],
+                "inline": True
+            },
+            {
+                "name": "Дней активности",
+                "value": statistics['active_days'],
+                "inline": True
+            },
+            {
+                "name": "Витая бездна",
+                "value": statistics['spiral_abyss'],
+                "inline": True
+            },
+            {
+                "name": "Окулы",
+                "value": f"Анемокулы: {statistics['anemoculi']} | Геокулы: {statistics['geoculi']} | Электрокулы: {statistics['electroculi']}",
+                "inline": True,
+            },
+            {
+                "name": "Собрано сундуков",
+                "value": f"Обычных сундуков: {statistics['common_chests']} | Богатых сундуков: {statistics['exquisite_chests']}\nДрагоценных сундуков: {statistics['precious_chests']} | Роскошных сундуков: {statistics['luxurious_chests']}",
+                "inline": True,
+            },
+            {
+                "name": "Разблокировано точек телепортации",
+                "value": statistics['unlocked_waypoints'],
+                "inline": True
+            },
+            {
+                "name": "Разблокировано подземелий",
+                "value": statistics['unlocked_domains'],
+                "inline": True
+            }
+        ]
+        embed = await self.bot.embeds.simple(title=f'Информация о {uid}')
+        embed.description = 'Персонажи игрока (из профиля): ' + ', '.join(data['characters'])
 
-            for i in fields:
-                embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
-    
+        for i in fields:
+            embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
+
         await inter.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Genshin(bot))

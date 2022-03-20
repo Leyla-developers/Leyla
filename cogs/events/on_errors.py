@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from Tools.buttons import SupportButton
 from Tools.exceptions import CustomError
+from genshinstats import DataNotPublic
 
 DESCRIPTIONS = {
     commands.MissingPermissions: "У тебя недостаточно прав, милый \🥺",
@@ -9,7 +10,8 @@ DESCRIPTIONS = {
     commands.UserNotFound: "Этот человечек не найден, проверь ID/Тег/Никнейм на правильность :eyes:",
     commands.MemberNotFound: "Этот человечек не найден на этом сервере, проверь ID/Тег/Никнейм на правильность :eyes:",
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
-    commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться("
+    commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
+    DataNotPublic: "Информация о пользователе не публичная, если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль, и включаете показ [боевых заслуг в настройках](https://media.discordapp.net/attachments/894108349367484446/954943198239801424/unknown.png)."
 }
 
 PERMISSIONS = {
