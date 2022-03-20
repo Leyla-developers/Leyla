@@ -26,7 +26,7 @@ class Genshin(commands.Cog):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid if cookie_data['ltuid'] is None else ltuid, "ltoken": ltoken if cookie_data['ltoken'] else ltoken}})
 
-            self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+            self.gs.set_cookie(ltuid=cookie_data['ltuid'] if cookie_data else None, ltoken=cookie_data['ltoken']if cookie_data else None)
 
         try:
             data = self.gs.get_user_stats(uid)
