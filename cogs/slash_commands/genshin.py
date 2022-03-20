@@ -3,6 +3,7 @@ from typing import Literal
 
 import disnake
 import genshinstats as genshin
+from genshinstats import NotLoggedIn
 from disnake.ext import commands
 from Tools.exceptions import CustomError
 
@@ -18,8 +19,20 @@ class Genshin(commands.Cog):
         ...
 
     @genshin_impact.sub_command(description="Информация о игроке")
-    async def player(self, inter, uid):
-        data = self.gs.get_user_stats(uid)
+    async def player(self, inter, uid, ltuid, ltoken):
+        self.gs.set_cookie(ltuid=ltuid, ltoken=ltoken)
+
+        try:
+            data = self.gs.get_user_stats(uid)
+
+            if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
+                await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id})
+            else:
+                await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
+        except:
+            raise NotLoggedIn
+
+
         statistics = self.gs.get_user_stats(uid)['stats']
         fields = [
             {
