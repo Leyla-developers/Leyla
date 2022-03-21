@@ -147,6 +147,7 @@ class Genshin(commands.Cog):
     @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
     async def get_player_characters(self, inter, uid, character: str):
         await inter.response.defer()
+        msg = await inter.send("Пожалуйста, немного подождите")
 
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
@@ -188,7 +189,7 @@ class Genshin(commands.Cog):
                     },
                 ]
                 description = "```Артефакты:```\n" + ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']}" for j in i]) for i in list_of_artifacts])
-                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
+                await msg.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
