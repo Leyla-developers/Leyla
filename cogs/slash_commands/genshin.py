@@ -1,5 +1,6 @@
 import random
 import json
+from typing import Literal
 
 import disnake
 import genshinstats as genshin
@@ -145,9 +146,9 @@ class Genshin(commands.Cog):
             await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid, "inline": True}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid), "inline": True}]))
 
     @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
-    async def get_player_characters(self, inter, uid, character: str):
+    async def get_player_characters(self, inter, uid, character: str, one_or_all: Literal['one', 'all'] = "one"):
         await inter.response.defer()
-        
+
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
         else:
@@ -156,41 +157,46 @@ class Genshin(commands.Cog):
         self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         try:
-            characters_data = lambda x: [str(i[x]) for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
-            list_of_artifacts = [i['artifacts'] for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
+            if one_or_all == "one":
+                character_data = lambda x: [str(i[x]) for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
+                list_of_artifacts = [i['artifacts'] for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
 
-            if character.lower() in [i.lower() for i in characters_data('name')]:
-                fields = [
-                    {
-                        "name": "Раритетность",
-                        "value": ''.join(characters_data('rarity')),
-                        "inline": True
-                    },
-                    {
-                        "name": "Элемент",
-                        "value": ''.join(characters_data('element')),
-                        "inline": True
-                    },
-                    {
-                        "name": "Уровень дружбы",
-                        "value": ''.join(characters_data('friendship')),
-                        "inline": True
-                    },
-                    {
-                        "name": "Созвездий",
-                        "value": ''.join(characters_data('constellation')),
-                        "inline": True
-                    },
-                    {
-                        "name": "Оружие",
-                        "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + str(json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity']),
-                        "inline": True
-                    },
-                ]
-                description = "```Артефакты:```\n" + ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']}" for j in i]) for i in list_of_artifacts])
-                await inter.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
+                if character.lower() in [i.lower() for i in character_data('name')]:
+                    fields = [
+                        {
+                            "name": "Раритетность",
+                            "value": ''.join(character_data('rarity')),
+                            "inline": True
+                        },
+                        {
+                            "name": "Элемент",
+                            "value": ''.join(character_data('element')),
+                            "inline": True
+                        },
+                        {
+                            "name": "Уровень дружбы",
+                            "value": ''.join(character_data('friendship')),
+                            "inline": True
+                        },
+                        {
+                            "name": "Созвездий",
+                            "value": ''.join(character_data('constellation')),
+                            "inline": True
+                        },
+                        {
+                            "name": "Оружие",
+                            "value": f"Название: " + json.loads(''.join(character_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + str(json.loads(''.join(character_data('weapon')).replace('"', "'").replace("'", '"'))['rarity']),
+                            "inline": True
+                        },
+                    ]
+                    description = "```Артефакты:```\n" + ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']}" for j in i]) for i in list_of_artifacts])
+                    await inter.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(character_data('icon'))))
+                else:
+                    raise CustomError("Этого персонажа нет у игрока!")
             else:
-                raise CustomError("Этого персонажа нет у игрока!")
+                data = lambda x: [str(i[x]) for i in self.gs.get_characters(uid, lang='ru-ru')]
+                characters_data = f"{data('name')} ({''.join(data('rarity'))}) | Созвездий: {''.join(character_data('constellation'))}"
+                await inter.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', description=characters_data))
 
         except DataNotPublic:
             raise CustomError(self.data_not_public_info)
