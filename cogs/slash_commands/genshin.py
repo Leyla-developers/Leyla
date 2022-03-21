@@ -14,7 +14,7 @@ class Genshin(commands.Cog):
         self.bot = bot
         self.gs = genshin
 
-    @commands.slash_command(name="genshin-impact", description="Информация про что-либо из игры Genshin Impact!")
+    @commands.slash_command(name="genshin", description="Информация про что-либо из игры Genshin Impact!")
     async def genshin_impact(self, inter):
         ...
 
@@ -127,6 +127,13 @@ class Genshin(commands.Cog):
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
+
+    @genshin_impact.sub_command(name='player-uid', description="Не можете найти профиль? Тогда можете получить его через HoYoLab!")
+    async def get_player_uid_from_hoyolab(self, inter, hoyolab_uid: int):
+        if self.gs.is_game_uid(hoyolab_uid):
+            raise CustomError("Это игровой UID! Вводите UID человека с HoYoLab!")
+        else:
+            await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid)}]))
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
