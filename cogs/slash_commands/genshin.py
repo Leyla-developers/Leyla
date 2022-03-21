@@ -154,8 +154,8 @@ class Genshin(commands.Cog):
         self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         try:
-            characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
-            list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
+            characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.lower()]
+            list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.lower()]
 
             if character.lower() in ''.join([i.lower() for i in characters_data('name')]):
                 fields = [
