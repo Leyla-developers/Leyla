@@ -190,8 +190,8 @@ class Genshin(commands.Cog):
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
-        except:
-            raise Exception
+        except Exception as e:
+            raise e
 
         #except DataNotPublic:
         #    raise CustomError(self.data_not_public_info)
