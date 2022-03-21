@@ -1,6 +1,5 @@
 import random
-from re import M
-from typing import Literal
+import json
 
 import disnake
 import genshinstats as genshin
@@ -14,6 +13,8 @@ class Genshin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.gs = genshin
+        self.data_not_public_info = "Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'"
+        self.not_logged_in_info = "**Примечание:** Если вы с телефона, то это сделать невозможно, но вы можете попросить друзей или кого-либо ещё, у кого есть компьютер/ноутбук, чтобы вам всё сделали.\nАвторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь."
 
     @commands.slash_command(name="genshin", description="Информация про что-либо из игры Genshin Impact!")
     async def genshin_impact(self, inter):
@@ -89,10 +90,10 @@ class Genshin(commands.Cog):
             await inter.send(embed=embed, ephemeral=True)
 
         except DataNotPublic:
-            raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
+            raise CustomError(self.data_not_public_info)
 
         except NotLoggedIn:
-            raise CustomError("**Примечание:** Если вы с телефона, то это сделать невозможно, но вы можете попросить друзей или кого-либо ещё, у кого есть компьютер/ноутбук, чтобы вам всё сделали.\nАвторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
+            raise CustomError(self.not_logged_in_info)
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
@@ -121,10 +122,10 @@ class Genshin(commands.Cog):
             await inter.send(embed=embed, ephemeral=True)
 
         except DataNotPublic:
-            raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
+            raise CustomError(self.data_not_public_info)
 
         except NotLoggedIn:
-            raise CustomError("**Примечание:** Если вы с телефона, то это сделать невозможно, но вы можете попросить друзей или кого-либо ещё, у кого есть компьютер/ноутбук, чтобы вам всё сделали.\nАвторизация не прошла успешно. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
+            raise CustomError(self.not_logged_in_info)
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
@@ -161,34 +162,36 @@ class Genshin(commands.Cog):
                     {
                         "name": "Раритетность",
                         "value": ''.join(characters_data('rarity')),
+                        "inline": True
                     },
                     {
                         "name": "Элемент",
                         "value": ''.join(characters_data('element')),
+                        "inline": True
                     },
                     {
                         "name": "Уровень дружбы",
                         "value": ''.join(characters_data('friendship')),
+                        "inline": True
                     },
                     {
                         "name": "Созвездий",
                         "value": ''.join(characters_data('constellation')),
+                        "inline": True
                     },
                     {
                         "name": "Оружие",
-                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),
+                        "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity'],
+                        "inline": True
                     },
-                    {
-                        "name": "Артефакты",
-                        "value": ''.join(['\n'.join([f"Название: {j['name']}\nУровень: {j['level']}\nРаритетность: {j['rarity']}\nСэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
-                    }
                 ]
-                
-                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', fields=fields, thumbnail=''.join(characters_data('icon'))))
+                description = ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']} | Сэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
+                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.capitalize()} | {uid}', fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
-                raise CustomError("Персонажа нет у игрока!")
+                raise CustomError("Этого персонажа нет у игрока!")
+
         except DataNotPublic:
-            raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
+            raise CustomError(self.data_not_public_info)
 
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
