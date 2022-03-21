@@ -169,15 +169,15 @@ class Genshin(commands.Cog):
                     },
                     {
                         "name": "Уровень дружбы",
-                        "value": ''.join(characters_data('friendship')),,
+                        "value": ''.join(characters_data('friendship')),
                     },
                     {
                         "name": "Созвездий",
-                        "value": ''.join(characters_data('constellation')),,
+                        "value": ''.join(characters_data('constellation')),
                     },
                     {
                         "name": "Оружие",
-                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),,
+                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),
                     },
                     {
                         "name": "Артефакты",
