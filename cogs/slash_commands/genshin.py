@@ -206,7 +206,7 @@ class Genshin(commands.Cog):
                     "Electro": "Электро",
                     "Anemo": "Анемо"
                 }
-                characters_data = "\n".join([f"Уровень {i['level']} | C{i['constellation']} | Элемент: **{elements[i['element']]}** | {i['name']} {i['rarity']}★ " for i in self.gs.get_characters(uid, lang='ru-ru')])
+                characters_data = "\n".join([f"Уровень **{i['level']}** | C{i['constellation']} | Элемент: **{elements[i['element']]}** | {i['name']} {i['rarity']}★ " for i in self.gs.get_characters(uid, lang='ru-ru')])
                 await inter.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', description=characters_data))
 
         except DataNotPublic:
