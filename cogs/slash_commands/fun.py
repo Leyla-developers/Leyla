@@ -47,8 +47,7 @@ class FunSlashCommands(commands.Cog):
         description="Накладывает разные эффекты на аватар."
     )
     async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
-        async with ClientSession() as session:
-            async with session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
+        async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
                 image_bytes = BytesIO(await response.read())
                 image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
                 embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{user}`'), image=f'attachment://{image_filename}')
