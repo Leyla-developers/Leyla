@@ -188,7 +188,7 @@ class Genshin(commands.Cog):
                     },
                 ]
                 description = "```Артефакты:```\n" + ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']}" for j in i]) for i in list_of_artifacts])
-                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
+                await inter.edit_original_message(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
