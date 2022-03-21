@@ -1,4 +1,4 @@
-import statistics
+import random
 from typing import Literal
 
 import disnake
@@ -130,16 +130,13 @@ class Genshin(commands.Cog):
 
     @genshin_impact.sub_command(name='player-uid', description="Не можете найти профиль? Тогда можете получить его через HoYoLab!")
     async def get_player_uid_from_hoyolab(self, inter, hoyolab_uid: int):
-        if await self.bot.config.DB.genshin_cookie.count_documents({"_id": inter.author.id}) == 0:
-            await self.bot.config.DB.genshin_cookie.insert_one({"_id": inter.author.id, "ltuid": ltuid, "ltoken": ltoken})
-        else:
-            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
-            if None in (cookie_data.values()):
-                pass
-            else:
-                await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
 
-            self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+        if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
+            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
+        else:
+            cookie_data = random.choice([i async for i in self.bot.config.DB.genshin_cookie.find()])
+
+        self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         if self.gs.is_game_uid(hoyolab_uid):
             raise CustomError("Это игровой UID! Вводите UID человека с HoYoLab!")
