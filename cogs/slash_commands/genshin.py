@@ -141,7 +141,7 @@ class Genshin(commands.Cog):
         if self.gs.is_game_uid(hoyolab_uid):
             raise CustomError("Это игровой UID! Вводите UID человека с HoYoLab!")
         else:
-            await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid)}]))
+            await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid, "inline": True}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid), "inline": True}]))
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
