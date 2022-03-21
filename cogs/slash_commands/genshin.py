@@ -1,4 +1,5 @@
 import random
+from re import M
 from typing import Literal
 
 import disnake
@@ -25,7 +26,7 @@ class Genshin(commands.Cog):
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             if None in (ltuid, ltoken, cookie_data.values()):
-                pass
+                cookie_data = random.choice([i async for i in self.bot.config.DB.genshin_cookie.find()])
             else:
                 await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
                 self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
@@ -103,7 +104,7 @@ class Genshin(commands.Cog):
         else:
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
             if None in (ltuid, ltoken, cookie_data.values()):
-                pass
+                cookie_data = random.choice([i async for i in self.bot.config.DB.genshin_cookie.find()])
             else:
                 await self.bot.config.DB.genshin_cookie.update_one({"_id": inter.author.id}, {"$set": {"ltuid": ltuid, "ltoken": ltoken}})
 
@@ -130,7 +131,6 @@ class Genshin(commands.Cog):
 
     @genshin_impact.sub_command(name='player-uid', description="Не можете найти профиль? Тогда можете получить его через HoYoLab!")
     async def get_player_uid_from_hoyolab(self, inter, hoyolab_uid: int):
-
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
         else:
@@ -142,6 +142,61 @@ class Genshin(commands.Cog):
             raise CustomError("Это игровой UID! Вводите UID человека с HoYoLab!")
         else:
             await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid, "inline": True}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid), "inline": True}]))
+
+    @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
+    async def get_player_characters(self, inter, uid, character: str):
+        if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
+            cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
+        else:
+            cookie_data = random.choice([i async for i in self.bot.config.DB.genshin_cookie.find()])
+
+        self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
+
+        try:
+            characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
+            list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
+            embed = await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', thumbnail=''.join(characters_data('icon')))
+
+            if character in characters_data('name'):
+                fields = [
+                    {
+                        "name": "Раритетность",
+                        "value": ''.join(characters_data('rarity')),
+                        "inline": True
+                    },
+                    {
+                        "name": "Элемент",
+                        "value": ''.join(characters_data('element')),
+                        "inline": True
+                    },
+                    {
+                        "name": "Уровень дружбы",
+                        "value": ''.join(characters_data('friendship')),
+                        "inline": True,
+                    },
+                    {
+                        "name": "Созвездий",
+                        "value": ''.join(characters_data('constellation')),
+                        "inline": True,
+                    },
+                    {
+                        "name": "Оружие",
+                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),
+                        "inline": True,
+                    },
+                    {
+                        "name": "Артефакты",
+                        "value": ''.join(['\n'.join([f"Название: {j['name']}\nУровень: {j['level']}\nРаритетность: {j['rarity']}\nСэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
+                        "inline": True
+                    }
+                ]
+            else:
+                raise CustomError("Персонажа нет у игрока!")
+        except DataNotPublic:
+            raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
+
+        except AccountNotFound:
+            raise CustomError("Такого аккаунта не существует.")
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
