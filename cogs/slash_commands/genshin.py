@@ -85,7 +85,7 @@ class Genshin(commands.Cog):
             for i in fields:
                 embed.add_field(name=i.get('name'), value=i.get('value'), inline=i.get('inline') if i.get('inline') else None)
 
-            await inter.send(embed=embed)
+            await inter.send(embed=embed, ephemeral=True)
 
         except DataNotPublic:
             raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
@@ -117,7 +117,7 @@ class Genshin(commands.Cog):
             for field, value in stats.items():
                 embed.add_field(name=''.join(field.title().replace('_', ' ')), value=value)
 
-            await inter.send(embed=embed)
+            await inter.send(embed=embed, ephemeral=True)
 
         except DataNotPublic:
             raise CustomError("Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
