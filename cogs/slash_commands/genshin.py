@@ -155,7 +155,6 @@ class Genshin(commands.Cog):
 
         try:
             characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'].lower() == character.lower()]
-
             list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'].lower() == character.lower()]
 
             if character.lower() in [i.lower() for i in characters_data('name')]:
@@ -191,11 +190,14 @@ class Genshin(commands.Cog):
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
-        except DataNotPublic:
-            raise CustomError(self.data_not_public_info)
+        except:
+            raise Exception
 
-        except AccountNotFound:
-            raise CustomError("Такого аккаунта не существует.")
+        #except DataNotPublic:
+        #    raise CustomError(self.data_not_public_info)
+
+        #except AccountNotFound:
+        #    raise CustomError("Такого аккаунта не существует.")
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
