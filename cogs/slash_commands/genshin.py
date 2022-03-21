@@ -155,7 +155,6 @@ class Genshin(commands.Cog):
         try:
             characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
             list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'] == character.capitalize()]
-            embed = await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', thumbnail=''.join(characters_data('icon')))
 
             if character in characters_data('name'):
                 fields = [
@@ -185,8 +184,7 @@ class Genshin(commands.Cog):
                     }
                 ]
                 
-                for i in fields:
-                    embed.add_field(name=i.get('name'), value=i.get('value'), inline=True)
+                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонажах {uid}', fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Персонажа нет у игрока!")
         except DataNotPublic:
