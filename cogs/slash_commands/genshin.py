@@ -181,12 +181,12 @@ class Genshin(commands.Cog):
                     },
                     {
                         "name": "Оружие",
-                        "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity'],
+                        "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + str(json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity']),
                         "inline": True
                     },
                 ]
                 description = ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']} | Сэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
-                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.capitalize()} | {uid}', fields=fields, thumbnail=''.join(characters_data('icon'))))
+                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.capitalize()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
