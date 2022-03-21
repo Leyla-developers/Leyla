@@ -162,34 +162,31 @@ class Genshin(commands.Cog):
                     {
                         "name": "Раритетность",
                         "value": ''.join(characters_data('rarity')),
-                        "inline": True
                     },
                     {
                         "name": "Элемент",
                         "value": ''.join(characters_data('element')),
-                        "inline": True
                     },
                     {
                         "name": "Уровень дружбы",
-                        "value": ''.join(characters_data('friendship')),
-                        "inline": True,
+                        "value": ''.join(characters_data('friendship')),,
                     },
                     {
                         "name": "Созвездий",
-                        "value": ''.join(characters_data('constellation')),
-                        "inline": True,
+                        "value": ''.join(characters_data('constellation')),,
                     },
                     {
                         "name": "Оружие",
-                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),
-                        "inline": True,
+                        "value": f"Название: " + ''.join(characters_data('weapon')['name']) + "\nРаритетность: " + ''.join(characters_data('weapon')['rarity']),,
                     },
                     {
                         "name": "Артефакты",
                         "value": ''.join(['\n'.join([f"Название: {j['name']}\nУровень: {j['level']}\nРаритетность: {j['rarity']}\nСэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
-                        "inline": True
                     }
                 ]
+                
+                for i in fields:
+                    embed.add_field(name=i.get('name'), value=i.get('value'), inline=True)
             else:
                 raise CustomError("Персонажа нет у игрока!")
         except DataNotPublic:
