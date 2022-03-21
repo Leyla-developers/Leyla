@@ -11,6 +11,9 @@ from services import waifu_pics
 
 OVERLAY_DESCRIPTIONS = {
     'jail': '{user} За шо сидим?',
+    'wasted': 'R.I.P. {user} погиб(-ла) смретью храбрых :D',
+    'gay': '🤭',
+    'triggered': 'ВЫАЫВОАЫАОЫВАЫВАРЫРАВЫРАЛО'
 }
 
 
