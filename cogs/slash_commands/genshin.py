@@ -146,8 +146,6 @@ class Genshin(commands.Cog):
 
     @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
     async def get_player_characters(self, inter, uid, character: str):
-        await inter.response.defer()
-
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
         else:
@@ -156,8 +154,8 @@ class Genshin(commands.Cog):
         self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         try:
-            characters_data = lambda x: [str(i[x]) for i in self.gs.get_characters(uid, lang='ru-ru')['characters'] if i['name'].lower() == character.lower()]
-            list_of_artifacts = [i['artifacts'] for i in self.gs.get_characters(uid, lang='ru-ru')['characters'] if i['name'].lower() == character.lower()]
+            characters_data = lambda x: [str(i[x]) for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
+            list_of_artifacts = [i['artifacts'] for i in self.gs.get_characters(uid, lang='ru-ru') if i['name'].lower() == character.lower()]
 
             if character.lower() in [i.lower() for i in characters_data('name')]:
                 fields = [
