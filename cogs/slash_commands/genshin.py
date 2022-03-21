@@ -179,25 +179,22 @@ class Genshin(commands.Cog):
                         "value": ''.join(characters_data('constellation')),
                         "inline": True
                     },
-                    #{
-                    #    "name": "Оружие",
-                    #    "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + str(json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity']),
-                    #    "inline": True
-                    #},
+                    {
+                        "name": "Оружие",
+                        "value": f"Название: " + json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['name'] + "\nРаритетность: " + str(json.loads(''.join(characters_data('weapon')).replace('"', "'").replace("'", '"'))['rarity']),
+                        "inline": True
+                    },
                 ]
-                description = ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']} | Сэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
+                description = "```Артефакты:```\n" + ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']} | Сэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts])
                 await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
-        except Exception as e:
-            raise e
+        except DataNotPublic:
+            raise CustomError(self.data_not_public_info)
 
-        #except DataNotPublic:
-        #    raise CustomError(self.data_not_public_info)
-
-        #except AccountNotFound:
-        #    raise CustomError("Такого аккаунта не существует.")
+        except AccountNotFound:
+            raise CustomError("Такого аккаунта не существует.")
 
 def setup(bot):
     bot.add_cog(Genshin(bot))
