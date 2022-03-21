@@ -147,7 +147,7 @@ class Genshin(commands.Cog):
     @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
     async def get_player_characters(self, inter, uid, character: str):
         await inter.response.defer()
-        msg = await inter.send("Пожалуйста, немного подождите")
+        msg = await inter.send("<:load:955387941738389506>Пожалуйста, немного подождите")
 
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
             cookie_data = dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id}))
