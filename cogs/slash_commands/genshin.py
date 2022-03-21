@@ -155,6 +155,7 @@ class Genshin(commands.Cog):
 
         try:
             characters_data = lambda x: [str(i[x]) for i in self.gs.get_all_user_data(uid)['characters'] if i['name'].lower() == character.lower()]
+
             list_of_artifacts = [i['artifacts'] for i in self.gs.get_all_user_data(uid)['characters'] if i['name'].lower() == character.lower()]
 
             if character.lower() in [i.lower() for i in characters_data('name')]:
@@ -186,7 +187,7 @@ class Genshin(commands.Cog):
                     },
                 ]
                 description = ''.join(['\n'.join([f"Название: {j['name']} | Уровень: {j['level']} | Раритетность: {j['rarity']} | Сэт артефактов: {j['set']['name']}" for j in i]) for i in list_of_artifacts]),
-                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.capitalize()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
+                await inter.send(embed=await self.bot.embeds.simple(title=f'Информация о персонаже {character.title()} | {uid}', description=description, fields=fields, thumbnail=''.join(characters_data('icon'))))
             else:
                 raise CustomError("Этого персонажа нет у игрока!")
 
