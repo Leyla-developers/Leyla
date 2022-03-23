@@ -113,7 +113,7 @@ class Genshin(commands.Cog):
             self.gs.set_cookie(ltuid=cookie_data['ltuid'], ltoken=cookie_data['ltoken'])
 
         try:
-            spiral_abyss = self.gs.get_spiral_abyss(uid, lang='ru-ru', previous=True)
+            spiral_abyss = self.gs.get_spiral_abyss(uid, previous=True)
             stats = spiral_abyss['stats']
             embed = await self.bot.embeds.simple(title=f"Информация по витой бездне у {uid}")
 
