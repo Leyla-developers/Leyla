@@ -183,10 +183,10 @@ class Utilities(commands.Cog):
         json_cb_data = json.loads(cb_data)
         get_currency = {i:j['Name'] for i, j in json_cb_data['Valute'].items()}
         data = json_cb_data["Valute"]
+        view = CurrencyButton()
 
         if currency.upper() in data:
             upper_currency = currency.upper()
-            view = CurrencyButton()
 
             await inter.send(
                 embed=await self.bot.embeds.simple(
