@@ -176,7 +176,7 @@ class Utilities(commands.Cog):
         )
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
-    async def currency_converter(self, inter, currency, how_many: int = 0):
+    async def currency_converter(self, inter, currency, how_many: float = 0):
         async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
             cb_data = await response.text()
 
