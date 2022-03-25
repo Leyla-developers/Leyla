@@ -21,7 +21,7 @@ class Voices(commands.Cog):
                 channel = self.bot.get_channel(data['channel'])
 
             if category:
-                if member in after.channel.members:
+                if member in before.channel.members:
                     voice_channel = await category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
             else:
                 if bool(channel.category):
