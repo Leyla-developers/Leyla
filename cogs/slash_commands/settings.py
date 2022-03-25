@@ -404,7 +404,7 @@ class Settings(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title="Приватные голосовые каналы",
                 description="Голосовой канал для приватных комнат был создан",
-                fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.id, "inline": True}]
+                fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}]
             )
         )
 
