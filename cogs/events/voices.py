@@ -31,7 +31,7 @@ class Voices(commands.Cog):
                     voice_channel = await member.guild.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
                 await member.move_to(voice_channel)
 
-            await self.bot.wait_for('voice_state_update', check=lambda x, y, z: len(channel.members) == 0)
+            await self.bot.wait_for('voice_state_update', check=lambda x, y, z: len(voice_channel.members) == 0)
             await voice_channel.delete()
 
 def setup(bot):
