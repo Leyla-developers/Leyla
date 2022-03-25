@@ -409,33 +409,5 @@ class Settings(commands.Cog):
             )
         )
 
-    @voice_settings.sub_command(name="set-text-channel", description="Указание чата, где через меня можно управлять своей комнаткой :)")
-    async def voice_text_channel(self, inter, lobby: disnake.CategoryChannel):
-        if lobby:
-            channel = await lobby.create_text_channel(name="Настройка комнат")
-        else:
-            channel = await inter.guild.create_text_channel(name="Настройка комнат")
-
-        if await self.bot.config.DB.voice.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.voice.insert_one({"_id": inter.guild.id, "lobby": lobby.id, "text_channel": channel.id})
-        else:
-            data = await self.bot.config.DB.voice.find_one({"_id": inter.guild.id})
-
-            if data['lobby'] == lobby.id:
-                if 'text_channel' in data.keys():
-                    raise CustomError("Сейчас и так указано это лобби!")
-                else:
-                    await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": lobby.id, "text_channel": channel.id}})
-            else:
-                await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": lobby.id, "text_channel": channel.id}})
-
-        await inter.send(
-            embed=await self.bot.embeds.simple(
-                title="Приватные голосовые каналы",
-                description="Голосовой канал для приватных комнат был создан",
-                fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}]
-            )
-        )
-
 def setup(bot):
     bot.add_cog(Settings(bot))
