@@ -383,7 +383,7 @@ class Settings(commands.Cog):
             )
         )
     
-    @voice_settings.sub_command(description="Указание голосового канала, при входе в который, будет создаваться приватный канал")
+    @voice_settings.sub_command(name="set-channel", description="Указание голосового канала, при входе в который, будет создаваться приватный канал")
     async def voice_channel_main(self, inter, channel: disnake.VoiceChannel):
         if await self.bot.config.DB.voice.count_documents({"_id": inter.guild.id}) == 0:
             if bool(channel.category):
