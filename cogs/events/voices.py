@@ -21,15 +21,13 @@ class Voices(commands.Cog):
                 channel = self.bot.get_channel(data['channel'])
 
             if category:
-                if member in after.channel.members:
+                if member in channel.members:
                     voice_channel = await category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
-                    return
             else:
                 if bool(channel.category):
                     voice_channel = await channel.category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
                 else:
                     voice_channel = await member.guild.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
-                return
 
             await member.move_to(voice_channel)
             await self.bot.wait_for('voice_state_update', check=lambda x, y, z: len(voice_channel.members) == 0)
