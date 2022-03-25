@@ -422,7 +422,10 @@ class Settings(commands.Cog):
             data = await self.bot.config.DB.voice.find_one({"_id": inter.guild.id})
 
             if data['lobby'] == lobby.id:
-                raise CustomError("Сейчас и так указано это лоббиб!")
+                if 'text_channel' in data.keys():
+                    raise CustomError("Сейчас и так указано это лобби!")
+                else:
+                    await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": lobby.id, "text_channel": channel.id}})
             else:
                 await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": lobby.id, "text_channel": channel.id}})
 
