@@ -231,7 +231,7 @@ class Utilities(commands.Cog):
         async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={expression}') as response:
             data = await response.text()
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Калькулятор', fields=[{"name": "Введённый пример", "value": expression}, {'name': "Результат", "value": data}]))
+        await inter.send(embed=await self.bot.embeds.simple(title='Калькулятор', fields=[{"name": "Введённый пример", "value": expression, 'inline': True}, {'name': "Результат", "value": data, 'inline': True}]))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
