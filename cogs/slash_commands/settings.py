@@ -46,6 +46,10 @@ class Settings(commands.Cog):
     async def reaction_role(self, inter):
         ...
 
+    @settings.sub_command_group(description='Настройка приватных голосовых каналов')
+    async def voice_settings(self, inter):
+        ...
+
     @settings.sub_command()
     @commands.is_nsfw()
     async def nsfw(self, inter, channel: disnake.TextChannel):
@@ -357,6 +361,51 @@ class Settings(commands.Cog):
                 description=f"Больше роли за реакцию на этом сообщении работать не будут!",
                 thumbnail=inter.author.display_avatar.url
             ), ephemeral=True
+        )
+
+    @voice_settings.sub_command(name="set-lobby", description="Указать лобби (категорию), где будут появляться голосовые каналы")
+    async def voice_lobby(self, inter, lobby: disnake.CategoryChannel):
+        if await self.bot.config.DB.voice.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.voice.insert_one({"_id": inter.guild.id, "lobby": lobby.id})
+        else:
+            data = await self.bot.config.DB.voice.find_one({"_id": inter.guild.id})
+
+            if data['lobby'] == lobby.id:
+                raise CustomError("Вообще-то, эта категория уже указана, как лобби!")
+            else:
+                await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": lobby.id}})
+        
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Приватные голосовые каналы", 
+                description="Лобби было успешно указано :)",
+                fields=[{"name": "Лобби", "value": lobby.name}]
+            )
+        )
+    
+    @voice_settings.sub_command(description="Указание голосового канала, при входе в который, будет создаваться приватный канал")
+    async def voice_channel_main(self, inter, channel: disnake.VoiceChannel):
+        if await self.bot.config.DB.voice.count_documents({"_id": inter.guild.id}) == 0:
+            if bool(channel.category):
+                await self.bot.config.DB.voice.insert_one({"_id": inter.guild.id, "lobby": channel.category.id, "channel": channel.id})
+            else:
+                await self.bot.config.DB.voice.insert_one({"_id": inter.guild.id, "channel": channel.id})
+        else:
+            data = await self.bot.config.DB.voice.find_one({"_id": inter.guild.id})
+            if data['channel'] == channel.id:
+                raise CustomError("Сейчас и так указан этот канал!")
+            else:
+                if bool(channel.category):
+                    await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": channel.category.id, "channel": channel.id}})
+                else:
+                    await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+        
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Приватные голосовые каналы",
+                description="Голосовой канал для приватных комнат был создан",
+                fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.id, "inline": True}]
+            )
         )
 
 
