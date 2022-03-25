@@ -46,7 +46,7 @@ class Settings(commands.Cog):
     async def reaction_role(self, inter):
         ...
 
-    @settings.sub_command_group(description='Настройка приватных голосовых каналов')
+    @settings.sub_command_group(name='voice', description='Настройка приватных голосовых каналов')
     async def voice_settings(self, inter):
         ...
 
