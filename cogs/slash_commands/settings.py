@@ -407,7 +407,7 @@ class Settings(commands.Cog):
                 description="Голосовой канал для приватных комнат был создан",
                 fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}]
             )
-        )
+        )   
 
 def setup(bot):
     bot.add_cog(Settings(bot))
