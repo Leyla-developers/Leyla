@@ -17,6 +17,7 @@ class Voices(commands.Cog):
 
             if 'lobby' in data.keys():
                 category = self.bot.get_channel(data['lobby'])
+                channel = self.bot.get_channel(data['channel'])
             else:
                 channel = self.bot.get_channel(data['channel'])
 
