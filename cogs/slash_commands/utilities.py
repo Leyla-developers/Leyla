@@ -94,14 +94,14 @@ class Utilities(commands.Cog):
         embed.set_footer(text=f"ID: {user.id}")
         
         main_information = [
-            f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>**",
+            f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
             f"Полный никнейм: **{str(user)}**",
         ]
 
         if user in inter.guild.members:
             user_to_member = inter.guild.get_member(user.id)
             second_information = [
-                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней**",
+                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user.joined_at.replace(tzinfo=None)).days} дней**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
             ]
 
