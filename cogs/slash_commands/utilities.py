@@ -86,7 +86,7 @@ class Utilities(commands.Cog):
         img.save('banner.png', 'png')
         file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
         embed.set_image(url=user.banner.url if user.banner else 'attachment://banner.png')
-        embed.set_image(url=user.display_avatar.url)
+        embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
         
         main_information = [
