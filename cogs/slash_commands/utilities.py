@@ -82,10 +82,14 @@ class Utilities(commands.Cog):
         async with self.bot.session.get(f'https://discord.com/api/v9/users/{user.id}', headers={'Authorization': 'Bot ' + environ['TOKEN']}) as response:
             color = dict(await response.json())['banner_color']
 
-        img = Image.new('RGBA', (500, 200), color)
-        img.save('banner.png', 'png')
-        file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
-        embed.set_image(url=user.banner.url if user.banner else 'attachment://banner.png')
+        if not user.banner:
+            img = Image.new('RGBA', (500, 200), color)
+            img.save('banner.png', 'png')
+            file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
+            embed.set_image(url='attachment://banner.png')
+        else:
+            embed.set_image(url=user.banner.url)
+
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
         
