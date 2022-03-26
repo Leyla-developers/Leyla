@@ -2,11 +2,13 @@ import re
 from datetime import datetime
 import typing
 from typing import Dict, List
-import os
+from os import environ
 import random
 import json
-
+from PIL import Image
+from io import BytesIO
 import aiohttp
+
 import disnake
 from disnake.ext import commands
 from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
@@ -77,9 +79,13 @@ class Utilities(commands.Cog):
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
 
-        if user.banner:
-            embed.set_image(url=user.banner.url)
+        async with self.bot.session.get(f'https://discord.com/api/v9/users/{user.id}', headers={'Authorization': 'Bot ' + environ['TOKEN']}) as response:
+            color = dict(await response.json())['banner_color']
 
+        img = Image.new('RGBA', (500, 200), color)
+        img.save('banner.png', 'png')
+        file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
+        embed.set_image(url=user.banner.url if user.banner else 'attachment://banner.png')
         embed.set_image(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
         
@@ -97,7 +103,7 @@ class Utilities(commands.Cog):
 
         embed.description = "\n".join(main_information) + "\n" + "\n".join(second_information) if user in inter.guild.members else "\n".join(main_information)
 
-        await inter.send(embed=embed)
+        await inter.send(embed=embed, file=None if user.banner else file)
 
     @commands.slash_command(
         description="Получить эмодзик"
@@ -231,7 +237,12 @@ class Utilities(commands.Cog):
         async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={expression}') as response:
             data = await response.text()
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Калькулятор', fields=[{"name": "Введённый пример", "value": expression, 'inline': True}, {'name': "Результат", "value": data, 'inline': True}]))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Калькулятор',
+                fields=[{"name": "Введённый пример", "value": expression, 'inline': True}, {'name': "Результат", "value": data, 'inline': True}]
+            )
+        )
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
