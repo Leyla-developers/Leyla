@@ -36,7 +36,7 @@ class Utilities(commands.Cog):
         ]
         embed = await self.bot.embeds.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
-            description=' | '.join(formats)
+            description=' | '.join(formats),
             image=user.display_avatar.url
         )
         return await inter.send(embed=embed)
