@@ -9,7 +9,7 @@ def user_rank_card(member, lvl, xp, need_xp, percentage: int = 0):
 
     back.paste(avatar, (0, 15))
     back.bar((467, 342), max_width=967, height=66, fill='#419ff1', percentage=percentage)
-    back.text((470, 265), str(member), font=font, color="#00fa81")
+    back.text((470, 265), str(member), font=font, color="#8858ec")
     back.text((855, 355), f"{xp} / {need_xp}", font=small_font, color="black")
-    back.text((1300, 280), str(lvl), font=font, color="#00fa81")
+    back.text((1300, 280), str(lvl), font=font, color="#8858ec")
     return back
