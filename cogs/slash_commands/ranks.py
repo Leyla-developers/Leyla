@@ -83,7 +83,7 @@ class Ranks(commands.Cog):
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
             card = user_rank_card(member, data['lvl'], data['xp'], 5*(data['lvl']**2)+50*data['lvl']+100, (data['xp'] / 5*(data['lvl']**2)+50*data['lvl']+100) * 100).asve('user_card.png')
-            await inter.send(file=disnake.File(BytesIO(open('user_card.png', 'rb').read()), 'user_card.png'))
+            await inter.send(file=disnake.File(BytesIO(open('user_card.png', 'rb').read()), 'user_card.png'), ephemeral=True)
 
 def setup(bot):
     bot.add_cog(Ranks(bot))
