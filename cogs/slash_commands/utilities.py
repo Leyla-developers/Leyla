@@ -139,7 +139,7 @@ class Utilities(commands.Cog):
 
         async with self.bot.session.post(
             'https://api.boticord.top/v1/server', 
-            headers={'Authorization': os.environ['BCORD']}, 
+            headers={'Authorization': environ['BCORD']}, 
             json=data
         ) as response:
             x = await response.json()
