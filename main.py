@@ -5,7 +5,6 @@ import disnake
 from core import Leyla
 from config import Config
 
-
 config = Config()
 
 async def init_and_run_bot(token: str) -> None:
@@ -20,7 +19,7 @@ async def init_and_run_bot(token: str) -> None:
         ),
         strip_after_prefix=True,
         case_insensitive=True,
-        status=disnake.Status.idle,
+        status=disnake.Status.dnd,
         intents=disnake.Intents.all(),
         sync_commands=True,
         enable_debug_events=True,
