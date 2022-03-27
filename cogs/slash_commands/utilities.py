@@ -29,8 +29,14 @@ class Utilities(commands.Cog):
         description="Вывод аватара участника"
     )
     async def avatar(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
+        formats = [
+            f"[PNG]({user.display_avatar.replace('png').url})",
+            f"[JPG]({user.display_avatar.replace('jpg').url})",
+            f"[GIF]({user.display_avatar.replace('gif').url})" if user.display_avatar.is_animated() else ""
+        ]
         embed = await self.bot.embeds.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
+            description=' | '.join(formats)
             image=user.display_avatar.url
         )
         return await inter.send(embed=embed)
