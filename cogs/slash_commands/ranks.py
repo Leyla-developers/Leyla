@@ -3,7 +3,7 @@ from asyncio import sleep
 import disnake
 from disnake.ext import commands
 from Tools.exceptions import CustomError
-
+from Tools.images import user_rank_card
 
 class Ranks(commands.Cog):
     
@@ -81,13 +81,7 @@ class Ranks(commands.Cog):
             raise CustomError("Система уровней не включена здесь!")
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
-            await inter.send(embed=await self.bot.embeds.simple(
-                    title=f"Опыт и уровень {member.name}", 
-                    description=f"Опыт: **{data['xp']}**\nУровень: **{data['lvl']}**",
-                    thumbnail=member.display_avatar.url,
-                    footer={"text": "Я люблю ананасы", "icon_url": self.bot.user.avatar.url}
-                )
-            )
+            card = user_rank_card(member, data['lvl'], data['xp'], 5*(data['lvl']**2)+50*data['lvl']+100, (data['xp'] / 5*(data['lvl']**2)+50*data['lvl']+100) * 100)
 
 def setup(bot):
     bot.add_cog(Ranks(bot))
