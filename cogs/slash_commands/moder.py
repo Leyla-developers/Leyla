@@ -85,7 +85,7 @@ class Moderation(commands.Cog):
         else:
             check = lambda m: m.author
 
-        cleared_messages = await inter.channel.purge(limit=messages_amount, before=inter.message.created_at, check=check)
+        cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
 
         await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
 
