@@ -93,6 +93,27 @@ class Settings(commands.Cog):
             )
         )
 
+    @logs.sub_command(name="moderation", description="Показ действий модераторов")
+    async def logs_moderation(self, inter, mode: Literal['Включить', 'Выключить']):
+        modes = {
+            'Включить': True,
+            'Выключить': False,
+        }
+
+        if await self.bot.config.DB.logs.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.logs.insert_one({"_id": inter.guild.id, "moderation": modes[mode], 'channel': None})
+        else:
+            await self.bot.config.DB.logs.update_one({"_id": inter.guild.id}, {"$set": {"moderation": modes[mode]}})
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(logs)**',
+                description="Режим логирования модерации переключён!",
+                fields=[{"name": "Режим", "value": mode}],
+                footer={"text": "И да, у вас не указан канал логирования, не забудьте его тоже!", 'icon_url': inter.guild.icon.url if inter.guild.icon else inter.author.display_avatar.url} if dict(await self.bot.config.DB.logs.find_one({"_id": inter.guild.id}))['channel'] else None
+            )
+        )
+
     @logs.sub_command(name="channel", description="Настройка кАнальчика для логов")
     async def logs_channel(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.logs.count_documents({"guild": inter.guild.id}) == 0:
