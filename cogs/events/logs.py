@@ -15,9 +15,31 @@ class Logs(commands.Cog):
             return dict(await self.bot.config.DB.logs.find_one({"guild": guild.id}))['channel']
 
     @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if not await self.get_channel(member.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Новый участник тут зашёл :3",
+                    footer={"text": f"Дата регистрации: <t:{round(member.created_at.timestamp())}:R>", "icon_url": member.guild.icon.url if member.guild.icon.url else None},
+                    thumbnail=member.display_avatar.url,
+                    color=disnake.Colour.red()
+                )
+            )
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        if not await self.get_channel(member.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Кто-то ушёл отседова...(",
+                    footer={"text": f"Дата регистрации: <t:{round(member.created_at.timestamp())}:R>", "icon_url": member.guild.icon.url if member.guild.icon.url else None},                    thumbnail=member.display_avatar.url,
+                    color=disnake.Colour.red()
+                )
+            )
+
+    @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if not await self.get_channel(message.guild):
-            return
+        if not await self.get_channel(message.guild): return
         elif message.author.bot: return
         else:
             await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
@@ -68,6 +90,63 @@ class Logs(commands.Cog):
                 embed.description = f"Никнейм {after.name} был сменён"
 
             await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, member):
+        if not await self.get_channel(guild): return
+        if not await self.bot.config.DB.logs.find_one({"_id": guild.id})['moderation']: return
+        else:
+            channel = await self.get_channel(guild)
+            embed = await self.bot.embeds.simple(
+                title="Бан участника", 
+                fields=[
+                    {"name": "Забаненный", "value": str(member)}
+                ]
+            )
+
+            await self.bot.get_channel(channel(guild)).send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, guild, member):
+        if not await self.get_channel(guild): return
+        if not await self.bot.config.DB.logs.find_one({"_id": guild.id})['moderation']: return
+        else:
+            channel = await self.get_channel(guild)
+            embed = await self.bot.embeds.simple(
+                title="Разбан участника", 
+                fields=[
+                    {"name": "Разбаненный", "value": str(member)}
+                ]
+            )
+
+            await self.bot.get_channel(channel(guild)).send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_join(self, thread):
+        if not await self.get_channel(thread.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(thread.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Новая ветка :eyes:",
+                    url=thread.jump_url
+                    description=f"Название ветки: **{thread.name}**",
+                    footer={"text": f"Дата создания: <t:{round(thread.created_at.timestamp())}:R>", "icon_url": thread.guild.icon.url if thread.guild.icon.url else None},
+                    thumbnail=thread.guild.icon.url if thread.guild.icon.url else None,
+                    color=disnake.Colour.red()
+                )
+            )
+
+    @commands.Cog.listener()
+    async def on_thread_remove(self, thread):
+        if not await self.get_channel(thread.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(thread.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Удаление ветки :eyes:",
+                    description=f"Ветка называлась **{thread.name}**"
+                    thumbnail=thread.guild.icon.url if thread.guild.icon.url else None,
+                    color=disnake.Colour.red()
+                )
+            )
+
 
 def setup(bot):
     bot.add_cog(Logs(bot))
