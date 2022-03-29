@@ -127,7 +127,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(thread.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новая ветка :eyes:",
-                    url=thread.jump_url
+                    url=thread.jump_url,
                     description=f"Название ветки: **{thread.name}**",
                     footer={"text": f"Дата создания: <t:{round(thread.created_at.timestamp())}:R>", "icon_url": thread.guild.icon.url if thread.guild.icon.url else None},
                     thumbnail=thread.guild.icon.url if thread.guild.icon.url else None,
