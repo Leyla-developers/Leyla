@@ -141,7 +141,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(thread.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удаление ветки :eyes:",
-                    description=f"Ветка называлась **{thread.name}**"
+                    description=f"Ветка называлась **{thread.name}**",
                     thumbnail=thread.guild.icon.url if thread.guild.icon.url else None,
                     color=disnake.Colour.red()
                 )
