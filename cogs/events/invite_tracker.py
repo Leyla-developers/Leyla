@@ -36,3 +36,6 @@ class InviteTracker(commands.Cog):
                         {"name": "Инвайтер", "value": str(self.get_invite(invites, i.code).inviter)},
                     ]
             await channel.send(embed=embed)
+
+def setup(bot):
+    bot.add_cog(InviteTracker(bot))
