@@ -20,7 +20,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новый участник тут зашёл :3",
-                    footer={"text": f"Дата регистрации: <t:{round(member.created_at.timestamp())}:R>", "icon_url": member.guild.icon.url if member.guild.icon.url else None},
+                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon.url else None},
                     thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )
@@ -32,7 +32,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Кто-то ушёл отседова...(",
-                    footer={"text": f"Дата регистрации: <t:{round(member.created_at.timestamp())}:R>", "icon_url": member.guild.icon.url if member.guild.icon.url else None},                    thumbnail=member.display_avatar.url,
+                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon.url else None},                    thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )
             )
@@ -129,7 +129,7 @@ class Logs(commands.Cog):
                     title="Новая ветка :eyes:",
                     url=thread.jump_url,
                     description=f"Название ветки: **{thread.name}**",
-                    footer={"text": f"Дата создания: <t:{round(thread.created_at.timestamp())}:R>", "icon_url": thread.guild.icon.url if thread.guild.icon.url else None},
+                    footer={"text": f"Дата создания: {thread.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": thread.guild.icon.url if thread.guild.icon.url else None},
                     thumbnail=thread.guild.icon.url if thread.guild.icon.url else None,
                     color=disnake.Colour.red()
                 )
