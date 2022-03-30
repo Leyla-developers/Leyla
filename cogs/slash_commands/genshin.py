@@ -146,7 +146,7 @@ class Genshin(commands.Cog):
             await inter.send(embed=await self.bot.embeds.simple(description="Ниже можете посмотреть результат :)", fields=[{"name": "HoYoLab ID", "value": hoyolab_uid, "inline": True}, {"name": "Genshin Impact UID", "value": self.gs.get_uid_from_hoyolab_uid(hoyolab_uid), "inline": True}]))
 
     @genshin_impact.sub_command(name="player-character", description="Информация о персонаже игрока")
-    async def get_player_characters(self, inter, uid, character: str = None, one_or_all: Literal['one', 'all'] = "one"):
+    async def get_player_characters(self, inter, uid, character: str, one_or_all: Literal['one', 'all'] = "one"):
         await inter.response.defer()
 
         if dict(await self.bot.config.DB.genshin_cookie.find_one({"_id": inter.author.id})):
