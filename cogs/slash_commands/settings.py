@@ -317,7 +317,7 @@ class Settings(commands.Cog):
         goodbye_channel: disnake.TextChannel, 
         welcome_message: str = None, 
         goodbye_message: str = None,
-        main_welcome_or_not: Literal['Изменить основное сообщение', 'Добавить/изменить существующее'] = 'Измениьть основное сообщение'
+        main_welcome_or_not: Literal['Изменить основное сообщение', 'Добавить/изменить существующее'] = 'Изменить основное сообщение'
     ):
         welcome_mode = {
             'Изменить основное сообщение': 1,
