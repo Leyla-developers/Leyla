@@ -20,6 +20,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новый участник тут зашёл :3",
+                    fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
                     footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon.url else None},
                     thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
@@ -32,6 +33,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Кто-то ушёл отседова...(",
+                    fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
                     footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon.url else None},                    thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )

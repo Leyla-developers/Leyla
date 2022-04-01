@@ -1,4 +1,5 @@
-import disnake
+import random
+
 from disnake.ext import commands
 
 
@@ -19,8 +20,14 @@ class Welcome(commands.Cog):
                     data['welcome_message'] = data['welcome_message'].replace('[member]', member.name)
                     data['welcome_message'] = data['welcome_message'].replace('[guild]', member.guild.name)
                     data['welcome_message'] = data['welcome_message'].replace('[guildMembers]', str(len(member.guild.members)))
+                    
+                    if data['welcome_messages']:
+                        data['welcome_messages'] = data['welcome_messages'].replace('[memberMention]', member.mention)
+                        data['welcome_messages'] = data['welcome_messages'].replace('[member]', member.name)
+                        data['welcome_messages'] = data['welcome_messages'].replace('[guild]', member.guild.name)
+                        data['welcome_messages'] = data['welcome_messages'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    await member.guild.get_channel(data['welcome_channel']).send(data['welcome_message'])
+                    await member.guild.get_channel(data['welcome_channel']).send(data['welcome_message'] if random.randint(1, 2) == 1 else random.choice(data['welcome_messages']))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -35,7 +42,13 @@ class Welcome(commands.Cog):
                     data['goodbye_message'] = data['goodbye_message'].replace('[guild]', member.guild.name)
                     data['goodbye_message'] = data['goodbye_message'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    await member.guild.get_channel(data['channel']).send(data['goodbye_message'])
+                    if data['goodbye_messages']:
+                        data['goodbye_messages'] = data['goodbye_messages'].replace('[memberMention]', member.mention)
+                        data['goodbye_messages'] = data['goodbye_messages'].replace('[member]', member.name)
+                        data['goodbye_messages'] = data['goodbye_messages'].replace('[guild]', member.guild.name)
+                        data['goodbye_messages'] = data['goodbye_messages'].replace('[guildMembers]', str(len(member.guild.members)))
+
+                    await member.guild.get_channel(data['channel']).send(data['goodbye_message'] if random.randint(1, 2) == 1 else random.choice(data['goodbye_messages']))
 
 def setup(bot):
     bot.add_cog(Welcome(bot))

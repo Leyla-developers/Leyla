@@ -310,14 +310,27 @@ class Settings(commands.Cog):
         )
 
     @welcome.sub_command(name='setup', description='Устанавливает канал приветствий u-u')
-    async def welcome_setup(self, inter, welcome_channel: disnake.TextChannel, goodbye_channel: disnake.TextChannel, welcome_message: str = None, goodbye_message: str = None):
+    async def welcome_setup(
+        self, 
+        inter, 
+        welcome_channel: disnake.TextChannel, 
+        goodbye_channel: disnake.TextChannel, 
+        welcome_message: str = None, 
+        goodbye_message: str = None,
+        main_welcome_or_not: Literal['Изменить основное сообщение', 'Добавить/изменить существующее'] = 'Измениьть основное сообщение'
+    ):
+        welcome_mode = {
+            'Изменить основное сообщение': 1,
+            'Изменить дополнительное': 2
+        }
+
         if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.welcome.insert_one(
                 {
-                    "_id": inter.guild.id, 
-                    "welcome_channel": welcome_channel.id, 
-                    "goodbye_channel": goodbye_channel.id, 
-                    "welcome_message": welcome_message, 
+                    "_id": inter.guild.id,
+                    "welcome_channel": welcome_channel.id,
+                    "goodbye_channel": goodbye_channel.id,
+                    "welcome_message": welcome_message,
                     "goodbye_message": goodbye_message,
                 }
             )
@@ -326,8 +339,10 @@ class Settings(commands.Cog):
                 {
                     "$set": {
                         "welcome_channel": welcome_channel.id,
-                        "welcome_message": welcome_message,
-                        "goodbye_message": goodbye_message,
+                        "welcome_message": welcome_message if welcome_mode[main_welcome_or_not] == 1 else ...,
+                        "welcome_messages": [welcome_message] if welcome_mode[main_welcome_or_not] == 2 else ...,
+                        "goodbye_message": goodbye_message if welcome_mode[main_welcome_or_not] == 1 else ...,
+                        "goodbye_messages": [goodbye_message] if welcome_mode[main_welcome_or_not] == 2 else ...,
                         "goodbye_channel": goodbye_channel.id,
                     }
                 }
