@@ -27,8 +27,12 @@ class Welcome(commands.Cog):
                         data['welcome_messages'] = data['welcome_messages'].replace('[guild]', member.guild.name)
                         data['welcome_messages'] = data['welcome_messages'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    await member.guild.get_channel(data['welcome_channel']).send(data['welcome_message'] if random.randint(1, 2) == 1 else random.choice(data['welcome_messages']))
-
+                    await member.guild.get_channel(
+                        data['welcome_channel']).send(
+                            data['welcome_message'] if random.randint(1, 2) == 1 else random.choice(
+                                data['welcome_messages']
+                        ) if 'welcome_messages' in data.keys() else data['welcome_message']
+                    )
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if await self.bot.config.DB.welcome.count_documents({"_id": member.guild.id}) == 0:
@@ -48,7 +52,12 @@ class Welcome(commands.Cog):
                         data['goodbye_messages'] = data['goodbye_messages'].replace('[guild]', member.guild.name)
                         data['goodbye_messages'] = data['goodbye_messages'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    await member.guild.get_channel(data['goodbye_channel']).send(data['goodbye_message'] if random.randint(1, 2) == 1 else random.choice(data['goodbye_messages']))
+                    await member.guild.get_channel(
+                        data['goodbye_channel']).send(
+                            data['goodbye_message'] if random.randint(1, 2) == 1 else random.choice(
+                                data['goodbye_messages']
+                        ) if 'goodbye_messages' in data.keys() else data['goodbye_message']
+                    )
 
 def setup(bot):
     bot.add_cog(Welcome(bot))
