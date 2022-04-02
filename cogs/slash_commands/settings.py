@@ -335,14 +335,16 @@ class Settings(commands.Cog):
                 }
             )
         else:
+            data = await self.bot.config.DB.welcome.find_one({"_id": inter.guild.id})
+
             await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, 
                 {
                     "$set": {
                         "welcome_channel": welcome_channel.id,
-                        "welcome_message": welcome_message if welcome_mode[main_welcome_or_not] == 1 else welcome_message,
-                        "welcome_messages": [welcome_message] if welcome_mode[main_welcome_or_not] == 2 else welcome_message,
-                        "goodbye_message": goodbye_message if welcome_mode[main_welcome_or_not] == 1 else goodbye_message,
-                        "goodbye_messages": [goodbye_message] if welcome_mode[main_welcome_or_not] == 2 else goodbye_message,
+                        "welcome_message": welcome_message if welcome_mode[main_welcome_or_not] == 1 else data['welcome_message'],
+                        "welcome_messages": [welcome_message] if welcome_mode[main_welcome_or_not] == 2 else data['welcome_message'],
+                        "goodbye_message": goodbye_message if welcome_mode[main_welcome_or_not] == 1 else data['goodbye_message'],
+                        "goodbye_messages": [goodbye_message] if welcome_mode[main_welcome_or_not] == 2 else data['goodbye_message'],
                         "goodbye_channel": goodbye_channel.id,
                     }
                 }
