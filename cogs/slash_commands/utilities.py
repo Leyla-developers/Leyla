@@ -269,7 +269,7 @@ class Utilities(commands.Cog):
         ]
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
-            description=f'**Владелец:** {request["information"]["owner"]}\n' + request['information']['longDescription'],
+            description=f'**Владелец:** {request["information"]["owner"]}\n' if request["information"]["owner"] else '' + request['information']['longDescription'],
             url=request['information']['links']['invite'],
             footer={"text": request['information']['shortDescription']},
             fields=[{
