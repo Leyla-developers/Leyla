@@ -156,7 +156,7 @@ class Utilities(commands.Cog):
                 server = data["serverID"]
                 embed = await self.bot.embeds.simple(
                     title='Перейти на BotiCord!',
-                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"] + f"\nВремя до следующего UP'a: <t:{data['timeToNextUpInMs']}:R>", 
+                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"] + f"\nВремя до следующего UP'a: <t:{data['timeToNextUpInMs']}:R>" if 'успешно' in data['message'] else data['message'], 
                     url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
                 )
 
