@@ -297,11 +297,13 @@ class Utilities(commands.Cog):
                 "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
                 "inline": True
             }],
-            thumbnail=request['information']['avatar'] if request['information']['avatar'] else None
         )
 
         if request['shortCode']:
             embed.add_field(name="Короткая ссылка", value=f'https://bcord.cc/s/{request["shortCode"]}', inline=True)
+
+        if request['information']['avatar']:
+            embed.set_thumbnail(url=request['information']['avatar'])
 
         await inter.send(embed=embed)
 
