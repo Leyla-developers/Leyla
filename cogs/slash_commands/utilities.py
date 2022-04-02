@@ -290,7 +290,7 @@ class Utilities(commands.Cog):
                 },
                 {
                     "name": "Тэги",
-                    "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                    "value": ', '.join(request['information']['tags']) if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
                     "inline": True
                 }
             ],
