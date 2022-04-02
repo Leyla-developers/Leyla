@@ -294,7 +294,8 @@ class Utilities(commands.Cog):
             },
             {
                 "name": "Тэги",
-                "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "Тут нет тэгов."
+                "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                "inline": True
             }],
             thumbnail=request['information']['avatar'] if request['information']['avatar'] else None
         )
