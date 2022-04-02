@@ -317,7 +317,7 @@ class Settings(commands.Cog):
         goodbye_channel: disnake.TextChannel, 
         welcome_message: str = None, 
         goodbye_message: str = None,
-        main_welcome_or_not: Literal['Изменить основное сообщение', 'Добавить/изменить существующее'] = 'Изменить основное сообщение'
+        main_welcome_or_not: Literal['Изменить основное сообщение', 'Изменить дополнительное'] = 'Изменить основное сообщение'
     ):
         welcome_mode = {
             'Изменить основное сообщение': 1,
@@ -339,16 +339,21 @@ class Settings(commands.Cog):
 
             await self.bot.config.DB.welcome.update_one({"_id": inter.guild.id}, 
                 {
+                    "$push": {
+                        "welcome_messages": welcome_message,
+                        "goodbye_messages": goodbye_message
+                    }
+                } if welcome_mode[main_welcome_or_not] == 2 else
+                {
                     "$set": {
                         "welcome_channel": welcome_channel.id,
                         "welcome_message": welcome_message if welcome_mode[main_welcome_or_not] == 1 else data['welcome_message'],
-                        "welcome_messages": [welcome_message] if welcome_mode[main_welcome_or_not] == 2 else data['welcome_message'],
                         "goodbye_message": goodbye_message if welcome_mode[main_welcome_or_not] == 1 else data['goodbye_message'],
-                        "goodbye_messages": [goodbye_message] if welcome_mode[main_welcome_or_not] == 2 else data['goodbye_message'],
                         "goodbye_channel": goodbye_channel.id,
                     }
                 }
             )
+
 
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(welcomer)**', 
