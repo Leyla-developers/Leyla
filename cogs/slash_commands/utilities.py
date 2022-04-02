@@ -260,13 +260,14 @@ class Utilities(commands.Cog):
             request = await response.json()
 
         links_array = [
-            f"Инвайт: {request['information']['links']['invite'] if request['information']['links']['invite'] else 'На этот сервер нет инвайта'}",
-            f"Твич: {request['information']['links']['twitch'] if request['information']['links']['twitch'] else 'У этого сервера нет твич канала('}",
-            f"Стим: {request['information']['links']['steam'] if request['information']['links']['steam'] else 'У этого сервера нет стим-группы('}",
-            f"ВК: {request['information']['links']['vk'] if request['information']['links']['vk'] else 'У этого сервера нет вк-группы/беседы('}",
-            f"Сайт: {request['information']['links']['site'] if request['information']['links']['site'] else 'У этого сервера нет сайта('}",
-            f"Ютуб: {request['information']['links']['youtube'] if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала('}",
+            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else ,
+            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'],
+            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'],
+            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'],
+            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'],
+            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'],
         ]
+
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
@@ -280,17 +281,17 @@ class Utilities(commands.Cog):
                 },
                 {
                     "name": "Количество участников",
-                    "value": request['information']['members'],
-                    "inline": True
-                },
-                {
-                    "name": "Ссылки",
-                    "value": "\n".join(links_array),
+                    "value": request['information']['members'][0],
                     "inline": True
                 },
                 {
                     "name": "Тэги",
                     "value": ', '.join(request['information']['tags']) if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                    "inline": True
+                },
+                {
+                    "name": "Прочие ссылки",
+                    "value": "\n".join(links_array),
                     "inline": True
                 }
             ],
