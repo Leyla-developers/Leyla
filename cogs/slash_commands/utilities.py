@@ -148,16 +148,16 @@ class Utilities(commands.Cog):
             headers={'Authorization': environ['BCORD']}, 
             json=data
         ) as response:
-            x = await response.json()
+            data = await response.json()
         
             if not response.ok:
                 return
             else:
                 server = data["serverID"]
                 embed = await self.bot.embeds.simple(
-                    title='BotiCord',
-                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in x else x["message"], 
-                    url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
+                    title='Перейти на BotiCord!',
+                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"] + f"Время до следующего UP'a: <t:{data['timeToNextUpInMs']}:R>", 
+                    url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
                 )
 
                 await inter.send('Благодарю за поддержку сервера! <3', embed=embed)
