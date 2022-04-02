@@ -254,5 +254,51 @@ class Utilities(commands.Cog):
             )
         )
 
+    @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
+    async def boticord_info_cmd(self, inter, guild: disnake.Guild = None):
+        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{guild.id if guild else inter.guild.id}') as response:
+            request = await response.json()
+
+        links_array = [
+            f"Ютуб: {request['information']['links']['invite'] if request['information']['links']['invite'] else 'На этот сервер нет инвайта'}",
+            f"Ютуб: {request['information']['links']['twitch'] if request['information']['links']['twitch'] else 'У этого сервера нет твич канала('}",
+            f"Ютуб: {request['information']['links']['steam'] if request['information']['links']['steam'] else 'У этого сервера нет стим-группы('}",
+            f"Ютуб: {request['information']['links']['vk'] if request['information']['links']['vk'] else 'У этого сервера нет вк-группы/беседы('}",
+            f"Ютуб: {request['information']['links']['site'] if request['information']['links']['site'] else 'У этого сервера нет сайта('}",
+            f"Ютуб: {request['information']['links']['youtube'] if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала('}",
+        ]
+        embed = await self.bot.embeds.simple(
+            title=request['information']['name'],
+            description=f'**Владелец:** {request["information"]["owner"]}\n' + request['information']['longDescription'],
+            url=request['information']['links']['invite'],
+            footer={"text": request['information']['shortDescription']},
+            fields=[{
+                "name": "Ссылки на BotiCord",
+                "value": "\n".join(request['links']),
+                "inline": True
+            },
+            {
+                "name": "Количество бампов (оценок)",
+                "value": request['information']['bumps'],
+                "inline": True
+            },
+            {
+                "name": "Количество участников",
+                "value": request['information']['mmebers'],
+                "inline": True
+            },
+            {
+                "name": "Ссылки",
+                "value": "\n".join(links_array),
+                "inline": True
+            }],
+            thumbnail=request['information']['avatar'] if request['information']['avatar'] else None
+        )
+
+        if request['shortCode']:
+            embed.add_field(name="Короткая ссылка", value=f'https://bcord.cc/s/{request["shortCode"]}', inline=True)
+
+        await inter.send(embed=embed)
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
