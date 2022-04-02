@@ -160,7 +160,7 @@ class Utilities(commands.Cog):
                     url=f"https://boticord.top/add/server" if "error" in x else f"https://boticord.top/server/{server}"
                 )
 
-                await inter.send(embed=embed)
+                await inter.send('Благодарю за поддержку сервера! <3', embed=embed)
 
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
@@ -175,7 +175,7 @@ class Utilities(commands.Cog):
             headers={
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/80.0.4170.91',
-                'cookie': os.environ['COOKIE']
+                'cookie': environ['COOKIE']
             }) as session:
             async with session.get(f'{url}/anime/random') as res:
                 soup = BeautifulSoup(await res.text(), 'html.parser')
