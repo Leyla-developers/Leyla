@@ -284,7 +284,7 @@ class Utilities(commands.Cog):
             },
             {
                 "name": "Количество участников",
-                "value": request['information']['mmebers'],
+                "value": request['information']['members'],
                 "inline": True
             },
             {
