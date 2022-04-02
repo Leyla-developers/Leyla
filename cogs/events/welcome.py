@@ -21,7 +21,7 @@ class Welcome(commands.Cog):
                     data['welcome_message'] = data['welcome_message'].replace('[guild]', member.guild.name)
                     data['welcome_message'] = data['welcome_message'].replace('[guildMembers]', str(len(member.guild.members)))
                     
-                    if data['welcome_messages']:
+                    if 'welcome_messages' in data.keys():
                         data['welcome_messages'] = data['welcome_messages'].replace('[memberMention]', member.mention)
                         data['welcome_messages'] = data['welcome_messages'].replace('[member]', member.name)
                         data['welcome_messages'] = data['welcome_messages'].replace('[guild]', member.guild.name)
@@ -42,7 +42,7 @@ class Welcome(commands.Cog):
                     data['goodbye_message'] = data['goodbye_message'].replace('[guild]', member.guild.name)
                     data['goodbye_message'] = data['goodbye_message'].replace('[guildMembers]', str(len(member.guild.members)))
 
-                    if data['goodbye_messages']:
+                    if 'goodbye_messages' in data.keys():
                         data['goodbye_messages'] = data['goodbye_messages'].replace('[memberMention]', member.mention)
                         data['goodbye_messages'] = data['goodbye_messages'].replace('[member]', member.name)
                         data['goodbye_messages'] = data['goodbye_messages'].replace('[guild]', member.guild.name)
