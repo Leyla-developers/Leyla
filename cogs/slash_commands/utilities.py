@@ -160,7 +160,7 @@ class Utilities(commands.Cog):
                     url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
                 )
 
-                await inter.send('Благодарю за поддержку сервера! <3', embed=embed)
+                await inter.send('Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None, embed=embed)
 
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
