@@ -354,13 +354,31 @@ class Settings(commands.Cog):
                 }
             )
 
-
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(welcomer)**', 
                 description="Настройки велкомера применены успешно!!", 
                 fields=[{'name': 'Каналы', 'value': f'{welcome_channel.mention} / {goodbye_channel.mention}'}]
             )
         )
+
+    @welcome.sub_command(name='info', description='Информация о велкомере')
+    async def welcome_info(self, inter):
+        if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:
+            raise CustomError("Велкомер не настроен на этом сервере!")
+        else:
+            data = await self.bot.config.DB.welcome.find_one({"_id": inter.guild.id})
+            embed = await self.bot.embeds.simple(title='Информация о велкомере', description=f"Основное сообщение:\n{data['welcome_message']}")
+
+            if 'welcome_messages' in data.keys():
+                for i in range(len(data['welcome_messages'])):
+                    embed.add_field(name=f"Номер [{i+1}] (Приветственное)", value=data['welcome_messages'][i], inline=True)
+            
+            if 'goodbye_messages' in data.keys():
+                for i in range(len(data['goodbye_messages'])):
+                    embed.add_field(name=f"Номер [{i+1}] (Прощальное)", value=data['welcome_messages'][i], inline=True)                
+
+            await inter.send(embed=embed)
+
 
     @welcome.sub_command(name="help", description="Справка по велкомеру (Сообщение при входе/выходе)")
     async def welcome_help(self, inter):
