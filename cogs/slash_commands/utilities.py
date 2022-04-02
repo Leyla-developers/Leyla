@@ -269,7 +269,7 @@ class Utilities(commands.Cog):
         ]
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
-            description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'],
+            description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' if guild in self.bot.guilds else '' + request['information']['longDescription'],
             url=request['information']['links']['invite'],
             footer={"text": request['information']['shortDescription']},
             fields=[{
