@@ -260,11 +260,11 @@ class Utilities(commands.Cog):
             request = await response.json()
 
         links_array = [
-            f"Ютуб: {request['information']['links']['invite'] if request['information']['links']['invite'] else 'На этот сервер нет инвайта'}",
-            f"Ютуб: {request['information']['links']['twitch'] if request['information']['links']['twitch'] else 'У этого сервера нет твич канала('}",
-            f"Ютуб: {request['information']['links']['steam'] if request['information']['links']['steam'] else 'У этого сервера нет стим-группы('}",
-            f"Ютуб: {request['information']['links']['vk'] if request['information']['links']['vk'] else 'У этого сервера нет вк-группы/беседы('}",
-            f"Ютуб: {request['information']['links']['site'] if request['information']['links']['site'] else 'У этого сервера нет сайта('}",
+            f"Инвайт: {request['information']['links']['invite'] if request['information']['links']['invite'] else 'На этот сервер нет инвайта'}",
+            f"Твич: {request['information']['links']['twitch'] if request['information']['links']['twitch'] else 'У этого сервера нет твич канала('}",
+            f"Стим: {request['information']['links']['steam'] if request['information']['links']['steam'] else 'У этого сервера нет стим-группы('}",
+            f"ВК: {request['information']['links']['vk'] if request['information']['links']['vk'] else 'У этого сервера нет вк-группы/беседы('}",
+            f"Сайт: {request['information']['links']['site'] if request['information']['links']['site'] else 'У этого сервера нет сайта('}",
             f"Ютуб: {request['information']['links']['youtube'] if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала('}",
         ]
         embed = await self.bot.embeds.simple(
@@ -272,31 +272,28 @@ class Utilities(commands.Cog):
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' if guild in self.bot.guilds else '' + request['information']['longDescription'],
             url=request['information']['links']['invite'],
             footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
-            fields=[{
-                "name": "Ссылки на BotiCord",
-                "value": "\n".join(request['links']),
-                "inline": True
-            },
-            {
-                "name": "Количество бампов (оценок)",
-                "value": request['information']['bumps'],
-                "inline": True
-            },
-            {
-                "name": "Количество участников",
-                "value": request['information']['members'],
-                "inline": True
-            },
-            {
-                "name": "Ссылки",
-                "value": "\n".join(links_array),
-                "inline": True
-            },
-            {
-                "name": "Тэги",
-                "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
-                "inline": True
-            }],
+            fields=[
+                {
+                    "name": "Количество бампов (оценок)",
+                    "value": request['information']['bumps'],
+                    "inline": True
+                },
+                {
+                    "name": "Количество участников",
+                    "value": request['information']['members'],
+                    "inline": True
+                },
+                {
+                    "name": "Ссылки",
+                    "value": "\n".join(links_array),
+                    "inline": True
+                },
+                {
+                    "name": "Тэги",
+                    "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                    "inline": True
+                }
+            ],
         )
 
         if request['shortCode']:
