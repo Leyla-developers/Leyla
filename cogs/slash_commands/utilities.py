@@ -260,12 +260,12 @@ class Utilities(commands.Cog):
             request = await response.json()
 
         links_array = [
-            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else ,
-            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'],
-            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'],
-            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'],
-            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'],
-            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'],
+            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else 'Инвайт ссылки нет',
+            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else 'Ссылки на твич нет(',
+            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else 'Стим группы у этого сервера нет',
+            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else 'ВК группы у сервера нет',
+            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else 'У сервера нет сайта',
+            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала',
         ]
 
         embed = await self.bot.embeds.simple(
