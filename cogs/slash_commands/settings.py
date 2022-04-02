@@ -317,11 +317,11 @@ class Settings(commands.Cog):
         goodbye_channel: disnake.TextChannel, 
         welcome_message: str = None, 
         goodbye_message: str = None,
-        main_welcome_or_not: Literal['Изменить основное сообщение', 'Изменить дополнительное'] = 'Изменить основное сообщение'
+        main_welcome_or_not: Literal['Изменить основное сообщение', 'Добавить новое'] = 'Изменить основное сообщение'
     ):
         welcome_mode = {
             'Изменить основное сообщение': 1,
-            'Изменить дополнительное': 2
+            'Добавить новое': 2
         }
 
         if await self.bot.config.DB.welcome.count_documents({"_id": inter.guild.id}) == 0:

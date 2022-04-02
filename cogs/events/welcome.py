@@ -22,10 +22,10 @@ class Welcome(commands.Cog):
                     data['welcome_message'] = data['welcome_message'].replace('[guildMembers]', str(len(member.guild.members)))
                     
                     if 'welcome_messages' in data.keys():
-                        data['welcome_messages'] = data['welcome_messages'].replace('[memberMention]', member.mention)
-                        data['welcome_messages'] = data['welcome_messages'].replace('[member]', member.name)
-                        data['welcome_messages'] = data['welcome_messages'].replace('[guild]', member.guild.name)
-                        data['welcome_messages'] = data['welcome_messages'].replace('[guildMembers]', str(len(member.guild.members)))
+                        data['welcome_messages'] = [i.replace('[memberMention]', member.mention) for i in data['welcome_messages']]
+                        data['welcome_messages'] = [i.replace('[member]', member.name) for i in data['welcome_messages']]
+                        data['welcome_messages'] = [i.replace('[guild]', member.guild.name) for i in data['welcome_messages']]
+                        data['welcome_messages'] = [i.replace('[guildMembers]', str(len(member.guild.members))) for i in data['welcome_messages']]
 
                     await member.guild.get_channel(
                         data['welcome_channel']).send(
@@ -47,10 +47,10 @@ class Welcome(commands.Cog):
                     data['goodbye_message'] = data['goodbye_message'].replace('[guildMembers]', str(len(member.guild.members)))
 
                     if 'goodbye_messages' in data.keys():
-                        data['goodbye_messages'] = data['goodbye_messages'].replace('[memberMention]', member.mention)
-                        data['goodbye_messages'] = data['goodbye_messages'].replace('[member]', member.name)
-                        data['goodbye_messages'] = data['goodbye_messages'].replace('[guild]', member.guild.name)
-                        data['goodbye_messages'] = data['goodbye_messages'].replace('[guildMembers]', str(len(member.guild.members)))
+                        data['goodbye_messages'] = [i.replace('[memberMention]', member.mention) for i in data['goodbye_messages']]
+                        data['goodbye_messages'] = [i.replace('[member]', member.name) for i in data['goodbye_messages']]
+                        data['goodbye_messages'] = [i.replace('[guild]', member.guild.name) for i in data['goodbye_messages']]
+                        data['goodbye_messages'] = [i.replace('[guildMembers]', str(len(member.guild.members))) for i in data['goodbye_messages']]
 
                     await member.guild.get_channel(
                         data['goodbye_channel']).send(
