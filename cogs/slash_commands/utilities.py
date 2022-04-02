@@ -291,6 +291,10 @@ class Utilities(commands.Cog):
                 "name": "Ссылки",
                 "value": "\n".join(links_array),
                 "inline": True
+            },
+            {
+                "name": "Тэги",
+                "value": request['information']['tags'] if len(request['information']['tags']) > 0 else "Тут нет тэгов."
             }],
             thumbnail=request['information']['avatar'] if request['information']['avatar'] else None
         )
