@@ -271,7 +271,7 @@ class Utilities(commands.Cog):
             title=request['information']['name'],
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' if guild in self.bot.guilds else '' + request['information']['longDescription'],
             url=request['information']['links']['invite'],
-            footer={"text": request['information']['shortDescription']},
+            footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
             fields=[{
                 "name": "Ссылки на BotiCord",
                 "value": "\n".join(request['links']),
