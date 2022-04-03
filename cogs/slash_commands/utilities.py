@@ -142,6 +142,7 @@ class Utilities(commands.Cog):
             "serverAvatar": inter.guild.icon.url if inter.guild.icon else None,
             "serverMembersAllCount": len(inter.guild.members),
             "serverOwnerID": str(inter.guild.owner_id),
+            "serverOwnerTag": str(inter.guild.owner),
         }
 
         async with self.bot.session.post(
