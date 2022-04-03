@@ -224,7 +224,7 @@ class Utilities(commands.Cog):
                             "value": round(how_many * (data[upper_currency]['Value'] / data[upper_currency]['Nominal']), 2),
                         },
                     ],
-                    footer={"text": 'Вся информация взята с оффициального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
+                    footer={"text": 'Вся информация взята с официального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
                 ), view=view
             )
         else:
