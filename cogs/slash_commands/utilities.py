@@ -1,3 +1,4 @@
+from email.mime import image
 import re
 from datetime import datetime
 import typing
@@ -304,6 +305,18 @@ class Utilities(commands.Cog):
             embed.set_thumbnail(url=request['information']['avatar'])
 
         await inter.send(embed=embed)
+
+    @commands.slash_command(name='resize', description="Изменение вашего изображения")
+    async def image_resize(self, inter, image_link: str, x: int, y: int):
+        if (x+y) > (2048+1080):
+            raise CustomError('Можно максимум 2К (2048 x 1080)')
+        else:
+            async with self.bot.session.get(image_link) as response:
+                data = await response.read()
+
+            img = Image.open(BytesIO(data)).resize((x, y))
+            img.save('resized_image.png')
+            await inter.send('Ваше изображение ->', file=disnake.File(BytesIO(open('resized_image.png', 'rb').read()), 'resized_image.png'))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
