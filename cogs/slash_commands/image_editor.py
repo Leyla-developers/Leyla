@@ -31,7 +31,10 @@ class ImageEditor(commands.Cog):
 
     @image_editor.sub_command(name='rotate', description='Вертела я эти ваши картинки...')
     async def rotate_image(self, inter, degree: float, expand: commands.Param(default=True, choices=['Изменять размер', 'Не изменять размер']), image: Union[disnake.User, str]):
-        image = pil.Editor(pil.load_image(image.display_avatar.url))
+        image = pil.Editor(pil.load_image(image.display_avatar.url if isinstance(image, disnake.User) else image))
         image.rotate(degree, expand)
-        file = disnake.File(image.image_bytes, f'{image.name}.png')
+        file = disnake.File(image.image_bytes, f'rotated_image.png')
         await inter.send('Люблю всё вертеть.', file=file)
+
+def setup(bot):
+    bot.add_cog(ImageEditor(bot))
