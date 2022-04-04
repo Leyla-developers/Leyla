@@ -87,6 +87,7 @@ class FunSlashCommands(commands.Cog):
             description="Второй пользователь"
         )
     ):
+        await inter.response.defer()
         percentage = randint(1, 100)
         get_image = ship_image(percentage, user_one, second_user)
         file = disnake.File(get_image.image_bytes, 'ship_img.png')
