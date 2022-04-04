@@ -306,7 +306,6 @@ class Utilities(commands.Cog):
             embed.set_thumbnail(url=request['information']['avatar'])
 
         await inter.send(embed=embed)
-
     @commands.slash_command(name='resize', description="Изменение вашего изображения")
     async def image_resize(self, inter, image_link: str, x: int, y: int):
         if (x+y) > (2048+1080):

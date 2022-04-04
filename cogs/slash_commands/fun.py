@@ -1,11 +1,12 @@
 from io import BytesIO
 from PIL import Image
-from random import randint
+from random import randint, choice
 
 import disnake
 from disnake.ext import commands
 
 from Tools.exceptions import CustomError
+from Tools.images import ship_image
 from services import waifu_pics
 
 
@@ -73,6 +74,28 @@ class FunSlashCommands(commands.Cog):
         embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
         return await inter.send(embed=embed)
 
+    @commands.slash_command(name="ship", description="Создание шип-картинки")
+    async def ship_not_ship(
+        self, 
+        inter, 
+        user_one: disnake.User = commands.Param(
+            default=lambda inter: inter.author,
+            description="Первый пользователь"
+        ),
+        second_user: disnake.User = commands.Param(
+            default=lambda inter: choice(inter.guild.members),
+            description="Второй пользователь"
+        )
+    ):
+        percentage = randint(1, 100)
+        get_image = ship_image(percentage, user_one, second_user)
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title=f'*Толкнула {user_one.name} на {second_user.name}* <:awww:878155710796550145>' if percentage > 30 else 'Хрусь 💔',
+                image='attachment://ship_img.png'
+            )
+        )
 
 def setup(bot):
     bot.add_cog(FunSlashCommands(bot))
