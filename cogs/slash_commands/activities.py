@@ -21,7 +21,15 @@ class Activities(commands.Cog):
         }
 
     @commands.slash_command(description="Всякие разные развлечения для голосового кАнальчика")
-    async def activity(self, inter, voice_channel: disnake.VoiceChannel, activity: Literal['youtube', 'poker', 'betrayal', 'fishing', 'chess', 'letter-tile', 'word-snack', 'doodle-crew']):
+    async def activity(
+        self, 
+        inter, 
+        voice_channel: disnake.VoiceChannel = commands.Param(
+            name="Голосовой чат", 
+            description="Выбор голосового чата"
+        ), 
+        activity: Literal['youtube', 'poker', 'betrayal', 'fishing', 'chess', 'letter-tile', 'word-snack', 'doodle-crew'] = 'youtube'
+    ):
         data = {
             'max_age': 604800,
             'max_uses': 100,
