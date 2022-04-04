@@ -88,12 +88,11 @@ class FunSlashCommands(commands.Cog):
         )
     ):
         await inter.response.defer()
-        message = await inter.send('Подождите пару секунд, пожалуйста!')
         percentage = randint(1, 100)
         get_image = ship_image(percentage, user_one, second_user)
         file = disnake.File(get_image.image_bytes, 'ship_img.png')
 
-        await message.edit_original_message(
+        await inter.send(
             embed=await self.bot.embeds.simple(
                 title=f'*Толкнула {user_one.name} на {second_user.name}* <:awww:878155710796550145>' if percentage > 30 else 'Хрусь 💔',
                 image='attachment://ship_img.png'
