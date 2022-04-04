@@ -93,6 +93,7 @@ class FunSlashCommands(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title=f'*Толкнула {user_one.name} на {second_user.name}* <:awww:878155710796550145>' if percentage > 30 else 'Хрусь 💔',
+                type='image'
                 image='attachment://ship_img.png'
             )
         )
