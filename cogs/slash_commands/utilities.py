@@ -26,7 +26,11 @@ class Utilities(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.slash_command(
+    @commands.slash_command(name='utilities')
+    async def utils(self, inter):
+        ...
+
+    @utils.sub_command(
         description="Вывод аватара участника"
     )
     async def avatar(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
@@ -42,7 +46,7 @@ class Utilities(commands.Cog):
         )
         return await inter.send(embed=embed)
 
-    @commands.slash_command(
+    @utils.sub_command(
         description='Перевод в/из азбуки морзе.'
     )
     async def morse(self, inter, variant: typing.Literal['to', 'from'], *, code):
@@ -57,7 +61,7 @@ class Utilities(commands.Cog):
         )
         await inter.send(embed=embed)
 
-    @commands.slash_command(
+    @utils.sub_command(
         description="Вывод информации о гильдии",
     )
     async def guild(self, inter: disnake.ApplicationCommandInteraction):
@@ -80,7 +84,7 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=embed)
 
-    @commands.slash_command(
+    @utils.sub_command(
         description="Вывод информации о юзере"
     )
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
@@ -116,7 +120,7 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=embed, file=None if user.banner else file)
 
-    @commands.slash_command(
+    @utils.sub_command(
         description="Получить эмодзик"
     )
     async def emoji(self, inter, emoji):
@@ -132,7 +136,7 @@ class Utilities(commands.Cog):
 
             await inter.send(embed=embed)
 
-    @commands.slash_command(description="Данная команда может поднять сервер в топе на boticord'e")
+    @utils.sub_command(description="Данная команда может поднять сервер в топе на boticord'e")
     async def up(self, inter: disnake.ApplicationCommandInteraction):
         data = {
             "serverID": str(inter.guild.id),
@@ -164,12 +168,12 @@ class Utilities(commands.Cog):
 
                 await inter.send('Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None, embed=embed)
 
-    @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
+    @utils.sub_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
         emoji = random.choice(self.bot.emojis)
         await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[{'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
 
-    @commands.slash_command(name="random-anime", description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
+    @utils.sub_command(name="random-anime", description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
     async def random_anime(self, inter):
         url = 'https://animego.org'
 
@@ -193,7 +197,7 @@ class Utilities(commands.Cog):
             )
         )
 
-    @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
+    @utils.sub_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
     async def currency_converter(self, inter, currency, how_many: float = 0):
         async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
             cb_data = await response.text()
@@ -231,7 +235,7 @@ class Utilities(commands.Cog):
         else:
             await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=view)
 
-    @commands.slash_command(description="Переведу тебе всё, что можно!")
+    @utils.sub_command(description="Переведу тебе всё, что можно!")
     async def trasnlate(self, inter, text, to_language, from_language = 'ru'):
         data = await Translator().translate(text, to_language, from_language)
 
@@ -244,7 +248,7 @@ class Utilities(commands.Cog):
             )
         )
 
-    @commands.slash_command(description="Помогу решить почти любой пример!")
+    @utils.sub_command(description="Помогу решить почти любой пример!")
     async def calculator(self, inter, expression: str):
         async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={expression}') as response:
             data = await response.text()
@@ -256,7 +260,7 @@ class Utilities(commands.Cog):
             )
         )
 
-    @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
+    @utils.sub_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
     async def boticord_info_cmd(self, inter, guild: disnake.Guild = None):
         async with self.bot.session.get(f'https://api.boticord.top/v1/server/{guild.id if guild else inter.guild.id}') as response:
             request = await response.json()
@@ -306,17 +310,6 @@ class Utilities(commands.Cog):
             embed.set_thumbnail(url=request['information']['avatar'])
 
         await inter.send(embed=embed)
-    @commands.slash_command(name='resize', description="Изменение вашего изображения")
-    async def image_resize(self, inter, image_link: str, x: int, y: int):
-        if (x+y) > (2048+1080):
-            raise CustomError('Можно максимум 2К (2048 x 1080)')
-        else:
-            async with self.bot.session.get(image_link) as response:
-                data = await response.read()
-
-            img = Image.open(BytesIO(data)).resize((x, y))
-            img.save('resized_image.png')
-            await inter.send('Ваше изображение ->', file=disnake.File(BytesIO(open('resized_image.png', 'rb').read()), 'resized_image.png'))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
