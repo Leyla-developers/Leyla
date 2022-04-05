@@ -1,4 +1,4 @@
-from email.mime import image
+import calendar as cld
 import re
 from datetime import datetime
 import typing
@@ -269,7 +269,7 @@ class Utilities(commands.Cog):
             f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else 'У сервера нет сайта',
             f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала',
         ]
-
+        md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
@@ -277,7 +277,7 @@ class Utilities(commands.Cog):
             footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
             fields=[
                 {
-                    "name": "Количество бампов (оценок)",
+                    "name": f"Количество бампов (оценок) | До сброса (дней): {md - datetime.now().day}",
                     "value": request['information']['bumps'],
                     "inline": True
                 },
