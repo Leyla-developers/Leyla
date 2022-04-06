@@ -59,7 +59,7 @@ class Ranks(commands.Cog):
         if message.channel.id in ignore_data['channels']:
             return
 
-        if message.channel.id in [self.bot.get_channel(i).channels for i in ignore_data['category']]:
+        if message.channel.id in [[i.id for i in self.bot.get_channel(i).channels] for i in ignore_data['category']][0]:
             return
         
         if message.author.id in ignore_data['users']:
