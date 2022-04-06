@@ -218,7 +218,7 @@ class Settings(commands.Cog):
             "name": "Игнорируемые категории", "value": ', '.join([self.bot.get_channel(i).name for i in all_level_data['category']]) if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
         },
         {
-            "name": "Игнорируемые ппользователи", "value": ', '.join([inter.guild.get_member(i).mention for i in all_level_data['users']]) if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
+            "name": "Игнорируемые пользователи", "value": ', '.join([inter.guild.get_member(i).mention for i in all_level_data['users']]) if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
         }]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
