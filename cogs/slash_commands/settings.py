@@ -212,13 +212,13 @@ class Settings(commands.Cog):
             "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено", "inline": True,
         },
         {
-            "name": "Игнорируемые каналы", "value": all_level_data['channels'] if len(all_level_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
+            "name": "Игнорируемые каналы", "value": ', '.join([self.bot.get_channel(i).mention for i in all_level_data['channels']]) if len(all_level_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
         },
         {
-            "name": "Игнорируемые категории", "value": all_level_data['category'] if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
+            "name": "Игнорируемые категории", "value": ', '.join([self.bot.get_channel(i).mention for i in all_level_data['category']]) if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
         },
         {
-            "name": "Игнорируемые ппользователи", "value": all_level_data['users'] if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
+            "name": "Игнорируемые ппользователи", "value": ', '.join([self.bot.get_channel(i).mention for i in all_level_data['users']]) if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
         }]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
