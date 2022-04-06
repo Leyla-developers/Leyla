@@ -45,6 +45,8 @@ class Ranks(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
+        ignore_data = await self.bot.config.DB.levels.find_one({"_id": message.guild.id})
+
         if await self.bot.config.DB.levels.count_documents({"_id": message.guild.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"_id": message.guild.id, "mode": False, "channel": None, "roles": None, "message": None})
 
@@ -52,6 +54,15 @@ class Ranks(commands.Cog):
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
 
         if message.author.bot: 
+            return
+        
+        if message.channel.id in ignore_data['channels']:
+            return
+
+        if message.channel.id in ignore_data['category']:
+            return
+        
+        if message.author.id in ignore_data['users']:
             return
 
         else:
