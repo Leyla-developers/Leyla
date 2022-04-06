@@ -107,7 +107,8 @@ class FunSlashCommands(commands.Cog):
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
                     await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
 
-                await inter.send("Лобби создано! Игра начнётся, когда будет >=3 игроков.")
+                msg = await inter.send("Лобби создано! Игра начнётся, когда будет >=3 игроков.")
+                # if (int(msg.created_at.strftime('%H%M'))+5) - int(datetime.datetime.now().strftime('%H%M')) > data['start_time']:
             else:
                 raise CustomError("Нет начатой игры!")
 
@@ -133,6 +134,7 @@ class FunSlashCommands(commands.Cog):
                             rand = randint(1, 2)
                             for i in range(1, len(data['joined'])):
                                 member = message.guild.get_member(i)
+                                await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [message.author.id]}})
                             if rand == 1:
                                 msg = await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
                             else:
