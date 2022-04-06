@@ -315,7 +315,8 @@ class Settings(commands.Cog):
             str(ignore_object): self.bot.get_channel(ignore_object) if ignore_object in [i.id for i in inter.guild.channels] else None,
             str(ignore_object): inter.guild.get_member(ignore_object) if ignore_object in [i.id for i in inter.guild.members] else None,
         }
-        if not isinstance(ignore_object, (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
+
+        if not isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
             raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
         else:
             if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
