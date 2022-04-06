@@ -102,7 +102,7 @@ class FunSlashCommands(commands.Cog):
             if action == "Начать игру":
                 await self.bot.config.DB.russian_roulette.insert_one({"_id": inter.guild.id, "lobby": "rr", "step": [inter.author.id], "joined": [inter.author.id], "started_or_not": False, 'start_time': datetime.datetime.now().strftime("%H%M")})
                 data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
-                time.sleep(30)
+
                 if len(data['joined']) >= 3:
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
                     await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
@@ -112,7 +112,7 @@ class FunSlashCommands(commands.Cog):
                         raise CustomError("Игра не была начата, из-за малого количества участников")
                     else:
                         await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
-                        await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
+                        await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
 
                 await inter.send("Лобби создано!")
             else:
