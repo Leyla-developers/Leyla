@@ -324,13 +324,13 @@ class Settings(commands.Cog):
                 })
             else:
                 if isinstance(_object[str(ignore_object)], disnake.Member):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)]}})
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)].id}})
 
                 if isinstance(_object[str(ignore_object)], disnake.TextChannel):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)]}})
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)].id}})
 
                 if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)]}})
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)].id}})
         else:
             raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
 
