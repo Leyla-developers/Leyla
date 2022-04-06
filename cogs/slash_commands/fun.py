@@ -99,19 +99,22 @@ class FunSlashCommands(commands.Cog):
     @commands.slash_command(name='russian-roulette', description="Игра в русскую рулетку...)")
     async def fun_rr(self, inter, action: Literal['Войти', 'Начать игру']):
         if await self.bot.config.DB.russian_roulette.count_documents({"_id": inter.guild.id}) == 0:
-            data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
-            await self.bot.config.DB.russian_roulette.insert_one({"_id": inter.guild.id, "lobby": "rr", "step": [inter.author.id], "joined": [inter.author.id], "started_or_not": False, 'start_time': datetime.datetime.now().strftime("%H%M")})
-            time.sleep(30)
-            if len(data['joined']) >= 3:
-                await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
-                await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
-            else:
-                if len(data['joined']) <= 1:
-                    await self.bot.config.DB.russian_roulette.delete_one({"_id": inter.guild.id})
-                    raise CustomError("Игра не была начата, из-за малого количества участников")
-                else:
+            if action == "Начать игру":
+                data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
+                await self.bot.config.DB.russian_roulette.insert_one({"_id": inter.guild.id, "lobby": "rr", "step": [inter.author.id], "joined": [inter.author.id], "started_or_not": False, 'start_time': datetime.datetime.now().strftime("%H%M")})
+                time.sleep(30)
+                if len(data['joined']) >= 3:
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
                     await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
+                else:
+                    if len(data['joined']) <= 1:
+                        await self.bot.config.DB.russian_roulette.delete_one({"_id": inter.guild.id})
+                        raise CustomError("Игра не была начата, из-за малого количества участников")
+                    else:
+                        await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
+                        await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
+            else:
+                raise CustomError("Нет начатой игры!")
 
         else:
             if action == "Войти":
