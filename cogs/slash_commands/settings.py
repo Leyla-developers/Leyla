@@ -308,6 +308,17 @@ class Settings(commands.Cog):
                 description="**[memberMention]** - Упоминание участника, который зашёл\n**[member]** - Никнейм и тег зашедшего участника\n**[xp]** - Количество опыта, нужного до следующего уровня\n**[lvl]** - Показывает уровень, который участник получил при повышении."
             ), ephemeral=True
         )
+    
+    @level.sub_command(name='ignore', description="Настройка игнорирования (уровни), накладывающиеся на пользователя/канал/категорию")
+    async def level_ignore(self, inter, ignore_object: str = commands.Param(
+            choices=[
+                disnake.OptionChoice(name="Чаты", value=disnake.TextChannel),
+                disnake.OptionChoice(name="Категории", value=disnake.CategoryChannel),
+                disnake.OptionChoice(name="Пользователи", value=disnake.User)
+            ]
+        )
+    ):
+        await inter.send(ignore_object)
 
     @welcome.sub_command(name='setup', description='Устанавливает канал приветствий u-u')
     async def welcome_setup(
