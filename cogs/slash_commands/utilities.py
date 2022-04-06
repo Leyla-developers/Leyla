@@ -258,7 +258,7 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
     async def boticord_info_cmd(self, inter, guild: disnake.Guild = None):
-        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{guild.id if guild else inter.guild.id}') as response:
+        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{guild.id if guild in self.bot.guilds else inter.guild.id}') as response:
             request = await response.json()
 
         links_array = [
