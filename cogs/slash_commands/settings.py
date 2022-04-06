@@ -315,9 +315,7 @@ class Settings(commands.Cog):
             str(ignore_object): self.bot.get_channel(ignore_object) if ignore_object in [i.id for i in inter.guild.channels] else inter.guild.get_member(ignore_object),
         }
 
-        if not isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
-            raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
-        else:
+        if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
             if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
                 await self.bot.config.DB.levels.insert_one({
                     "_id": inter.guild.id, "mode": False, "channel": None,
@@ -333,14 +331,16 @@ class Settings(commands.Cog):
 
                 if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
                     await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)]}})
+        else:
+            raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
             
-            await inter.send(
-                embed=await self.bot.embeds.simple(
-                    title="Leyla settings **(levels)**",
-                    description=f"Чат теперь будет игнорироваться!" if isinstance(ignore_object, disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(ignore_object, disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(ignore_object, disnake.CategoryChannel) else 'Как ты это сделал!?',
-                    fields=[{'name': 'Игнорируемый объект', 'value': ignore_object.mention}]
-                )
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Leyla settings **(levels)**",
+                description=f"Чат теперь будет игнорироваться!" if isinstance(ignore_object, disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(ignore_object, disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(ignore_object, disnake.CategoryChannel) else 'Как ты это сделал!?',
+                fields=[{'name': 'Игнорируемый объект', 'value': ignore_object.mention}]
             )
+        )
 
     @welcome.sub_command(name='setup', description='Устанавливает канал приветствий u-u')
     async def welcome_setup(
