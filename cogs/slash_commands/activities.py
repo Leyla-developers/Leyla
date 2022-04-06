@@ -25,7 +25,7 @@ class Activities(commands.Cog):
         self, 
         inter, 
         voice_channel: disnake.VoiceChannel = commands.Param(
-            name="Голосовой чат", 
+            name="голосовой чат", 
             description="Выбор голосового чата"
         ), 
         activity: Literal['youtube', 'poker', 'betrayal', 'fishing', 'chess', 'letter-tile', 'word-snack', 'doodle-crew'] = 'youtube'

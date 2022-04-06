@@ -80,12 +80,12 @@ class FunSlashCommands(commands.Cog):
         inter, 
         user_one: disnake.User = commands.Param(
             default=lambda inter: inter.author,
-            name="Пользователь (1)",
+            name="пользователь (1)",
             description="Первый пользователь"
         ),
         second_user: disnake.User = commands.Param(
             default=lambda inter: choice(inter.guild.members),
-            name="Пользователь (2)",
+            name="пользователь (2)",
             description="Второй пользователь"
         )
     ):
