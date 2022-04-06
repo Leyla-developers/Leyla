@@ -312,8 +312,7 @@ class Settings(commands.Cog):
     @level.sub_command(name='ignore', description="Настройка игнорирования (уровни), накладывающиеся на пользователя/канал/категорию")
     async def level_ignore(self, inter, ignore_object):
         _object = {
-            str(ignore_object): self.bot.get_channel(ignore_object) if ignore_object in [i.id for i in inter.guild.channels] else None,
-            str(ignore_object): inter.guild.get_member(ignore_object) if ignore_object in [i.id for i in inter.guild.members] else None,
+            str(ignore_object): self.bot.get_channel(ignore_object) if ignore_object in [i.id for i in inter.guild.channels] else inter.guild.get_member(ignore_object),
         }
 
         if not isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
