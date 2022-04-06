@@ -321,17 +321,17 @@ class Settings(commands.Cog):
             if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
                 await self.bot.config.DB.levels.insert_one({
                     "_id": inter.guild.id, "mode": False, "channel": None,
-                    "roles": None, "message": None, "users": [_object[str(ignore_object)] if isinstance(ignore_object, disnake.Member) else None],
-                    "channels": [_object[str(ignore_object)] if isinstance(ignore_object, disnake.TextChannel) else None], "category": [_object[str(ignore_object)] if isinstance(ignore_object, disnake.CategoryChannel) else None]
+                    "roles": None, "message": None, "users": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.Member) else None],
+                    "channels": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.TextChannel) else None], "category": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else None]
                 })
             else:
-                if isinstance(ignore_object, disnake.Member):
+                if isinstance(_object[str(ignore_object)], disnake.Member):
                     await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)]}})
 
-                if isinstance(ignore_object, disnake.TextChannel):
+                if isinstance(_object[str(ignore_object)], disnake.TextChannel):
                     await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)]}})
 
-                if isinstance(ignore_object, disnake.CategoryChannel):
+                if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
                     await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)]}})
             
             await inter.send(
