@@ -310,7 +310,7 @@ class Settings(commands.Cog):
         )
     
     @level.sub_command(name='ignore', description="Настройка игнорирования (уровни), накладывающиеся на пользователя/канал/категорию")
-    async def level_ignore(self, inter, ignore_object: str = commands.Param(
+    async def level_ignore(self, inter, ignore_object: commands.Param(
             choices=[
                 disnake.OptionChoice(name="Чаты", value=disnake.TextChannel),
                 disnake.OptionChoice(name="Категории", value=disnake.CategoryChannel),
