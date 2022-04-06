@@ -83,7 +83,7 @@ class Ranks(commands.Cog):
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
                     await self.get_level_up_message(message)
                 else:
-                    await sleep(60)
+                    # await sleep(60)
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(1, 3)+data['xp']}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
