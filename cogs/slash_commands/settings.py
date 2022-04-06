@@ -199,6 +199,7 @@ class Settings(commands.Cog):
     @level.sub_command(name="info", description="Вся информация о ваших настройках в уровнях")
     async def level_info(self, inter):
         all_level_data = dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))
+        ignore_data = await self.bot.config.DB.levels.find_one({"_id": message.guild.id})
         fields_data = [{
             "name": "Режим", "value": "Включен" if all_level_data['mode'] else "Выключен", "inline": True,
         },
@@ -209,7 +210,16 @@ class Settings(commands.Cog):
             "name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if int(i) in [i.id for i in inter.guild.roles]]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"
         },
         {
-            "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено"
+            "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено", "inline": True,
+        },
+        {
+            "name": "Игнорируемые каналы", "value": ignore_data['channels'] if len(ignore_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
+        },
+        {
+            "name": "Игнорируемые категории", "value": ignore_data['category'] if len(ignore_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
+        },
+        {
+            "name": "Игнорируемые ппользователи", "value": ignore_data['users'] if len(ignore_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
         }]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
@@ -221,8 +231,8 @@ class Settings(commands.Cog):
         
         await inter.send(embed=embed)
 
-    @level.sub_command(description="Настройка системы уровней")
-    async def mode(self, inter, system_mode: Literal['Включить', 'Выключить']):
+    @level.sub_command(name="mode", description="Настройка системы уровней")
+    async def level_mode(self, inter, system_mode: Literal['Включить', 'Выключить']):
         mode = {
             "Включить": True,
             "Выключить": False,
@@ -239,8 +249,8 @@ class Settings(commands.Cog):
         
         await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(ranks)**", description="Режим уровней успешно изменён."))
 
-    @level.sub_command(description="Настройка сообщения при повышении уровня")
-    async def message(self, inter, message):
+    @level.sub_command(name="message", description="Настройка сообщения при повышении уровня")
+    async def level_message(self, inter, message):
         if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "message": message})
         else:
@@ -252,8 +262,8 @@ class Settings(commands.Cog):
             )
         )
 
-    @level.sub_command(description="Выбор канала в который будут приходить оповещения о повышении уровня")
-    async def channel(self, inter, channel: disnake.TextChannel):
+    @level.sub_command(name="channel", description="Выбор канала в который будут приходить оповещения о повышении уровня")
+    async def level_channel(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"_id": inter.guild.id, "channel": channel.id})
         if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id, "channel": channel.id}) != 0:
