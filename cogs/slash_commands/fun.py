@@ -78,16 +78,8 @@ class FunSlashCommands(commands.Cog):
     async def ship_not_ship(
         self, 
         inter, 
-        user_one: disnake.User = commands.Param(
-            default=lambda inter: inter.author,
-            name="пользователь (1)",
-            description="Первый пользователь"
-        ),
-        second_user: disnake.User = commands.Param(
-            default=lambda inter: choice(inter.guild.members),
-            name="пользователь (2)",
-            description="Второй пользователь"
-        )
+        user_one: disnake.User,
+        second_user: disnake.User
     ):
         await inter.response.defer()
         percentage = randint(1, 100)

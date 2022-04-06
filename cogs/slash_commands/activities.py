@@ -24,10 +24,7 @@ class Activities(commands.Cog):
     async def activity(
         self, 
         inter, 
-        voice_channel: disnake.VoiceChannel = commands.Param(
-            name="голосовой чат", 
-            description="Выбор голосового чата"
-        ), 
+        voice_channel: disnake.VoiceChannel,
         activity: Literal['youtube', 'poker', 'betrayal', 'fishing', 'chess', 'letter-tile', 'word-snack', 'doodle-crew'] = 'youtube'
     ):
         data = {
