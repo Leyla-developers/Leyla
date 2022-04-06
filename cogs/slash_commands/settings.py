@@ -325,13 +325,13 @@ class Settings(commands.Cog):
         }
         data = await self.bot.config.DB.levels.find_one({"_id": inter.guild.id})
 
-        if _object[str(ignore_object)] in data['category']:
+        if _object[str(ignore_object)].id in data['category']:
             raise CustomError("Эта категория уже игнорируется!")
 
-        elif _object[str(ignore_object)] in data['channels']:
+        elif _object[str(ignore_object)].id in data['channels']:
             raise CustomError("Этот чат уже игнорируется!")
 
-        elif _object[str(ignore_object)] in data['users']:
+        elif _object[str(ignore_object)].id in data['users']:
             raise CustomError("Этот участник уже игнорируется!")
         else:
             if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
