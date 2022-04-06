@@ -338,7 +338,7 @@ class Settings(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title="Leyla settings **(levels)**",
                 description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
-                fields=[{'name': 'Игнорируемый объект', 'value': ignore_object.mention}]
+                fields=[{'name': 'Игнорируемый объект', 'value': _object[str(ignore_object)].id.mention}]
             )
         )
 
