@@ -48,7 +48,7 @@ class Ranks(commands.Cog):
         ignore_data = await self.bot.config.DB.levels.find_one({"_id": message.guild.id})
 
         if await self.bot.config.DB.levels.count_documents({"_id": message.guild.id}) == 0:
-            await self.bot.config.DB.levels.insert_one({"_id": message.guild.id, "mode": False, "channel": None, "roles": None, "message": None})
+            await self.bot.config.DB.levels.insert_one({"_id": message.guild.id, "mode": False, "channel": None, "roles": None, "message": None, "users": [], "category": [], "channels": []})
 
         if await self.bot.config.DB.levels.count_documents({"guild": message.guild.id, "member": message.author.id}) == 0:
             await self.bot.config.DB.levels.insert_one({"guild": message.guild.id, "member": message.author.id, "xp": 0, "lvl": 1})
@@ -59,8 +59,11 @@ class Ranks(commands.Cog):
         if message.channel.id in ignore_data['channels']:
             return
 
-        if message.channel.id in [[i.id for i in self.bot.get_channel(i).channels] for i in ignore_data['category']][0]:
-            return
+        try:
+            if message.channel.id in [[i.id for i in self.bot.get_channel(i).channels] for i in ignore_data['category']][0]:
+                return
+        except:
+            pass
         
         if message.author.id in ignore_data['users']:
             return
