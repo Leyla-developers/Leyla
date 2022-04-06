@@ -316,21 +316,14 @@ class Settings(commands.Cog):
         }
 
         if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
-            if await self.bot.config.DB.levels.count_documents({"_id": inter.guild.id}) == 0:
-                await self.bot.config.DB.levels.insert_one({
-                    "_id": inter.guild.id, "mode": False, "channel": None,
-                    "roles": None, "message": None, "users": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.Member) else None],
-                    "channels": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.TextChannel) else None], "category": [_object[str(ignore_object)] if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else None]
-                })
-            else:
-                if isinstance(_object[str(ignore_object)], disnake.Member):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)].id}})
+            if isinstance(_object[str(ignore_object)], disnake.Member):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)].id}})
 
-                if isinstance(_object[str(ignore_object)], disnake.TextChannel):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)].id}})
+            if isinstance(_object[str(ignore_object)], disnake.TextChannel):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)].id}})
 
-                if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
-                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)].id}})
+            if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)].id}})
         else:
             raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
 
@@ -338,7 +331,33 @@ class Settings(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title="Leyla settings **(levels)**",
                 description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
-                fields=[{'name': 'Игнорируемый объект', 'value': _object[str(ignore_object)].id.mention}]
+                fields=[{'name': 'Игнорируемый объект', 'value': _object[str(ignore_object)].mention}]
+            )
+        )
+
+    @level.sub_command(name='ignore-remove', description="Данная команда убирает что-либо из игнорируемых")
+    async def level_ignore_remove(self, inter, ignore_object):
+        _object = {
+            str(ignore_object): self.bot.get_channel(int(ignore_object)) if int(ignore_object) in [i.id for i in inter.guild.channels] else inter.guild.get_member(int(ignore_object)),
+        }
+
+        if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
+            if isinstance(_object[str(ignore_object)], disnake.Member):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$pull": {"users": _object[str(ignore_object)].id}})
+
+            if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$pull": {"category": _object[str(ignore_object)].id}})
+
+            if isinstance(_object[str(ignore_object)], disnake.TextChannel):
+                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$pull": {"channels": _object[str(ignore_object)].id}})
+        else:
+            raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Leyla settings **(levels)**",
+                description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
+                fields=[{'name': 'Удалённый игнорируемый объект', 'value': _object[str(ignore_object)].mention}]
             )
         )
 
