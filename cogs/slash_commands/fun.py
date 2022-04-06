@@ -113,6 +113,8 @@ class FunSlashCommands(commands.Cog):
                     else:
                         await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
                         await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
+
+                await inter.send("Лобби создано!")
             else:
                 raise CustomError("Нет начатой игры!")
 
