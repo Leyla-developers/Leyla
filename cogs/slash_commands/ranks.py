@@ -64,7 +64,7 @@ class Ranks(commands.Cog):
                 return
         except:
             pass
-        
+
         if message.author.id in ignore_data['users']:
             return
 
@@ -80,12 +80,12 @@ class Ranks(commands.Cog):
 
                             for j in reverse_data.items():
                                 if int(j[0]) >= lvl:
-                                    await message.author.add_roles(message.guild.get_role(int(j[0])))
+                                    await message.author.add_roles(message.guild.get_role(int(j[-1])))
 
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
                     await self.get_level_up_message(message)
                 else:
-                    await sleep(60)
+                    # await sleep(60)
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": __import__('random').randint(1, 3)+data['xp']}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
