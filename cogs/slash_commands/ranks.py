@@ -72,13 +72,12 @@ class Ranks(commands.Cog):
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 if await self.formula(message, message.author):
                     if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
-                        for level_role_data in dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
-                            ...
-                        try:
-                            reverse_levels = {value: key for key, value in level_role_data.items()}
-                            await message.author.add_roles(message.guild.get_role(int(reverse_levels[[i for i in level_role_data.values() if lvl >= int(i)][0]])))
-                        except:
-                            pass
+                        for i in dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['roles']:
+                            reverse_data = {value:key for key, value in i.items()}
+
+                            for j in reverse_data.items():
+                                if int(j[0]) >= lvl:
+                                    await message.author.add_roles(message.guild.get_role(int(j[0])))
 
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
                     await self.get_level_up_message(message)
