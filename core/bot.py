@@ -40,5 +40,6 @@ class Leyla(commands.Bot):
         return self.remove_command(item)
 
     async def on_ready(self):
+        [await self.bot.config.DB.russian_roulette.delete_one({"_id": i['_id']}) async for i in self.bot.config.DB.russian_roulette.find()]
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()
