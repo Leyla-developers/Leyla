@@ -198,8 +198,7 @@ class Settings(commands.Cog):
 
     @level.sub_command(name="info", description="Вся информация о ваших настройках в уровнях")
     async def level_info(self, inter):
-        all_level_data = dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))
-        ignore_data = await self.bot.config.DB.levels.find_one({"_id": message.guild.id})
+        all_level_data = await self.bot.config.DB.levels.find_one({"_id": inter.guild.id})
         fields_data = [{
             "name": "Режим", "value": "Включен" if all_level_data['mode'] else "Выключен", "inline": True,
         },
@@ -213,13 +212,13 @@ class Settings(commands.Cog):
             "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено", "inline": True,
         },
         {
-            "name": "Игнорируемые каналы", "value": ignore_data['channels'] if len(ignore_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
+            "name": "Игнорируемые каналы", "value": all_level_data['channels'] if len(all_level_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
         },
         {
-            "name": "Игнорируемые категории", "value": ignore_data['category'] if len(ignore_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
+            "name": "Игнорируемые категории", "value": all_level_data['category'] if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
         },
         {
-            "name": "Игнорируемые ппользователи", "value": ignore_data['users'] if len(ignore_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
+            "name": "Игнорируемые ппользователи", "value": all_level_data['users'] if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
         }]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
@@ -324,26 +323,36 @@ class Settings(commands.Cog):
         _object = {
             str(ignore_object): self.bot.get_channel(int(ignore_object)) if int(ignore_object) in [i.id for i in inter.guild.channels] else inter.guild.get_member(int(ignore_object)),
         }
+        data = await self.bot.config.DB.levels.find_one({"_id": inter.guild.id})
 
-        if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
-            if isinstance(_object[str(ignore_object)], disnake.Member):
-                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)].id}})
+        if _object[str(ignore_object)] in data['category']:
+            raise CustomError("Эта категория уже игнорируется!")
 
-            if isinstance(_object[str(ignore_object)], disnake.TextChannel):
-                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)].id}})
+        elif _object[str(ignore_object)] in data['channels']:
+            raise CustomError("Этот чат уже игнорируется!")
 
-            if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
-                await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)].id}})
+        elif _object[str(ignore_object)] in data['users']:
+            raise CustomError("Этот участник уже игнорируется!")
         else:
-            raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
+            if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
+                if isinstance(_object[str(ignore_object)], disnake.Member):
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"users": _object[str(ignore_object)].id}})
 
-        await inter.send(
-            embed=await self.bot.embeds.simple(
-                title="Leyla settings **(levels)**",
-                description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
-                fields=[{'name': 'Игнорируемый объект', 'value': _object[str(ignore_object)].mention}]
+                if isinstance(_object[str(ignore_object)], disnake.TextChannel):
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"channels": _object[str(ignore_object)].id}})
+
+                if isinstance(_object[str(ignore_object)], disnake.CategoryChannel):
+                    await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$push": {"category": _object[str(ignore_object)].id}})
+            else:
+                raise CustomError("Нужно указать либо категорию, либо канал, либо участника!")
+
+            await inter.send(
+                embed=await self.bot.embeds.simple(
+                    title="Leyla settings **(levels)**",
+                    description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
+                    fields=[{'name': 'Игнорируемый объект', 'value': _object[str(ignore_object)].mention}]
+                )
             )
-        )
 
     @level.sub_command(name='ignore-remove', description="Данная команда убирает что-либо из игнорируемых")
     async def level_ignore_remove(self, inter, ignore_object):
