@@ -310,9 +310,9 @@ class Settings(commands.Cog):
         )
     
     @level.sub_command(name='ignore', description="Настройка игнорирования (уровни), накладывающиеся на пользователя/канал/категорию")
-    async def level_ignore(self, inter, ignore_object: int):
+    async def level_ignore(self, inter, ignore_object):
         _object = {
-            str(ignore_object): self.bot.get_channel(ignore_object) if ignore_object in [i.id for i in inter.guild.channels] else inter.guild.get_member(ignore_object),
+            str(ignore_object): self.bot.get_channel(int(ignore_object)) if int(ignore_object) in [i.id for i in inter.guild.channels] else inter.guild.get_member(int(ignore_object)),
         }
 
         if isinstance(_object[str(ignore_object)], (disnake.TextChannel, disnake.CategoryChannel, disnake.Member)):
@@ -337,7 +337,7 @@ class Settings(commands.Cog):
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title="Leyla settings **(levels)**",
-                description=f"Чат теперь будет игнорироваться!" if isinstance(ignore_object, disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(ignore_object, disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(ignore_object, disnake.CategoryChannel) else 'Как ты это сделал!?',
+                description=f"Чат теперь будет игнорироваться!" if isinstance(_object[str(ignore_object)], disnake.TextChannel) else 'Участник теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.Member) else 'Категория теперь будет игнорироваться!' if isinstance(_object[str(ignore_object)], disnake.CategoryChannel) else 'Как ты это сделал!?',
                 fields=[{'name': 'Игнорируемый объект', 'value': ignore_object.mention}]
             )
         )
