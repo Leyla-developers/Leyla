@@ -103,18 +103,11 @@ class FunSlashCommands(commands.Cog):
                 await self.bot.config.DB.russian_roulette.insert_one({"_id": inter.guild.id, "lobby": "rr", "step": [inter.author.id], "joined": [inter.author.id], "started_or_not": False, 'start_time': datetime.datetime.now().strftime("%H%M")})
                 data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
 
-                if len(data['joined']) >= 3:
+                if len(data['joined']) >= 2:
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
-                    await inter.send(f"Игра начата! Ходите, {data['joined'][0]}")
-                else:
-                    if len(data['joined']) <= 1:
-                        await self.bot.config.DB.russian_roulette.delete_one({"_id": inter.guild.id})
-                        raise CustomError("Игра не была начата, из-за малого количества участников")
-                    else:
-                        await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
-                        await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
+                    await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
 
-                await inter.send("Лобби создано!")
+                await inter.send("Лобби создано! Игра начнётся, когда будет >=3 игроков.")
             else:
                 raise CustomError("Нет начатой игры!")
 
