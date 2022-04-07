@@ -136,10 +136,11 @@ class FunSlashCommands(commands.Cog):
                                 member = message.guild.get_member(i)
                                 await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [message.author.id]}})
                             if rand == 1:
-                                msg = await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
+                                await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
                             else:
                                 await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
-                                msg = await message.channel.send(f'Тебе не повезло, выбываешь. :(. Следующий: {member.mention}')
+                                await message.channel.send(f'Тебе не повезло, выбываешь. :(. Следующий: {member.mention}')
+                            
 
         if (int(msg.created_at.strftime('%H%M'))+5) - int(datetime.datetime.now().strftime('%H%M')) > data['start_time']:
             await message.channel.send('Игра окончена. Время выбыло')
