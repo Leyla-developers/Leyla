@@ -102,12 +102,7 @@ class FunSlashCommands(commands.Cog):
             if action == "Начать игру":
                 await self.bot.config.DB.russian_roulette.insert_one({"_id": inter.guild.id, "lobby": "rr", "step": [inter.author.id], "joined": [inter.author.id], "started_or_not": False, 'start_time': datetime.datetime.now().strftime("%H%M")})
                 data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
-
-                if len(data['joined']) >= 2:
-                    await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
-                    await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
-
-                msg = await inter.send("Лобби создано! Игра начнётся, когда будет >=3 игроков.")
+                await inter.send("Лобби создано! Игра начнётся, когда будет >=3 игроков.")
                 # if (int(msg.created_at.strftime('%H%M'))+5) - int(datetime.datetime.now().strftime('%H%M')) > data['start_time']:
             else:
                 raise CustomError("Нет начатой игры!")
@@ -120,6 +115,11 @@ class FunSlashCommands(commands.Cog):
                 else:
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$push": {"joined": inter.author.id}})
                     await inter.send("Я подключила вас к игре.")
+
+                    if len(data['joined']) >= 2:
+                        await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
+                        await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
+            
             else:
                 raise CustomError("Сейчас уже идёт игра, подождите, пока игра закончится!")
 
