@@ -277,8 +277,8 @@ class Utilities(commands.Cog):
             footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
             fields=[
                 {
-                    "name": f"Количество бампов (оценок) | До сброса (дней): {md - datetime.now().day}",
-                    "value": request['information']['bumps'],
+                    "name": f"Количество бампов (оценок) | До сброса (дней)",
+                    "value": str(request['information']['bumps']) + " | " + str(md - datetime.now().day),
                     "inline": True
                 },
                 {
