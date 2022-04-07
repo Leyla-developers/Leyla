@@ -142,6 +142,7 @@ class FunSlashCommands(commands.Cog):
                                 else:
                                     if len(data['joined']) > 1:
                                         await message.channel.send(f"**Пиу**. Всё. Пока. Ход переходит к {message.guild.get_member(data['joined'][i]).mention}")
+                                        await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": data['joined'][i]}})
                                         await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][i]]}})
                                     else:
                                         await message.channel.send(f"Игра окончена. {message.guild.get_member(data['joined'][0]).mention} побеждает.")
