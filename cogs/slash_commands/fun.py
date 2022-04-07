@@ -128,7 +128,7 @@ class FunSlashCommands(commands.Cog):
         if await self.bot.config.DB.russian_roulette.count_documents({"_id": message.guild.id}) != 0:
             data = await self.bot.config.DB.russian_roulette.find_one({"_id": message.guild.id})
             if message.author.id in data['joined']:
-                if message.author.id in data['step']:
+                if message.author.id == data['step'][0]:
                     if data['started_or_not']:
                         if message.content.lower() == "выстрел":
                             rand = randint(1, 2)
