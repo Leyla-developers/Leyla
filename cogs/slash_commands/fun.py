@@ -140,11 +140,10 @@ class FunSlashCommands(commands.Cog):
                             else:
                                 await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
                                 await message.channel.send(f'Тебе не повезло, выбываешь. :(. Следующий: {member.mention}')
-                            
 
-        if (int(msg.created_at.strftime('%H%M'))+5) - int(datetime.datetime.now().strftime('%H%M')) > data['start_time']:
-            await message.channel.send('Игра окончена. Время выбыло')
-            await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
+                        if int(data['start_time']) == int(datetime.now().strftime('%H%M')+5):
+                            await message.channel.send('Игра окончена. Время выбыло')
+                            await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
 
 
 def setup(bot):

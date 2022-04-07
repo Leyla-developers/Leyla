@@ -215,5 +215,6 @@ class Genshin(commands.Cog):
         except AccountNotFound:
             raise CustomError("Такого аккаунта не существует.")
 
+
 def setup(bot):
     bot.add_cog(Genshin(bot))
