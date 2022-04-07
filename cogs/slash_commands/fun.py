@@ -146,7 +146,7 @@ class FunSlashCommands(commands.Cog):
                                     await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
                                 else:
                                     await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
-                                    await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][0]]}})
+                                    await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][1 if len(data['joined']) > 1 else 0]]}})
                                     if len(data['joined']) == 1:
                                         await message.channel.send(f"А {member.mention} везунчик.. Ты победил(-а)!")
                                         await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
