@@ -152,7 +152,7 @@ class FunSlashCommands(commands.Cog):
                                         await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
                                     else:
                                         await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
-                                        await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][0]]}})
+                                        await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][1 if len(data['joined']) > 1 else 0]]}})
                                         await message.channel.send(f'Тебе не повезло, выбываешь. :(. Следующий: {member.mention}')
 
                         if int(data['start_time']) == int(datetime.datetime.now().strftime('%H%M'))+5:
