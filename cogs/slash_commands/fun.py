@@ -135,7 +135,7 @@ class FunSlashCommands(commands.Cog):
                         if message.content.lower() == "выстрел":
                             rand = randint(1, 2)
                             for i in range(1, len(data['joined'])):
-                                member = message.guild.get_member(i)
+                                member = message.guild.get_member(int(i))
                                 await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [message.author.id]}})
                             if rand == 1:
                                 await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
