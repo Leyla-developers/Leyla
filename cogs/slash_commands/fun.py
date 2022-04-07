@@ -162,6 +162,5 @@ class FunSlashCommands(commands.Cog):
                             await message.channel.send('Игра окончена. Время выбыло')
                             await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
 
-
 def setup(bot):
     bot.add_cog(FunSlashCommands(bot))
