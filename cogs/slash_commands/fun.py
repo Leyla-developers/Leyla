@@ -110,13 +110,15 @@ class FunSlashCommands(commands.Cog):
         else:
             if action == "Войти":
                 data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
+
                 if data['started_or_not']:
                     raise CustomError("Сейчас уже идёт игра, подождите, пока игра закончится!")
                 else:
                     await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$push": {"joined": inter.author.id}})
                     await inter.send("Я подключила вас к игре.")
+                    new_data = await self.bot.config.DB.russian_roulette.find_one({"_id": inter.guild.id})
 
-                    if len(data['joined']) >= 2:
+                    if len(new_data['joined']) >= 2:
                         await self.bot.config.DB.russian_roulette.update_one({"_id": inter.guild.id}, {"$set": {"started_or_not": True}})
                         await inter.send(f"Игра начата! Ходите, {data['joined'][0]}. Чтобы сделать ход, пропишите 'Выстрел'")
             
@@ -141,7 +143,7 @@ class FunSlashCommands(commands.Cog):
                                 await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
                                 await message.channel.send(f'Тебе не повезло, выбываешь. :(. Следующий: {member.mention}')
 
-                        if int(data['start_time']) == int(datetime.now().strftime('%H%M')+5):
+                        if int(data['start_time']) == int(datetime.now().strftime('%H%M'))+5:
                             await message.channel.send('Игра окончена. Время выбыло')
                             await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
 
