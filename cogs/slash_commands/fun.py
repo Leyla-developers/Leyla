@@ -139,14 +139,11 @@ class FunSlashCommands(commands.Cog):
                                     await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][i]]}})
                                     member = message.guild.get_member(int(data['joined'][i]))
                                 else:
-                                    await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][0]]}})
-                                    member = message.guild.get_member(int(data['joined'][0]))
+                                    await message.channel.send(f"А {member.mention} везунчик.. Ты победил(-а)!")
+                                    await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
 
                                 if rand == 1:
                                     await message.channel.send(f'Тебе повезло :). Следующий: {member.mention}')
-                                elif len(data['joined']) == 1:
-                                    await message.channel.send(f"А {member.mention} везунчик.. Ты победил(-а)!")
-                                    await self.bot.config.DB.russian_roulette.delete_one({"_id": message.guild.id})
                                 else:
                                     await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$pull": {"joined": message.author.id, "step": message.author.id}})
                                     await self.bot.config.DB.russian_roulette.update_one({"_id": message.guild.id}, {"$set": {"step": [data['joined'][1 if len(data['joined']) > 1 else 0]]}})
