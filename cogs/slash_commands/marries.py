@@ -19,7 +19,7 @@ class MarryButton(disnake.ui.View):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!")
         else:
-            await inter.response.edit_original_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
+            await inter.edit_original_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
             await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
             self.value = True
             self.stop()
@@ -29,7 +29,7 @@ class MarryButton(disnake.ui.View):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
         else:
-            await inter.response.edit_original_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
+            await inter.edit_original_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
             self.value = False
             self.stop()
 
