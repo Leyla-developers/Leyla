@@ -41,7 +41,7 @@ class DivorceButton(disnake.ui.View):
     
     @disnake.ui.button(label="Разорвать брак", style=disnake.ButtonStyle.red)
     async def divorce_button_accept(self, button, inter):
-        if self.partner.id != inter.author.id:
+        if self.partner.id == inter.author.id:
             await inter.response.send_message("Принять должен тот, с кем вы сватались!", ephemeral=True)
         else:
             await inter.response.send_message(f'{self.partner.mention} Согласен(на) быть партнёром 🎉')
@@ -85,7 +85,7 @@ class Marries(commands.Cog):
                 embed=await self.bot.embeds.simple(
                     title='Вы уверены? :(', 
                     description=f"{inter.author.mention} вдруг захотел(-а) порвать брачные узы."),
-                view=DivorceButton(partner=self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'mate': inter.author.id}))['mate']) if await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) != 0 else self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': inter.author.id}))['_id']))
+                view=DivorceButton(partner=self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'mate': inter.author.id}))['_id']) if await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) != 0 else self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': inter.author.id}))['mate']))
             )
         else:
             raise CustomError("Вы и так не замужем, хихи.")
