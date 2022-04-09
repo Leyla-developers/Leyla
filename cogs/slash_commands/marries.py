@@ -92,8 +92,8 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name="marries", description="Выводит браки")
     async def marry_marries(self, inter):
-        data = [f'`{self.bot.get_user(i["_id"]).name}` + `{self.bot.get_user(i["mate"]).name}` | <t:{round(i["time"].timestamp())}:D>' async for i in self.bot.config.DB.marries.find() if self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': i['_id']}))['_id']) and self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': i['_id']}))['mate']) in inter.guild.members else "Нет парочек, получается."]
-        await inter.send(embed=await self.bot.embeds.simple(title='Парочки, которые есть тута', description='\n'.join(data)))
+        data = [f'`{self.bot.get_user(i["_id"]).name}` + `{self.bot.get_user(i["mate"]).name}` | <t:{round(i["time"].timestamp())}:D>' async for i in self.bot.config.DB.marries.find() if self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': i['_id']}))['_id']) and self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': i['_id']}))['mate']) in inter.guild.members]
+        await inter.send(embed=await self.bot.embeds.simple(title='Парочки, которые есть тута', description='\n'.join(data) if len(data) != 0 else "Нет парочек, получается."))
 
 def setup(bot):
     bot.add_cog(Marries(bot))
