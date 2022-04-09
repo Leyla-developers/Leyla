@@ -88,7 +88,7 @@ class Marries(commands.Cog):
                 view=DivorceButton()
                 )
         else:
-
+            raise CustomError("Вы и так не замужем, хихи.")
 
 
 def setup(bot):
