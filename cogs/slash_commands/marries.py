@@ -7,15 +7,13 @@ from Tools.exceptions import CustomError
 
 
 class MarryButton(disnake.ui.View):
-    message: disnake.Message
-
+    
     def __init__(self, partner: disnake.Member):
         super().__init__()
         self.partner = partner
         self.value = None
         self.config = Config()
     
-
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
         if self.partner.id != inter.author.id:
