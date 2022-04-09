@@ -1,5 +1,5 @@
 from datetime import datetime
-from this import d
+from config import Config
 
 import disnake
 from disnake.ext import commands
@@ -12,6 +12,7 @@ class MarryButton(disnake.ui.View):
         super().__init__()
         self.partner = partner
         self.value = None
+        self.config = Config()
     
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
@@ -19,7 +20,7 @@ class MarryButton(disnake.ui.View):
             await inter.response.send_message("Принять должен тот, кого вы попросили!")
         else:
             await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
-            await self.bot.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
+            await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
             self.value = True
             self.stop()
 
