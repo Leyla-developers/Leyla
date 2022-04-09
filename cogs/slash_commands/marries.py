@@ -19,33 +19,32 @@ class MarryButton(disnake.ui.View):
         self.remove_item(self.children[1])
         await self.message.edit(view=self)
 
-
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
-        if inter.author.id == self.partner.id:
-            await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
-        else:
-            for child in self.children:
-                if isinstance(child, disnake.ui.Button):
-                    child.disabled = True
+        #if inter.author.id == self.partner.id:
+        #    await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
+        #else:
+        for child in self.children:
+            if isinstance(child, disnake.ui.Button):
+                child.disabled = True
 
-            await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
-            await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
-            self.value = True
-            self.stop()
+        await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
+        await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
+        self.value = True
+        self.stop()
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
     async def marry_button_cancel(self, button, inter):
-        if inter.author.id == self.partner.id:
-            await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!", ephemeral=True)
-        else:
-            for child in self.children:
-                if isinstance(child, disnake.ui.Button):
-                    child.disabled = True
-                    
-            await inter.response.send_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
-            self.value = False
-            self.stop()
+        #if inter.author.id == self.partner.id:
+        #    await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!", ephemeral=True)
+        #else:
+        for child in self.children:
+            if isinstance(child, disnake.ui.Button):
+                child.disabled = True
+                
+        await inter.response.send_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
+        self.value = False
+        self.stop()
 
 class Marries(commands.Cog):
 
