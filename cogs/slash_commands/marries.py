@@ -9,17 +9,27 @@ from Tools.exceptions import CustomError
 class MarryButton(disnake.ui.View):
 
     def __init__(self, partner: disnake.Member):
-        super().__init__()
+        super().__init__(timeout=15)
         self.partner = partner
         self.value = None
         self.config = Config()
     
+    async def on_timeout(self):
+        self.children[0].disabled = True
+        self.remove_item(self.children[1])
+        await self.message.edit(view=self)
+
+
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!")
         else:
-            await inter.edit_original_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
+            for child in self.children:
+                if isinstance(child, disnake.ui.Button):
+                    child.disabled = True
+
+            await inter.response.edit_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
             await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
             self.value = True
             self.stop()
@@ -29,7 +39,11 @@ class MarryButton(disnake.ui.View):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
         else:
-            await inter.edit_original_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
+            for child in self.children:
+                if isinstance(child, disnake.ui.Button):
+                    child.disabled = True
+                    
+            await inter.response.edit_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
             self.value = False
             self.stop()
 
