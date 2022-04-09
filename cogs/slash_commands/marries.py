@@ -41,7 +41,7 @@ class DivorceButton(disnake.ui.View):
     
     @disnake.ui.button(label="Разорвать брак", style=disnake.ButtonStyle.red)
     async def divorce_button_accept(self, button, inter):
-        if self.partner.id == inter.author.id:
+        if self.partner.id != inter.author.id:
             await inter.response.send_message("Принять должен тот, с кем вы сватались!", ephemeral=True)
         else:
             await inter.response.send_message(f'{self.partner.mention} Согласен(на) быть партнёром 🎉')
