@@ -14,7 +14,7 @@ class MarryButton(disnake.ui.View):
         self.value = None
     
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
-    async def marry_button(self, button, inter):
+    async def marry_button_accept(self, button, inter):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!")
         else:
@@ -25,7 +25,7 @@ class MarryButton(disnake.ui.View):
         self.stop()
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
-    async def marry_button(self, button, inter):
+    async def marry_button_cancel(self, button, inter):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
         else:
@@ -43,16 +43,25 @@ class Marries(commands.Cog):
     async def marry_cmd(self, inter):
         ...
 
-    @marry_cmd.sub_command(name="invite")
+    @marry_cmd.sub_command(name="invite", description="Предложить сыграть свадьбу кому-либо")
     async def marry_invite(self, inter, member: disnake.Member):
         if await self.bot.config.DB.marries.count_documents({"_id": inter.author.id}) == 0 or \
                 await self.bot.config.DB.marries.count_documents({"_id": member.id}) == 0:
-            await inter.send(
-                embed=await self.bot.embeds.simple(
-                    title="Свадьба, получается", 
-                    description=f"{inter.author.mention} и {member.mention} связали брачные узы"
-                ), view=MarryButton(partner=inter.author)
-            )
+            view = MarryButton(partner=inter.author)
+            main_description = f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)"
+            embed = await self.bot.embeds.simple(
+                        title="Свадьба, получается <3", 
+                        description=main_description,
+                        footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
+                    )
+            message = await inter.send(embed=embed, view=view)
+
+            if view.value:
+                embed.description = f"Свадьбе быть! {inter.author.mention} связал(а) свои брачные узы с {member.mention} :3"
+                await message.edit(embed=embed)
+            else:
+                embed.description = f"Свадьбе не быть(. {member.mention} отказал(а) {inter.author.mention}"
+                await message.edit(embed=embed)
         else:
             raise CustomError(f"Эм) Вы и/или {member.mention} женаты. На что вы надеетесь?")
 
