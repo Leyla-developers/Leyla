@@ -44,8 +44,8 @@ class DivorceButton(disnake.ui.View):
         if self.partner.id != inter.author.id:
             await inter.response.send_message("Принять должен тот, с кем вы сватались!", ephemeral=True)
         else:
-            await inter.response.send_message(f'{self.partner.mention} Согласен(на) быть партнёром 🎉')
-            await self.config.DB.marries.delete_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
+            await inter.response.send_message(f'{self.partner.mention} Согласился(ась) расторгнуть брак(. Удачи.')
+            await self.config.DB.marries.delete_one({"$or": [{"_id": inter.author.id}, {"mate": self.partner.id}]})
             self.stop()
 
 class Marries(commands.Cog):
