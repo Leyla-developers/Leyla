@@ -80,7 +80,10 @@ class Ranks(commands.Cog):
 
                             for j in reverse_data.items():
                                 if lvl >= int(j[0]):
-                                    await message.author.add_roles(message.guild.get_role(int(j[-1])))
+                                    try:
+                                        await message.author.add_roles(message.guild.get_role(int(j[-1])))
+                                    except:
+                                        pass
 
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": lvl + 1}})
                     await self.get_level_up_message(message)
