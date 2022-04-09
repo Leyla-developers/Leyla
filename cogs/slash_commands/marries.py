@@ -28,6 +28,8 @@ class MarryButton(disnake.ui.View):
     async def marry_button_cancel(self, button, inter):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
+        elif button.disabled:
+
         else:
             await inter.response.send_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
             self.value = False
@@ -54,10 +56,13 @@ class Marries(commands.Cog):
                         footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
                     )
             message = await inter.send(embed=embed, view=view)
+            await view.wait()
 
             if view.value:
                 embed.description = f"Свадьбе быть! {inter.author.mention} связал(а) свои брачные узы с {member.mention} :3"
                 await message.edit(embed=embed)
+            elif view.disabled:
+                await message.edit('Всё, всё. Что вы пытаетесь ещё-то?')
             else:
                 embed.description = f"Свадьбе не быть(. {member.mention} отказал(а) {inter.author.mention}"
                 await message.edit(embed=embed)
