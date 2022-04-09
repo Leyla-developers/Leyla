@@ -1,4 +1,5 @@
 from datetime import datetime
+from this import d
 
 import disnake
 from disnake.ext import commands
@@ -58,3 +59,6 @@ class Marries(commands.Cog):
     @marry_cmd.sub_command(name='divorce', description="Развод с партнёром")
     async def marry_divorce(self, inter):
         ...
+
+def setup(bot):
+    bot.add_cog(Marries(bot))
