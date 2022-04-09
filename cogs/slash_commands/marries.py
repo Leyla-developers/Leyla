@@ -18,7 +18,7 @@ class MarryButton(disnake.ui.View):
 
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
-        if inter.author.id == self.partner.id:
+        if self.partner.id != inter.author.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
         else:
             await inter.response.edit_message(f'{self.partner.mention} Согласен(на) быть партнёром {inter.author.mention} 🎉')
@@ -26,7 +26,7 @@ class MarryButton(disnake.ui.View):
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
     async def marry_button_cancel(self, button, inter):
-        if inter.author.id == self.partner.id:
+        if self.partner.id != inter.author.id:
             await inter.response.edit_message("Нажать должен(на) тот, кого вы попросили!", ephemeral=True)
         else:                    
             await inter.response.edit_message(f'{self.partner.mention} Не согласен(на) быть партнёром {inter.author.mention}', view=None)
