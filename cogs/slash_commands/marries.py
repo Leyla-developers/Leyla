@@ -19,9 +19,8 @@ class MarryButton(disnake.ui.View):
         if self.partner.id != inter.author.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
         else:
-            await inter.response.defer()
-            await inter.response.send_message(f'{self.partner.mention} Согласен(на) быть партнёром {inter.author.mention} 🎉')
-            await inter.response.edit_message(view=None)
+            msg = await inter.response.send_message(f'{self.partner.mention} Согласен(на) быть партнёром {inter.author.mention} 🎉')
+            await msg.edit(view=None)
             await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
@@ -29,9 +28,8 @@ class MarryButton(disnake.ui.View):
         if self.partner.id != inter.author.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!", ephemeral=True)
         else:
-            await inter.response.defer()
-            await inter.response.send_message(f'{self.partner.mention} Не согласен(на) быть партнёром {inter.author.mention}')
-            await inter.response.edit_message(view=None)
+            msg = await inter.response.send_message(f'{self.partner.mention} Не согласен(на) быть партнёром {inter.author.mention}')
+            await msg.edit(view=None)
 
 class Marries(commands.Cog):
 
@@ -45,7 +43,7 @@ class Marries(commands.Cog):
     @marry_cmd.sub_command(name="invite", description="Предложить сыграть свадьбу кому-либо")
     async def marry_invite(self, inter, member: disnake.Member):
         if await self.bot.config.DB.marries.count_documents({"_id": inter.author.id}) == 0 or await self.bot.config.DB.marries.count_documents({"_id": member.id}) == 0 or \
-        await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) == 0 or await self.bot.config.DB.marries.count_documents({"mate": member.id}) == 0:
+            await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) == 0 or await self.bot.config.DB.marries.count_documents({"mate": member.id}) == 0:
             view = MarryButton(partner=member)
             main_description = f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)"
             embed = await self.bot.embeds.simple(
