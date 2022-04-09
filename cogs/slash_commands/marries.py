@@ -28,8 +28,6 @@ class MarryButton(disnake.ui.View):
     async def marry_button_cancel(self, button, inter):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
-        elif button.disabled:
-
         else:
             await inter.response.send_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
             self.value = False
