@@ -19,7 +19,7 @@ class MarryButton(disnake.ui.View):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!")
         else:
-            await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
+            await inter.response.edit_original_message(f'{inter.author.mention} Согласен(на) быть партнёром {self.partner.mention}')
             await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
             self.value = True
             self.stop()
@@ -29,7 +29,7 @@ class MarryButton(disnake.ui.View):
         if inter.author.id == self.partner.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!")
         else:
-            await inter.response.send_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
+            await inter.response.edit_original_message(f'{inter.author.mention} Не согласен(на) быть партнёром {self.partner.mention}')
             self.value = False
             self.stop()
 
@@ -44,8 +44,8 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name="invite", description="Предложить сыграть свадьбу кому-либо")
     async def marry_invite(self, inter, member: disnake.Member):
-        if await self.bot.config.DB.marries.count_documents({"_id": inter.author.id}) == 0 or \
-                await self.bot.config.DB.marries.count_documents({"_id": member.id}) == 0:
+        if await self.bot.config.DB.marries.count_documents({"_id": inter.author.id}) == 0 or await self.bot.config.DB.marries.count_documents({"_id": member.id}) == 0 or \
+        await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) == 0 or await self.bot.config.DB.marries.count_documents({"mate": member.id}) == 0:
             view = MarryButton(partner=inter.author)
             main_description = f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)"
             embed = await self.bot.embeds.simple(
