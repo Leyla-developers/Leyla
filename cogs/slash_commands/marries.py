@@ -85,8 +85,8 @@ class Marries(commands.Cog):
                 embed=await self.bot.embeds.simple(
                     title='Вы уверены? :(', 
                     description=f"{inter.author.mention} вдруг захотел(-а) порвать брачные узы."),
-                view=DivorceButton()
-                )
+                view=DivorceButton(partner=self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'mate': inter.author.id}))['mate']) if await self.bot.config.DB.marries.count_documents({"mate": inter.author.id}) != 0 else self.bot.get_user(dict(await self.bot.config.DB.marries.find_one({'_id': inter.author.id}))['_id']))
+            )
         else:
             raise CustomError("Вы и так не замужем, хихи.")
 
