@@ -80,7 +80,7 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name='divorce', description="Развод с партнёром")
     async def marry_divorce(self, inter):
-        if await self.is_married(inter.author):
+        if not await self.is_married(inter.author):
             await inter.send(
                 embed=await self.bot.embeds.simple(
                     title='Вы уверены? :(', 
