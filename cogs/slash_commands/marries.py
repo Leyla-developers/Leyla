@@ -90,6 +90,10 @@ class Marries(commands.Cog):
         else:
             raise CustomError("Вы и так не замужем, хихи.")
 
+    @marry_cmd.sub_command(name="marries", description="Выводит браки")
+    async def marry_marries(self, inter):
+        data = [f'`{self.bot.get_user(i["_id"]).name}` + `{self.bot.get_user(i["mate"]).name}` | <t:{i["time"].timestamp()}:D>' async for i in self.bot.config.DB.marries.find() if dict(await self.bot.config.DB.marries.find_one({'$or': [{'_id': i['_id']}, {'mate': i['mate']}]}))['_id'] and dict(await self.bot.config.DB.marries.find_one({'$or': [{'_id': i['_id']}, {'mate': i['mate']}]}))['mate'] in inter.guild.members]
+        await inter.send(embed=await self.bot.embeds.simple(title='Парочки, которые есть тута', description='\n'.join(data)))
 
 def setup(bot):
     bot.add_cog(Marries(bot))
