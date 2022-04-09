@@ -37,7 +37,7 @@ class Marries(commands.Cog):
         self.bot = bot
 
     async def is_married(self, author: disnake.Member):
-        if await self.bot.config.db.marry.count_documents({'$or': [{'first': author.id}, {'member': author.id}]})
+        if await self.bot.config.db.marry.count_documents({'$or': [{'first': author.id}, {'member': author.id}]}):
             return True
         else:
             return False
