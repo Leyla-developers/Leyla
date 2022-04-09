@@ -6,7 +6,7 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 
 
-class MarryButton(disnake.ui.Button):
+class MarryButton(disnake.ui.View):
 
     def __init__(self, partner: disnake.Member):
         super().__init__()
