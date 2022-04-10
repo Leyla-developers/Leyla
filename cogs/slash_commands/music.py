@@ -28,18 +28,19 @@ class Music(commands.Cog):
         """Event fired when a node has finished connecting."""
         print(f'Node: <{node.identifier}> is ready!')
 
-    @commands.command()
-    async def play(self, ctx: commands.Context, *, search: wavelink.YouTubeTrack):
+    @commands.slash_command()
+    async def play(self, inter, search: wavelink.YouTubeTrack):
         """Play a song with the given search query.
 
         If not connected, connect to our voice channel.
         """
-        if not ctx.voice_client:
-            vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
+        if not inter.voice_client:
+            vc: wavelink.Player = await inter.author.voice.channel.connect(cls=wavelink.Player)
         else:
-            vc: wavelink.Player = ctx.voice_client
+            vc: wavelink.Player = inter.voice_client
 
         await vc.play(search)
+        await inter.send(embed=await self.bot.embeds.simple(title=f'Трек: ({search.title})[{search.uri}]', description=f'Длительность песни: `{search.duration}`', thumbnail=search.thumb))
 
 
 def setup(bot):
