@@ -29,16 +29,6 @@ class Music(commands.Cog):
         *,
         channel: disnake.VoiceChannel = None,
     ):
-        """
-        This method connects the bot to a voice channel.
-
-        Parameters
-        ----------
-        interaction : disnake.ApplicationCommandInteraction
-            The Interaction of the command.
-        channel
-            The voice channel to connect to.
-        """
         if not channel:
             try:
                 channel = interaction.author.voice.channel
@@ -55,7 +45,7 @@ class Music(commands.Cog):
         print(f'Node: <{node.identifier}> is ready!')
 
     @commands.slash_command()
-    async def play(self, inter, *, query: wavelink.YouTubeTrack):
+    async def play(self, inter, *, query: str):
         tracks = await self.bot.wavelink.get_tracks(f"ytsearch:{query}")
 
         if not tracks:
