@@ -14,4 +14,4 @@ lavalink
 PyNaCl
 SmallGoogleTranslator
 genshinstats
-git+https://github.com/KortaPo/Wavelink.git
+git+https://github.com/Leyla-developers/Wavelink.git
