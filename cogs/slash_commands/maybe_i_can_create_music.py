@@ -28,7 +28,7 @@ class Music(commands.Cog):
     async def on_wavelink_node_ready(self, node: wavelink.Node):
         print(f'Node: <{node.identifier}> is ready!')
 
-    @commands.slash_command()
+    @commands.command()
     async def play(self, inter, *, search: wavelink.YouTubeTrack):
         """Play a song with the given search query.
 
