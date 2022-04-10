@@ -21,6 +21,7 @@ class Leyla(commands.Bot):
         self.times = LeylaTasks(self)
         self.music = lavalink.Client(898664959767113729)
         self.ignore_cogs = []
+        self.wavelink = None
 
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):

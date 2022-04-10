@@ -12,16 +12,20 @@ class Music(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+        if not hasattr(bot, "wavelink"):
+            self.bot.wavelink = wavelink.Client(bot=self.bot)
+            
         bot.loop.create_task(self.connect_nodes())
 
-    async def connect_nodes(self):
-        """Connect to our Lavalink nodes."""
+    async def start_nodes(self):
         await self.bot.wait_until_ready()
 
-        await wavelink.NodePool.create_node(bot=self.bot,
-                                            host='localhost',
-                                            port=7000,
-                                            password='test')
+        await self.bot.wavelink.initiate_node(
+            host="localhost",
+            port=7000,
+            rest_uri="http://127.0.0.1:7000",
+            password="test",
+        )
 
     async def connect_(
         self,
