@@ -11,54 +11,36 @@ class Music(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.wavelink = wavelink.Client(bot=self.bot)
-        
-        bot.loop.create_task(self.start_nodes())
 
-    async def start_nodes(self):
+        bot.loop.create_task(self.connect_nodes())
+
+    async def connect_nodes(self):
+        """Connect to our Lavalink nodes."""
         await self.bot.wait_until_ready()
 
-        await self.bot.wavelink.initiate_node(
-            host="localhost",
-            port=7000,
-            rest_uri="http://127.0.0.1:7000",
-            password="test",
-        )
-
-    async def connect_(
-        self,
-        interaction: disnake.ApplicationCommandInteraction,
-        *,
-        channel: disnake.VoiceChannel = None,
-    ):
-        if not channel:
-            try:
-                channel = interaction.author.voice.channel
-            except AttributeError:
-                raise disnake.DiscordException("No channel to join. Please either specify a valid channel or join one.")
-
-        player = self.bot.wavelink.get_player(interaction.guild.id)
-        await interaction.response.send_message(f"Connecting to **`{channel.name}`**")
-        await player.connect(channel.id)
+        await wavelink.NodePool.create_node(bot=self.bot,
+                                            host='localhost',
+                                            port=7000,
+                                            password='test')
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
         """Event fired when a node has finished connecting."""
         print(f'Node: <{node.identifier}> is ready!')
 
-    @commands.slash_command()
-    async def play(self, inter, *, query: str):
-        tracks = await self.bot.wavelink.get_tracks(f"ytsearch:{query}")
+    @commands.command()
+    async def play(self, ctx: commands.Context, *, search: wavelink.YouTubeTrack):
+        """Play a song with the given search query.
 
-        if not tracks:
-            return await inter.followup.send("Could not find any songs with that query.")
+        If not connected, connect to our voice channel.
+        """
+        if not ctx.voice_client:
+            vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
+        else:
+            vc: wavelink.Player = ctx.voice_client
 
-        player = self.bot.wavelink.get_player(inter.guild.id)
-        if not player.is_connected:
-            await self.connect_(inter)
+        await vc.play(search)
 
-        await inter.edit_original_message(content=f"Added {str(tracks[0])} to the queue.")
-        await player.play(tracks[0])
 
 def setup(bot):
     bot.add_cog(Music(bot))
