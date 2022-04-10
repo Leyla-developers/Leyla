@@ -45,7 +45,7 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description='Перевод в/из азбуки морзе.'
     )
-    async def morse(self, inter, decoder: typing.Literal['Морзе', 'Шифр Цезаря'], variant: typing.Literal['crypt', 'decrypt'], *, text):
+    async def crypter(self, inter, decoder: typing.Literal['Морзе', 'Шифр Цезаря'], variant: typing.Literal['crypt', 'decrypt'], *, text):
         if decoder == "Морзе":
             if variant == 'crypt':
                 morse = Decoder().to_morse(text)
@@ -59,14 +59,14 @@ class Utilities(commands.Cog):
 
         elif decoder == "Шифр Цезаря":
             if variant == 'crypt':
-                cezar = [chr(ord(i)-3) for i in text]
+                cezar = ''.join([chr(ord(i)-3) for i in text])
 
             elif variant == 'decrypt':
-                cezar = [chr(ord(i)+3) for i in text]
+                cezar = ''.join([chr(ord(i)+3) for i in text])
 
             embed = await self.bot.embeds.simple(
                 title='Decoder/Encoder шифра Цезаря (3).',
-                description=cezar
+                description=' '.join([i for i in text.split()])
             )
 
         await inter.send(embed=embed)
