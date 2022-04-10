@@ -14,4 +14,4 @@ lavalink
 PyNaCl
 SmallGoogleTranslator
 genshinstats
-Wawelink
+Wavelink
