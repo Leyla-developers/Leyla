@@ -20,7 +20,7 @@ class Leyla(commands.Bot):
         self.session = aiohttp.ClientSession()
         self.times = LeylaTasks(self)
         self.music = lavalink.Client(898664959767113729)
-        self.ignore_cogs = []
+        self.ignore_cogs = ['music']
         self.wavelink = None
 
         for folder in listdir('cogs'):
