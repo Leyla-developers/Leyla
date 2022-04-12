@@ -276,12 +276,12 @@ class Utilities(commands.Cog):
             request = await response.json()
 
         links_array = [
-            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else 'Инвайт ссылки нет',
-            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else 'Ссылки на твич нет(',
-            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else 'Стим группы у этого сервера нет',
-            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else 'ВК группы у сервера нет',
-            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else 'У сервера нет сайта',
-            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else 'У этого сервера нет ютуб канала',
+            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else None,
+            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else None,
+            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else None,
+            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else None,
+            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else None,
+            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else None,
         ]
         md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
         embed = await self.bot.embeds.simple(
