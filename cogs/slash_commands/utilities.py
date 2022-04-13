@@ -321,5 +321,59 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=embed)
 
+    @commands.slash_command(name="notebook")
+    async def notebook_main(self, inter):
+        ...
+
+    @notebook_main.sub_command(name="records", description="Ваши записи в блокнот")
+    async def notebook_records(self, inter):
+        if await self.bot.config.DB.notebook.count_documents({"_id": inter.author.id}) == 0:
+            raise CustomError("У тебя нет записей(")
+        else:
+            data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
+            # {'_id': user.id, 'info': {'writes': [{'1': {'title': 'Название...', 'description': 'Тут сама заметка...'}]}}}
+            embed = await self.bot.embeds.simple(
+                title='Ваши записи', 
+                description='\n'.join([''.join([f"{[i for i in data['info']['writes'][int(k)-1].keys()][0]} | {data['info']['writes'][int(k)-1][str(k)]['title']}" for k in [j for j in i.keys()]]) for i in data['info']['writes']])
+            )
+            await inter.send(embed=embed, ephemeral=True)
+    
+    @notebook_main.sub_command(name="write", description="Записать что-то новое в блокнот")
+    async def notebook_write(self, inter, title: str, text: str):
+        if len(title) > 90:
+            raise CustomError("Слишком большое название")
+        elif len(text) > 4000:
+            raise CustomError("Лимит текста, больше 4К нельзя!")
+        else:
+            if await self.bot.config.DB.notebook.count_documents({"_id": inter.author.id}) == 0:
+                await self.bot.config.DB.notebook.insert_one({'_id': inter.author.id, 'info': {'writes': [{'1': {'title': title, 'description': text}}]}})
+            else:
+                data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
+                n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])+1
+                await self.bot.config.DB.notebook.update_one({'_id': inter.author.id}, {"$set": {'info': {'writes': [{n: {'title': title, 'description': text}}]}}})
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title=f'Запись сделана! ({title})', 
+                description=f"Номер записи: {n}\nНадеюсь, вы хотя бы не забудете, куда записали :)"
+            )
+        )
+    
+    @notebook_main.sub_command(name='view', description="Просмотреть запись")
+    async def notebook_view(self, inter, number: int):
+        if await self.bot.config.DB.notebook.count_documents({"_id": inter.author.id}) == 0:
+            raise CustomError("У тебя нет записей(")
+        else:
+            data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
+            n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])
+            text = [data['info']['writes'][number-1][str(number)]['description'] for i in range(len(data['info']['writes']))][0]
+
+            if number > n:
+                raise CustomError("Такой записи у вас нет!")
+            elif number <= 0:
+                raise CustomError("Эм) Ниже или равно нулю не может быть здеся")
+            else:
+                await inter.send(embed=await self.bot.embeds.simple(title=f"Запись номер {number}", description=text))
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
