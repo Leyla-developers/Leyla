@@ -351,7 +351,8 @@ class Utilities(commands.Cog):
             else:
                 data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
                 n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])+1
-                await self.bot.config.DB.notebook.update_one({'_id': inter.author.id}, {"$set": {'info': {'writes': [{n: {'title': title, 'description': text}}]}}})
+                new_data = {'writes': [{n: {'title': title, 'description': text}}]}
+                await self.bot.config.DB.notebook.update_one({'_id': inter.author.id}, {"$set": {'info': new_data}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
