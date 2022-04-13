@@ -333,7 +333,7 @@ class Utilities(commands.Cog):
             data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
             embed = await self.bot.embeds.simple(
                 title='Ваши записи', 
-                description='\n'.join([''.join([f"{[i for i in data['info']['writes'][int(k)-1].keys()][0]} | {data['info']['writes'][int(k)-1][str(k)]['title']}" for k in [j for j in i.keys()]]) for i in data['info']['writes']]
+                description='\n'.join([''.join([f"{[i for i in data['info']['writes'][int(k)-1].keys()][0]} | {data['info']['writes'][int(k)-1][str(k)]['title']}" for k in [j for j in i.keys()]]) for i in data['info']['writes']])
             )
         
         await inter.send(embed=embed, ephemeral=True)
