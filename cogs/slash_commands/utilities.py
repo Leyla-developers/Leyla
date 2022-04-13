@@ -367,14 +367,14 @@ class Utilities(commands.Cog):
         else:
             data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
             n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])
-            text = [data['info']['writes'][number-1][str(number)]['description'] for i in range(len(data['info']['writes']))][0]
+            text = [data['info']['writes'][number-1][str(number)]['description'] for _ in range(len(data['info']['writes']))][0]
 
             if number > n:
                 raise CustomError("Такой записи у вас нет!")
             elif number <= 0:
                 raise CustomError("Эм) Ниже или равно нулю не может быть здеся")
             else:
-                await inter.send(embed=await self.bot.embeds.simple(title=f"Запись номер {number}", description=text), ephemeral=TRue)
+                await inter.send(embed=await self.bot.embeds.simple(title=f"Запись номер {number}", description=text), ephemeral=True)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
