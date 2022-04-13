@@ -333,7 +333,7 @@ class Utilities(commands.Cog):
             data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
             embed = await self.bot.embeds.simple(
                 title='Ваши записи', 
-                description='\n'.join([''.join([f"{[i for i in data['info']['writes'][int(k)-1].keys()][0]} | {data['info']['writes'][int(k)-1][str(k)]['title']}" for k in [j for j in i.keys()]]) for i in data['info']['writes']])
+                description='\n'.join([''.join([f"{[i for i in data['writes'][int(k)-1].keys()][0]} | {data['writes'][int(k)-1][str(k)]['title']}" for k in [j for j in i.keys()]]) for i in data['writes']])
             )
         
         await inter.send(embed=embed, ephemeral=True)
@@ -347,11 +347,11 @@ class Utilities(commands.Cog):
         else:
             if await self.bot.config.DB.notebook.count_documents({"_id": inter.author.id}) == 0:
                 n = 1
-                await self.bot.config.DB.notebook.insert_one({'_id': inter.author.id, 'info': {'writes': [{'1': {'title': title, 'description': text}}]}})
+                await self.bot.config.DB.notebook.insert_one({'_id': inter.author.id, 'writes': [{'1': {'title': title, 'description': text}}]})
             else:
                 data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
-                n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])+1
-                await self.bot.config.DB.notebook.update_one({'_id': inter.author.id}, {"$push": {'info': {'writes': [{n: {'title': title, 'description': text}}]}}})
+                n = int([''.join([[i for i in data['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['writes']][-1])+1
+                await self.bot.config.DB.notebook.update_one({'_id': inter.author.id}, {"$push": {'writes': [{n: {'title': title, 'description': text}}]}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
@@ -366,8 +366,8 @@ class Utilities(commands.Cog):
             raise CustomError("У тебя нет записей(")
         else:
             data = dict(await self.bot.config.DB.notebook.find_one({"_id": inter.author.id}))
-            n = int([''.join([[i for i in data['info']['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['info']['writes']][-1])
-            text = [data['info']['writes'][number-1][str(number)]['description'] for _ in range(len(data['info']['writes']))][0]
+            n = int([''.join([[i for i in data['writes'][int(k)-1].keys()][0] for k in [j for j in i.keys()]]) for i in data['writes']][-1])
+            text = [data['writes'][number-1][str(number)]['description'] for _ in range(len(data['info']['writes']))][0]
 
             if number > n:
                 raise CustomError("Такой записи у вас нет!")
