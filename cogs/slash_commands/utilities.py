@@ -100,15 +100,11 @@ class Utilities(commands.Cog):
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
         user = await self.bot.fetch_user(user.id)
-
-        if not user.banner:
-            color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
-            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
-            img.save('banner.png', 'png')
-            file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
-            embed.set_image(url='attachment://banner.png')
-        else:
-            embed.set_image(url=user.banner.url)
+        color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
+        img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
+        img.save('banner.png', 'png')
+        file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
+        embed.set_image(url='attachment://banner.png')
 
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
@@ -127,7 +123,7 @@ class Utilities(commands.Cog):
 
         embed.description = "\n".join(main_information) + "\n" + "\n".join(second_information) if user in inter.guild.members else "\n".join(main_information)
 
-        await inter.send(embed=embed, file=None if user.banner else file)
+        await inter.send(embed=embed, file=file)
 
     @commands.slash_command(
         description="Получить эмодзик"
