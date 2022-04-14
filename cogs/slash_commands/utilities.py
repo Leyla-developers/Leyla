@@ -112,6 +112,7 @@ class Utilities(commands.Cog):
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
             f"Полный никнейм: **{str(user)}**",
+            f"Бот?: **{'Да' if user.bot else 'Нет'}**"
         ]
 
         if user in inter.guild.members:
