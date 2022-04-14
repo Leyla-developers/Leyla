@@ -272,7 +272,7 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
     async def boticord_info_cmd(self, inter, guild = None):
-        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else int(guild)}') as response:
+        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else guild}') as response:
             request = await response.json()
 
         links_array = [
@@ -287,7 +287,7 @@ class Utilities(commands.Cog):
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
-            url=f"https://boticord.top/server/{guild.id if guild in self.bot.guilds else inter.guild.id}",
+            url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else int(guild)}",
             footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
             fields=[
                 {
