@@ -287,7 +287,7 @@ class Utilities(commands.Cog):
         embed = await self.bot.embeds.simple(
             title=request['information']['name'],
             description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
-            url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else int(guild)}",
+            url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
             footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
             fields=[
                 {
