@@ -121,7 +121,7 @@ class Utilities(commands.Cog):
         if user in inter.guild.members:
             user_to_member = inter.guild.get_member(user.id)
             second_information = [
-                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user.joined_at.replace(tzinfo=None)).days} дней**",
+                f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user_to_member.joined_at.replace(tzinfo=None)).days} дней**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
             ]
 
