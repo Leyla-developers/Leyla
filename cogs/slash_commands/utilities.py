@@ -100,11 +100,9 @@ class Utilities(commands.Cog):
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
 
-        async with self.bot.session.get(f'https://discord.com/api/v9/users/{user.id}', headers={'Authorization': 'Bot ' + environ['TOKEN']}) as response:
-            color = dict(await response.json())['banner_color']
-
         if not user.banner:
-            img = Image.new('RGBA', (500, 200), color)
+            color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
+            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.get_pixel((310, 310)))
             img.save('banner.png', 'png')
             file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
             embed.set_image(url='attachment://banner.png')
