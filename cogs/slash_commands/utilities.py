@@ -99,6 +99,7 @@ class Utilities(commands.Cog):
     )
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
+        user = await self.bot.fetch_user(user.id)
 
         if not user.banner:
             color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
