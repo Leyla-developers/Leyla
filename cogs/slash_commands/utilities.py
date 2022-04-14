@@ -102,7 +102,7 @@ class Utilities(commands.Cog):
 
         if not user.banner:
             color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
-            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.get_pixel((310, 310)))
+            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((310, 310)))
             img.save('banner.png', 'png')
             file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
             embed.set_image(url='attachment://banner.png')
