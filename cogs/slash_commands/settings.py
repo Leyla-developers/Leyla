@@ -450,6 +450,10 @@ class Settings(commands.Cog):
 
             await inter.send(embed=embed)
 
+    @welcome.sub_command(name='reset', description="Сбрасывание настроек велкомера")
+    async def welcome_reset(self, inter):
+        await self.bot.config.DB.welcome.delete_one({"_id": inter.guild.id})
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(welcomer)**', description="Настройки велкомера были сброшены :eyes:"))
 
     @welcome.sub_command(name="help", description="Справка по велкомеру (Сообщение при входе/выходе)")
     async def welcome_help(self, inter):
