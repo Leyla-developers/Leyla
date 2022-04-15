@@ -44,7 +44,8 @@ class Leyla(commands.Bot):
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()
 
-    async def on_message(self, message):
-        if message.content == self.user.mention:
-            await message.reply("Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать")
 
+@Leyla.event
+async def on_message(self, message):
+    if message.content == self.user.mention:
+        await message.reply("Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать")
