@@ -19,7 +19,10 @@ class Afk(commands.Cog):
             await message.channel.send(f"Смотрите, кто пришёл! {message.author.mention}, не устал(а) быть в AFK?")
         else:
             members = [i.name for i in message.mentions if i.id in data['afk_members']]
-            return await message.channel.send(f'Ну, вообще-то, эт{"от" if len(members) == 1 else "и"} {"милашка" if len(members) == 1 else "милашки"} в AFK. Не думаю, что их надо тревожить. ({"".join(members)})')
+            if not members:
+                return
+            else:
+                return await message.channel.send(f'Ну, вообще-то, эт{"от" if len(members) == 1 else "и"} {"милашка" if len(members) == 1 else "милашки"} в AFK. Не думаю, что их надо тревожить. ({"".join(members)})')
 
 def setup(bot):
     bot.add_cog(Afk(bot))
