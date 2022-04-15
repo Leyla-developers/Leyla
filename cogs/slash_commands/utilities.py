@@ -317,5 +317,14 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=embed)
 
+    @commands.slash_command(name="afk", description="Встали в афк? Ну ладно, подождём.")
+    async def utilities_afk_command(self, inter):
+        if await self.bot.config.DB.afk.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.afk.insert_one({"_id": inter.guild.id, "afk_members": [inter.author.id]})
+        else:
+            await self.bot.config.DB.afk.update_one({"_id": inter.guild.id}, {"$push": {"afk_members": inter.author.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

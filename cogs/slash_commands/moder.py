@@ -80,12 +80,15 @@ class Moderation(commands.Cog):
     @commands.slash_command(description="Кто-то намусорил в чате? Помогу очистить :)")
     @commands.has_permissions(manage_messages=True)
     async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
-        if member:
-            check = lambda m: m.author == member
+        if messages_amount <= 0:
+            raise CustomError("Как ты собрался очистить <")
         else:
-            check = lambda m: m.author
+            if member:
+                check = lambda m: m.author == member
+            else:
+                check = lambda m: m.author
 
-        cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
+            cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
 
         await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
 
