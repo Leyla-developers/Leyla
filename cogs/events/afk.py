@@ -22,7 +22,7 @@ class Afk(commands.Cog):
             if not members:
                 return
             else:
-                return await message.channel.send(f'Ну, вообще-то, эт{"от" if len(members) == 1 else "и"} {"милашка" if len(members) == 1 else "милашки"} в AFK. Не думаю, что их надо тревожить. ({"".join(members)})')
+                return await message.channel.send(f'Ну, вообще-то, эт{"а" if len(members) == 1 else "и"} {"милашка" if len(members) == 1 else "милашки"} в AFK. Не думаю, что их надо тревожить. ({"".join(members)})')
 
 def setup(bot):
     bot.add_cog(Afk(bot))
