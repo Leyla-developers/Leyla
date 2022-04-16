@@ -32,15 +32,16 @@ class Owner(commands.Cog):
     async def jail(self, inter, user: disnake.User):
         if await self.bot.config.OLD_DB.jail.count_documents({"_id": user.id}) == 0:
             await self.bot.config.OLD_DB.jail.insert_one({"_id": user.id})
+            await inter.send(f'Эта бяка занесена в чёрный список! (**{await self.bot.config.OLD_DB.jail.count_documents({})}**)')
             await inter.send('Эта бяка и так в чёрном списке! (>~<)')
         else:
-            await inter.send(f'Эта бяка занесена в чёрный список! (**{await self.bot.config.OLD_DB.jail.count_documents({})}**)')
+            await inter.send('Эта бяка и так в чёрном списке! (>~<)')
 
     @owner.sub_command(name="unjail")
     async def unjail(self, inter, user: disnake.User):
         if await self.bot.config.OLD_DB.jail.count_documents({"_id": user.id}) != 0:
             await self.bot.config.OLD_DB.jail.delete_one({"_id": user.id})
-            await inter.send('Эта пуфыстя больше не в чёрном списке! (^-^) (**{await self.bot.config.OLD_DB.jail.count_documents({})}**)')
+            await inter.send(f'Эта пуфыстя больше не в чёрном списке! (^-^) (**{await self.bot.config.OLD_DB.jail.count_documents({})}**)')
         else:
             await inter.send(f'Эта бяка не в чёрном списке!')
 
