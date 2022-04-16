@@ -15,7 +15,8 @@ class CoreEvents(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        await ctx.reply(f'{ctx.author.name}-Сан! Более обычные команды, начинающиеся с {ctx.prefix}, больше работать не будут. Теперь используйте слэш-команды `/`')
+        del self.bot[ctx.command.qualified_name]
+        await ctx.reply(f'{ctx.author.name}-Сан! Более обычные команды, начинающиеся с `{ctx.prefix}`, больше работать не будут. Теперь используйте слэш-команды `/`\nНо сначала перепригласите меня, чтобы слэш-команды появились.')
     
 def setup(bot):
     bot.add_cog(CoreEvents(bot))
