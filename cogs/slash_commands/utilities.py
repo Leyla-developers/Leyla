@@ -66,7 +66,7 @@ class Utilities(commands.Cog):
 
             embed = await self.bot.embeds.simple(
                 title='Decoder/Encoder шифра Цезаря (3).',
-                description=' '.join([i for i in text.split()])
+                description=' '.join([i for i in cezar.split()])
             )
 
         await inter.send(embed=embed)
