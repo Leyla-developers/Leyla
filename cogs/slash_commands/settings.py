@@ -470,9 +470,9 @@ class Settings(commands.Cog):
         emoji_data = emoji if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(emoji)
 
         if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
-            await self.bot.config.DB.emojirole.insert_one({"_id": message_id.id, "emojis": [{emoji_data: [role.id]}]})
+            await self.bot.config.DB.emojirole.insert_one({"_id": get_message.id, "emojis": [{emoji_data: [role.id]}]})
         else:
-            await self.bot.config.DB.emojirole.update_one({"_id": message_id.id}, {"$push": {"emojis": {emoji_data: [role.id]}}})
+            await self.bot.config.DB.emojirole.update_one({"_id": get_message.id}, {"$push": {"emojis": {emoji_data: [role.id]}}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
