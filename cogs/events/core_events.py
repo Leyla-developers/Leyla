@@ -10,8 +10,13 @@ class CoreEvents(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        prefix_data = await self.bot.config.OLD_DB.prefix.find_one({"_id": message.guild.id})
+
         if message.content == self.bot.user.mention:
             await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать')
+
+        elif message.content.lower().startswith(prefix_data['prefix']):
+            await message.reply('Ты чего это? У меня больше нет таких команд(. Теперь нужно использовать слэш-команды (`/`). Введя `/`, вам нужно найти мою аватарку и тыкнуть на неё. После этого появятся все мои команды!')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
