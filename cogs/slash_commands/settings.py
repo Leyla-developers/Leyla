@@ -465,8 +465,8 @@ class Settings(commands.Cog):
         )
 
     @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
-    async def reaction_role_set(self, inter, message_id: Optional[disnake.Message], role: disnake.Role, emoji):
-        get_message = message_id or inter.message
+    async def reaction_role_set(self, inter, channel: disnake.TextChannel, message_id: Optional[disnake.Message], role: disnake.Role, emoji):
+        get_message = await channel.fetch_message(message_id) if message_id else inter.message
         emoji_data = emoji if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(emoji)
 
         if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
