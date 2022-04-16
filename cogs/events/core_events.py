@@ -18,7 +18,8 @@ class CoreEvents(commands.Cog):
         channel = self.bot.get_channel(864408447029215232)
         await channel.send(
             embed=await self.bot.embeds.simple(
-                title=f'Меня добавили на {guild.name}', 
+                title=f'Меня добавили на {guild.name}',
+                description=f"Теперь у меня **{len(self.bot.guilds)}** серверов",
                 fields=[
                     {"name": "Участников", "value": len(guild.members)},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot])}
@@ -32,7 +33,8 @@ class CoreEvents(commands.Cog):
         channel = self.bot.get_channel(864408447029215232)
         await channel.send(
             embed=await self.bot.embeds.simple(
-                title=f'Меня убрали с {guild.name}', 
+                title=f'Меня убрали с {guild.name}',
+                description=f"Теперь у меня **{len(self.bot.guilds)}** серверов",
                 fields=[
                     {"name": "Участников", "value": len(guild.members), "inline": True},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot]), "inline": True}
