@@ -11,6 +11,8 @@ class Config:
     MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
     DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'color': 0xa8a6f0}
+    OLD_MONGO_CLIENT = AsyncIOMotorClient(environ['OLD_DB'])
+    OLD_DB = OLD_MONGO_CLIENT.Seriable.main.Seriable
 
     async def get_guild_data(self, guild: Union[Guild, int], key: str=None) -> dict:
         guild_id = guild.id if isinstance(guild, Guild) else guild
