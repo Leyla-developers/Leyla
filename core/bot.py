@@ -32,7 +32,8 @@ class Leyla(commands.Bot):
                     else:
                         self.load_extension(cog)
                 except Exception as e:
-                    print(f'{folder}.{cog} fucked up by Huela', e)
+                    print(f'{folder}.{cog} fucked up by Hueila', e)
+                    print(f'https://stackoverflow.com/{e}')
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
