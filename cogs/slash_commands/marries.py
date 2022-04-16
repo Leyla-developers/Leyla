@@ -92,7 +92,7 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name="marries", description="Выводит браки")
     async def marry_marries(self, inter):
-        data = [f"`{self.bot.get_user(i['_id']).name}` + `{self.bot.get_user(i['mate']).name}` | <t:{i['time'].timestamp()}:D>" async for i in self.bot.config.DB.marries.find() if i['_id'] and i['mate'] in [i.id for i in inter.guild.members]]
+        data = [f"`{self.bot.get_user(i['_id']).name}` + `{self.bot.get_user(i['mate']).name}` | <t:{round(i['time'].timestamp())}:D>" async for i in self.bot.config.DB.marries.find() if i['_id'] and i['mate'] in [i.id for i in inter.guild.members]]
         await inter.send(embed=await self.bot.embeds.simple(title='Парочки, которые есть тута', description='\n'.join(data) if len(data) != 0 else "Нет парочек, получается."))
 
 def setup(bot):
