@@ -6,6 +6,8 @@ from core import Leyla
 from config import Config
 
 config = Config()
+intents = disnake.Intents.default()
+intents.members = True
 
 async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
@@ -20,7 +22,7 @@ async def init_and_run_bot(token: str) -> None:
         strip_after_prefix=True,
         case_insensitive=True,
         status=disnake.Status.dnd,
-        intents=disnake.Intents.all(),
+        intents=intents,
         sync_commands=True,
         enable_debug_events=True,
         help_command=None

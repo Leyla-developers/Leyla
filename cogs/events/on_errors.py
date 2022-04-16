@@ -39,13 +39,7 @@ class OnErrors(commands.Cog):
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
 
-        if type(cmd_error) == DataNotPublic:
-            embed.add_field(name="Что я могу сделать?", value="Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
-
-        if type(cmd_error) == NotLoggedIn:
-            embed.add_field(name="Что я могу сделать?", value="Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), далее зайти в свой профиль. Далее нажимаете F12, application, cookies, и ищите в таблице строки `ltuid` и `ltoken`, и копируете оттуда данные, далее вставляете в команду вновь.")
-
-        if type(cmd_error) == CustomError:
+        if isinstance(cmd_error, CustomError):
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
