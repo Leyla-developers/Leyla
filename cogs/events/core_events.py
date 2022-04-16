@@ -20,7 +20,7 @@ class CoreEvents(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title=f'Меня добавили на {guild.name}', 
                 fields=[
-                    {"name": "Участников", "value": len(guild.member)},
+                    {"name": "Участников", "value": len(guild.members)},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot])}
                 ],
                 color=disnake.Color.green()
@@ -34,7 +34,7 @@ class CoreEvents(commands.Cog):
             embed=await self.bot.embeds.simple(
                 title=f'Меня убрали с {guild.name}', 
                 fields=[
-                    {"name": "Участников", "value": len(guild.member), "inline": True},
+                    {"name": "Участников", "value": len(guild.members), "inline": True},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot]), "inline": True}
                 ],
                 color=disnake.Color.red()
