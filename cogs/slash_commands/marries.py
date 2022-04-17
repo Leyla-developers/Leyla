@@ -71,7 +71,7 @@ class Marries(commands.Cog):
                     title="Свадьба, получается <3", 
                     description=f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)",
                     footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
-                ), view=MarryButton(partner=inter.author)
+                ), view=MarryButton(partner=member)
             )
         elif inter.author.id == member.id:
             raise CustomError("Выйти замуж за самого себя..?")
