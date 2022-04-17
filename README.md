@@ -23,6 +23,6 @@ ___
 ___
 ### Other info
 
-> Language: [`Python 3.10.0`](https://python.org)
+> Language: [`Python 3.10.4`](https://python.org)
 
 > Library: [`Disnake`](https://pypi.org/project/disnake/)
