@@ -16,7 +16,7 @@ class MarryButton(disnake.ui.View):
     
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green)
     async def marry_button_accept(self, button, inter):
-        if self.partner.id != inter.author.id:
+        if self.partner.id == inter.author.id:
             await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
         else:
             await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром 🎉')
@@ -25,7 +25,7 @@ class MarryButton(disnake.ui.View):
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
     async def marry_button_cancel(self, button, inter):
-        if self.partner.id != inter.author.id:
+        if self.partner.id == inter.author.id:
             await inter.response.send_message("Нажать должен(на) тот, кого вы попросили!", ephemeral=True)
         else:
             await inter.response.send_message(f'{inter.author.id} Не согласен(на) быть партнёром')
@@ -71,7 +71,7 @@ class Marries(commands.Cog):
                     title="Свадьба, получается <3", 
                     description=f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)",
                     footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
-                ), view=MarryButton(partner=member)
+                ), view=MarryButton(partner=inter.author)
             )
         elif inter.author.id == member.id:
             raise CustomError("Выйти замуж за самого себя..?")
