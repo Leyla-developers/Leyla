@@ -46,7 +46,7 @@ class OnErrors(commands.Cog):
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         if isinstance(cmd_error, commands.NSFWChannelRequired):
-            channels = list(map(lambda n: n.mention, filter(lambda x: x.nsfw, guild.text_channels)))
+            channels = list(map(lambda n: n.mention, filter(lambda x: x.nsfw, ctx.guild.text_channels)))
             embed.add_field(
                 name="Поэтому воспользуйтесь одним из NSFW-каналов", 
                 value="\n".join(channels) if len(channels) != 0 else "На сервере нет NSFW каналов :(")
