@@ -62,7 +62,7 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name="invite", description="Предложить сыграть свадьбу кому-либо")
     async def marry_invite(self, inter, member: disnake.Member):
-        if await self.is_married(inter.author):
+        if await self.is_married(inter.author) == 0:
             await inter.send(
                 embed=await self.bot.embeds.simple(
                     title="Свадьба, получается <3", 
