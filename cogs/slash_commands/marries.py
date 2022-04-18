@@ -62,7 +62,9 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name="invite", description="Предложить сыграть свадьбу кому-либо")
     async def marry_invite(self, inter, member: disnake.Member):
-        if await self.is_married(inter.author) == 0:
+        if inter.author.id == member.id:
+            raise CustomError("Выйти замуж за самого себя..?")
+        elif await self.is_married(inter.author) == 0:
             await inter.send(
                 embed=await self.bot.embeds.simple(
                     title="Свадьба, получается <3", 
@@ -70,8 +72,6 @@ class Marries(commands.Cog):
                     footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
                 ), view=MarryButton(partner=member)
             )
-        elif inter.author.id == member.id:
-            raise CustomError("Выйти замуж за самого себя..?")
         else:
             raise CustomError(f"Эм) Вы и/или {member.mention} женаты. На что вы надеетесь?")
 
