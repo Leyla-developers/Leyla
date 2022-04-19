@@ -271,49 +271,52 @@ class Utilities(commands.Cog):
         async with self.bot.session.get(f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}') as response:
             request = await response.json()
 
-        links_array = [
-            f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else None,
-            f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else None,
-            f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else None,
-            f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else None,
-            f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else None,
-            f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else None,
-        ]
-        md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
-        embed = await self.bot.embeds.simple(
-            title=request['information']['name'],
-            description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
-            url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
-            footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
-            fields=[
-                {
-                    "name": f"Количество бампов (оценок) | До сброса (дней)",
-                    "value": str(request['information']['bumps']) + " | " + str(md - datetime.now().day),
-                    "inline": True
-                },
-                {
-                    "name": "Количество участников",
-                    "value": request['information']['members'][0],
-                    "inline": True
-                },
-                {
-                    "name": "Тэги",
-                    "value": ', '.join(request['information']['tags']) if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
-                    "inline": True
-                },
-                {
-                    "name": "Прочие ссылки",
-                    "value": "\n".join([i for i in links_array if not i is None]),
-                    "inline": True
-                }
-            ],
-        )
+        if 'information' in request.keys():
+            links_array = [
+                f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else None,
+                f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else None,
+                f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else None,
+                f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else None,
+                f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else None,
+                f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else None,
+            ]
+            md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
+            embed = await self.bot.embeds.simple(
+                title=request['information']['name'],
+                description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
+                url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
+                footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
+                fields=[
+                    {
+                        "name": f"Количество бампов (оценок) | До сброса (дней)",
+                        "value": str(request['information']['bumps']) + " | " + str(md - datetime.now().day),
+                        "inline": True
+                    },
+                    {
+                        "name": "Количество участников",
+                        "value": request['information']['members'][0],
+                        "inline": True
+                    },
+                    {
+                        "name": "Тэги",
+                        "value": ', '.join(request['information']['tags']) if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                        "inline": True
+                    },
+                    {
+                        "name": "Прочие ссылки",
+                        "value": "\n".join([i for i in links_array if not i is None]),
+                        "inline": True
+                    }
+                ],
+            )
 
-        if request['shortCode']:
-            embed.add_field(name="Короткая ссылка", value=f'https://bcord.cc/s/{request["shortCode"]}', inline=True)
+            if request['shortCode']:
+                embed.add_field(name="Короткая ссылка", value=f'https://bcord.cc/s/{request["shortCode"]}', inline=True)
 
-        if request['information']['avatar']:
-            embed.set_thumbnail(url=request['information']['avatar'])
+            if request['information']['avatar']:
+                embed.set_thumbnail(url=request['information']['avatar'])
+        else:
+            raise CustomError("Сервера нет на ботикорд (или произошла какая-либо непредвиденная ошибка).")
 
         await inter.send(embed=embed)
 
