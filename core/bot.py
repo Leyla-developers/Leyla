@@ -1,7 +1,7 @@
 from os import listdir
 import aiohttp
 
-import lavalink
+import wavelink
 from datetime import datetime
 from disnake.ext import commands
 from Tools.exceptions import CustomError
@@ -19,7 +19,6 @@ class Leyla(commands.Bot):
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
         self.times = LeylaTasks(self)
-        self.music = lavalink.Client(898664959767113729)
         self.ignore_cogs = []
         self.wavelink = None
 

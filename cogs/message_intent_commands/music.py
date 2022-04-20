@@ -18,25 +18,26 @@ class Music(commands.Cog):
         """Connect to our Lavalink nodes."""
         await self.bot.wait_until_ready()
 
-        await wavelink.NodePool.create_node(bot=self.bot,
-                                            host='localhost',
-                                            port=7000,
-                                            password='test')
+        await wavelink.NodePool.create_node(
+            bot=self.bot,
+            host='localhost',
+            port=7000,
+            password='test'
+        )
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
-        """Event fired when a node has finished connecting."""
         print(f'Node: <{node.identifier}> is ready!')
 
     @commands.command(name="play", description="Включу вам любую музыку, какую вам нужно (ну почти)) :3")
-    async def play(self, inter, search: wavelink.YouTubeTrack):
-        if not inter.voice_client:
-            vc: wavelink.Player = await inter.author.voice.channel.connect(cls=wavelink.Player)
+    async def play(self, ctx, search: wavelink.YouTubeTrack):
+        if not ctx.voice_client:
+            vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
         else:
-            vc: wavelink.Player = inter.voice_client
+            vc: wavelink.Player = ctx.voice_client
 
         await vc.play(search)
-        await inter.send(embed=await self.bot.embeds.simple(title=f'Трек: ({search.title})[{search.uri}]', description=f'Длительность песни: `{search.duration}`', thumbnail=search.thumb))
+        await ctx.send(embed=await self.bot.embeds.simple(title=f'Трек: ({search.title})[{search.uri}]', description=f'Длительность песни: `{search.duration}`', thumbnail=search.thumb))
 
 
 def setup(bot):
