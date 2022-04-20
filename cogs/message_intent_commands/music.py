@@ -11,7 +11,6 @@ class Music(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.wave = wavelink.Node(bot, host='localhost', port=7000, password='test')
 
         bot.loop.create_task(self.connect_nodes())
 
