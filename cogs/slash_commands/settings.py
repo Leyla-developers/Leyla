@@ -546,7 +546,7 @@ class Settings(commands.Cog):
             )
         )
 
-    @settings.slash_command(name="prefix", description="Смена префикса бота")
+    @settings.sub_command(name="prefix", description="Смена префикса бота")
     async def set_prefix(self, inter, prefix: str):
         if len(prefix) > 5:
             raise CustomError("Префикс не может быть больше чем >5-ти символов.")
