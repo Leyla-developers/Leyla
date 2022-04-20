@@ -329,5 +329,6 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
 
+
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

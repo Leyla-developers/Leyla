@@ -29,7 +29,7 @@ class Music(commands.Cog):
         """Event fired when a node has finished connecting."""
         print(f'Node: <{node.identifier}> is ready!')
 
-    @commands.slash_command()
+    @commands.command(name="play", description="Включу вам любую музыку, какую вам нужно (ну почти)) :3")
     async def play(self, inter, search: wavelink.YouTubeTrack):
         if not inter.voice_client:
             vc: wavelink.Player = await inter.author.voice.channel.connect(cls=wavelink.Player)

@@ -41,6 +41,15 @@ class Leyla(commands.Bot):
     def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)
 
+    async def get_prefix(self, bot, message):
+        if message.guild.id in [i.id for i in self.guilds]:
+            if await self.bot.config.DB.prefix.count_documents({"_id": message.guild.id}) == 0:
+                prefix = 'l.'
+            else:
+                prefix = dict(await self.bot.config.DB.prefix.find_one({"_id": message.guild.ud}))['prefix']
+
+        return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(bot, message)
+
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()

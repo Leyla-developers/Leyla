@@ -529,8 +529,9 @@ class Settings(commands.Cog):
         else:
             data = await self.bot.config.DB.voice.find_one({"_id": inter.guild.id})
 
-            if data['channel'] == channel.id:
-                raise CustomError("Сейчас и так указан этот канал!")
+            if 'channel' in data.keys():
+                if data['channel'] == channel.id:
+                    raise CustomError("Сейчас и так указан этот канал!")
             else:
                 if bool(channel.category):
                     await self.bot.config.DB.voice.update_one({"_id": inter.guild.id}, {"$set": {"lobby": channel.category.id, "channel": channel.id}})
@@ -543,7 +544,19 @@ class Settings(commands.Cog):
                 description="Голосовой канал для приватных комнат был создан",
                 fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}]
             )
-        )   
+        )
+
+    @settings.slash_command(name="prefix", description="Смена префикса бота")
+    async def set_prefix(self, inter, prefix: str):
+        if len(prefix) > 5:
+            raise CustomError("Префикс не может быть больше чем >5-ти символов.")
+        else:
+            if await self.bot.config.DB.prefix.count_documents({"_id": inter.guild.id}) == 0:
+                await self.bot.config.DB.prefix.insert_one({"_id": inter.guild.id, "prefix": prefix})
+            else:
+                await self.bot.config.DB.prefix.update_one({"_id": inter.guild.id}, {"$set": {"prefix": prefix}})
+            
+            await inter.send(embed=await self.bot.embeds.simple(description=f"Префикс успешно сменён на **{prefix}**!"))
 
 
 def setup(bot):
