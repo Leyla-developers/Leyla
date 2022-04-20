@@ -1,1 +1,1 @@
-worker: python main.py & java -jar Lavalink.jar
+worker: python main.py
