@@ -43,10 +43,10 @@ class Leyla(commands.Bot):
 
     async def get_prefix(self, message):
         if message.guild.id in [i.id for i in self.guilds]:
-            if await self.bot.config.DB.prefix.count_documents({"_id": message.guild.id}) == 0:
+            if await self.config.DB.prefix.count_documents({"_id": message.guild.id}) == 0:
                 prefix = 'l.'
             else:
-                prefix = dict(await self.bot.config.DB.prefix.find_one({"_id": message.guild.ud}))['prefix']
+                prefix = dict(await self.config.DB.prefix.find_one({"_id": message.guild.ud}))['prefix']
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
 
