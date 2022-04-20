@@ -45,7 +45,7 @@ class Welcome(commands.Cog):
                     data['goodbye_message'] = data['goodbye_message'].replace('[member]', member.name)
                     data['goodbye_message'] = data['goodbye_message'].replace('[guild]', member.guild.name)
                     data['goodbye_message'] = data['goodbye_message'].replace('[guildMembers]', str(len(member.guild.members)))
-
+    
                     if 'goodbye_messages' in data.keys():
                         data['goodbye_messages'] = [i.replace('[memberMention]', member.mention) for i in data['goodbye_messages']]
                         data['goodbye_messages'] = [i.replace('[member]', member.name) for i in data['goodbye_messages']]

@@ -30,16 +30,14 @@ class Music(commands.Cog):
         print(f'Node: <{node.identifier}> is ready!')
 
     @commands.slash_command()
-    async def play(self, inter, search: str):
-        player = self.wave.get_tracks(f'ytsearch:{search}')
+    async def play(self, inter, search: wavelink.YouTubeTrack):
         if not inter.voice_client:
             vc: wavelink.Player = await inter.author.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = inter.voice_client
 
-        #await vc.play(player.tracks[])
-        await inter.send(player.tracks[0])
-        #await inter.send(embed=await self.bot.embeds.simple(title=f'Трек: ({search.title})[{search.uri}]', description=f'Длительность песни: `{search.duration}`', thumbnail=search.thumb))
+        await vc.play(search)
+        await inter.send(embed=await self.bot.embeds.simple(title=f'Трек: ({search.title})[{search.uri}]', description=f'Длительность песни: `{search.duration}`', thumbnail=search.thumb))
 
 
 def setup(bot):
