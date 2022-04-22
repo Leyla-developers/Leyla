@@ -40,6 +40,7 @@ class LeylaTasks:
         'tentacles',
     ]
 
+
     @tasks.loop(seconds=30)
     async def nsfw(self):
         async for i in self.bot.config.DB.nsfw.find():
