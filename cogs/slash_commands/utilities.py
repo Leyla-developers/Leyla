@@ -1,8 +1,8 @@
 import calendar as cld
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import typing
-from typing import Dict, List
+from typing import Dict, List, Literal
 from os import environ
 import random
 import json
@@ -329,6 +329,23 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
 
+    @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
+    async def utilities_giveaway(
+        self, inter, 
+        giveaway_channel: disnake.TextChannel, prize: str,
+        time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней']
+    ):
+        time_convert = {
+            'Секунд': datetime.now() + timedelta(seconds=time),
+            'Минут': datetime.now() + timedelta(minutes=time),
+            'Часов': datetime.now() + timedelta(hours=time),
+            'Дней': datetime.now() + timedelta(days=time)
+        }
+
+        embed = await self.bot.embeds.simple(title='> Розыгрыш!', description=f"**Приз:** {prize}", footer={"text": f'До окончания: {time} {unit.lower()}'})
+        message = await giveaway_channel.send(embed=embed)
+        await message.add_reaction('👍')
+        await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id, "message_id": message.id})
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
