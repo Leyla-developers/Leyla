@@ -9,10 +9,10 @@ class CoreEvents(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(self.bot.user.name, 'started at:', str(self.bot.uptime))
         await self.bot.times.nsfw.start()
         await self.bot.times.giveaway_check.start()
-
+        print(self.bot.user.name, 'started at:', str(self.bot.uptime))
+        
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.content == self.bot.user.mention:
