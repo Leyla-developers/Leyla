@@ -7,7 +7,7 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
-from .classes import LeylaTasks
+from .classes.time_posting import LeylaTasks
 
 
 class Leyla(commands.Bot):
@@ -51,5 +51,5 @@ class Leyla(commands.Bot):
 
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
-        self.times.nsfw.start()
-        self.times.giveaway_check.start()
+        await self.times.nsfw.start()
+        await self.times.giveaway_check.start()
