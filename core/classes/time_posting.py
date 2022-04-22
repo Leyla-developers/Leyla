@@ -61,3 +61,4 @@ class LeylaTasks:
                 description=f"**Приз:** {i['prize']}\n**Победитель:** {''.join(random.choices([i.mention async for i in message.reactions[0].users()], k=1))}",
             )
             await message.edit(embed=embed)
+            await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})

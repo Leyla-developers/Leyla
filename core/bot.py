@@ -52,4 +52,4 @@ class Leyla(commands.Bot):
     async def on_ready(self):
         print(self.user.name, 'started at:', str(self.uptime))
         self.times.nsfw.start()
-        self.giveaway_check.start()
+        self.times.giveaway_check.start()
