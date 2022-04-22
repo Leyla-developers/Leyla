@@ -342,7 +342,7 @@ class Utilities(commands.Cog):
             'Дней': datetime.now() + timedelta(days=time)
         }
 
-        embed = await self.bot.embeds.simple(title='> Розыгрыш!', description=f"**Приз:** {prize}", footer={"text": f'До окончания: {time} {unit.lower()}'})
+        embed = await self.bot.embeds.simple(title='> Розыгрыш!', description=f"**Приз:** {prize}", footer={"text": f'До окончания: {time} {unit.lower()}', 'icon_url': inter.author.display_avatar.url})
         message = await giveaway_channel.send(embed=embed)
         await message.add_reaction('👍')
         await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id, "message_id": message.id})
