@@ -7,7 +7,7 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
-from .classes.time_posting import LeylaTasks
+from .classes import LeylaTasks
 
 
 class Leyla(commands.Bot):
