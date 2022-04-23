@@ -53,3 +53,6 @@ class Leyla(commands.Bot):
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
 
+    async def on_ready(self):
+        self.checks.nsfw.start()
+        self.checks.giveaway_check.start()
