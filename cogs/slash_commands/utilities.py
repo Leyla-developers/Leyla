@@ -9,6 +9,7 @@ import json
 from PIL import Image
 from io import BytesIO
 import aiohttp
+import asyncio
 
 import disnake
 from disnake.ext import commands
@@ -330,12 +331,25 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
 
+    async def giveaway_loop(self):
+        while True:
+            async for i in self.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
+                message = await self.bot.get_channel(i['channel']).fetch_message(i['message_id'])
+                embed = await self.bot.embeds.simple(
+                    title='> Розыгрыш окончен!', 
+                    description=f"**Приз:** {i['prize']}\n**Победитель:** {''.join(random.choices([i.mention async for i in message.reactions[0].users()], k=i['count']))}",
+                )
+                await message.edit(embed=embed)
+                await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
+                await asyncio.sleep(10)
+
     @commands.command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     async def utilities_giveaway(
         self, inter, 
         giveaway_channel: disnake.TextChannel, prize: str,
         time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
     ):
+        self.bot.loop.create_task(self.giveaway_loop())
         time_convert = {
             'Секунд': datetime.now() + timedelta(seconds=time),
             'Минут': datetime.now() + timedelta(minutes=time),
