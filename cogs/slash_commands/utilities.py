@@ -341,7 +341,7 @@ class Utilities(commands.Cog):
                 )
                 await message.edit(embed=embed)
                 await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
-                await asyncio.sleep(10)
+                await asyncio.sleep(1)
 
     @commands.command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     async def utilities_giveaway(
