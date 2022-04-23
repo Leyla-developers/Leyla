@@ -1,5 +1,6 @@
 import disnake
 from disnake.ext import commands
+from core.classes import LeylaTasks as task
 
 
 class CoreEvents(commands.Cog):
@@ -8,9 +9,9 @@ class CoreEvents(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_ready(self):
-        await self.bot.times.nsfw.start()
-        await self.bot.times.giveaway_check.start()
+    async def on_connect(self):
+        await task(self.bot).nsfw.start()
+        await task(self.bot).giveaway_check.start()
         print(self.bot.user.name, 'started at:', str(self.bot.uptime))
         
     @commands.Cog.listener()
