@@ -329,7 +329,7 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
 
-    @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
+    @commands.command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     async def utilities_giveaway(
         self, inter, 
         giveaway_channel: disnake.TextChannel, prize: str,
