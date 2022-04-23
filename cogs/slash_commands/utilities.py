@@ -337,7 +337,6 @@ class Utilities(commands.Cog):
         giveaway_channel: disnake.TextChannel, prize: str,
         time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
     ):
-        self.bot.loop.create_task(self.giveaway_loop())
         time_convert = {
             'Секунд': datetime.now() + timedelta(seconds=time),
             'Минут': datetime.now() + timedelta(minutes=time),
