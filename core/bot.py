@@ -1,12 +1,12 @@
 from os import listdir
 import aiohttp
 
-import wavelink
 from datetime import datetime
 from disnake.ext import commands
 from Tools.exceptions import CustomError
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
+from .classes import LeylaTasks
 
 
 class Leyla(commands.Bot):
@@ -15,6 +15,7 @@ class Leyla(commands.Bot):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
         self.uptime = datetime.utcnow()
+        self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
         self.ignore_cogs = []
@@ -31,6 +32,11 @@ class Leyla(commands.Bot):
                 except Exception as e:
                     print(f'{folder}.{cog} fucked up by Hueila', e)
                     print(f'https://stackoverflow.com/{e}')
+
+    async def on_ready(self):
+        print(self.bot.user.name, 'started at:', datetime.now())
+        self.checks.giveaway_check.start()
+        self.checks.nsfw.start()
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)

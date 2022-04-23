@@ -26,8 +26,6 @@ class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        LeylaTasks(bot).nsfw.start()
-        LeylaTasks(bot).giveaway_check.start()
 
     @commands.slash_command(
         description="Вывод аватара участника"
