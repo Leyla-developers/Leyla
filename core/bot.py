@@ -7,7 +7,6 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
-from .classes import LeylaTasks
 
 
 class Leyla(commands.Bot):
@@ -18,7 +17,6 @@ class Leyla(commands.Bot):
         self.uptime = datetime.utcnow()
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.times = LeylaTasks(self)
         self.ignore_cogs = []
         self.wavelink = None
 
@@ -49,6 +47,3 @@ class Leyla(commands.Bot):
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
 
-    async def on_ready(self):
-        LeylaTasks(self).nsfw.start()
-        LeylaTasks(self).giveaway_check.start()

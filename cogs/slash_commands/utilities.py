@@ -19,12 +19,15 @@ import emoji as emj
 from bs4 import BeautifulSoup
 from Tools.buttons import CurrencyButton
 from Tools.translator import Translator
+from core.classes import LeylaTasks
 
 
 class Utilities(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        LeylaTasks(bot).nsfw.start()
+        LeylaTasks(bot).giveaway_check.start()
 
     @commands.slash_command(
         description="Вывод аватара участника"
@@ -350,6 +353,8 @@ class Utilities(commands.Cog):
         message = await giveaway_channel.send(embed=embed)
         await message.add_reaction('👍')
         await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id, "message_id": message.id})
+
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
