@@ -343,7 +343,7 @@ class Utilities(commands.Cog):
                 await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
                 await asyncio.sleep(1)
 
-    @commands.command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
+    @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     async def utilities_giveaway(
         self, inter, 
         giveaway_channel: disnake.TextChannel, prize: str,
