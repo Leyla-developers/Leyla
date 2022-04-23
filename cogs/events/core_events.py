@@ -15,8 +15,6 @@ class CoreEvents(commands.Cog):
         
     @commands.Cog.listener()
     async def on_message(self, message):
-        await task(self.bot).nsfw.start()
-        await task(self.bot).giveaway_check.start()
         if message.content == self.bot.user.mention:
             await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать')
 

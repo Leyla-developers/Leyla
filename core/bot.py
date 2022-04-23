@@ -48,3 +48,7 @@ class Leyla(commands.Bot):
                 prefix = dict(await self.config.DB.prefix.find_one({"_id": message.guild.id}))['prefix']
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
+
+    async def on_ready(self):
+        self.times.nsfw.start()
+        self.times.giveaway_check.start()
