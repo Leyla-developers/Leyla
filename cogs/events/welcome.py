@@ -41,3 +41,4 @@ class Welcome(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Welcome(bot))
+    
