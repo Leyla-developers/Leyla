@@ -354,6 +354,5 @@ class Utilities(commands.Cog):
         await message.add_reaction('👍')
         await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id, "message_id": message.id})
 
-
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
