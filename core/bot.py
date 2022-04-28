@@ -1,6 +1,8 @@
 from os import listdir
 import aiohttp
 
+import wavelink
+import humanize
 from datetime import datetime
 from disnake.ext import commands
 from Tools.exceptions import CustomError
@@ -18,8 +20,9 @@ class Leyla(commands.Bot):
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.ignore_cogs = []
+        self.ignore_cogs = ['music']
         self.wavelink = None
+        self.humanize = humanize.i18n.activate("ru_RU")
 
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):
@@ -31,10 +34,11 @@ class Leyla(commands.Bot):
                         self.load_extension(cog)
                 except Exception as e:
                     print(f'{folder}.{cog} fucked up by Hueila', e)
-                    print(f'https://stackoverflow.com/{e}')
+                    print(f'https://stackoverflow.com/{e.replace(" ", "+")}')
 
     async def on_ready(self):
         print(self.bot.user.name, 'started at:', datetime.now())
+        self.load_extension('cogs/message_intent_commands/music.py')
         self.checks.giveaway_check.start()
         self.checks.nsfw.start()
 
@@ -53,6 +57,4 @@ class Leyla(commands.Bot):
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
 
-    async def on_ready(self):
-        self.checks.nsfw.start()
-        self.checks.giveaway_check.start()
+

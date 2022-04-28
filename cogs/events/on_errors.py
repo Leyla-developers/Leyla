@@ -29,6 +29,32 @@ class OnErrors(commands.Cog):
         self.emoji = "<:blurplecross:918571629997613096>"
 
     @commands.Cog.listener()
+    async def on_command_error(self, ctx, cmd_error):
+        embed = await self.bot.embeds.simple(
+            title=f"{self.emoji} Произошла ошибка",
+            color=disnake.Colour.red()
+        )
+        embed.description = DESCRIPTIONS.get(type(cmd_error), "Произошла неизвестная ошибка, пожалуйста, отправьте ошибку на [сервер технической поддержки](https://discord.gg/43zapTjgvm)")
+
+        if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
+            embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
+
+        if isinstance(cmd_error, CustomError):
+            embed.add_field(name="Описание ошибки", value=cmd_error)
+
+        if not type(cmd_error) in DESCRIPTIONS.keys():
+            embed.add_field(name="Описание ошибки", value=cmd_error)
+
+        if isinstance(cmd_error, commands.NSFWChannelRequired):
+            channels = list(map(lambda n: n.mention, filter(lambda x: x.nsfw, ctx.guild.text_channels)))
+            embed.add_field(
+                name="Поэтому воспользуйтесь одним из NSFW-каналов", 
+                value="\n".join(channels) if len(channels) != 0 else "На сервере нет NSFW каналов :("
+            )
+
+        await ctx.reply(embed=embed)
+
+    @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, cmd_error):
         embed = await self.bot.embeds.simple(
             title=f"{self.emoji} Произошла ошибка",

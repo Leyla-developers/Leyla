@@ -1,9 +1,13 @@
 import asyncio
-from os import environ
+from os import environ, system
 
 import disnake
 from core import Leyla
 from config import Config
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 config = Config()
 intents = disnake.Intents.default()

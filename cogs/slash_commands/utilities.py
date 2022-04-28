@@ -338,21 +338,24 @@ class Utilities(commands.Cog):
         giveaway_channel: disnake.TextChannel, prize: str,
         time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
     ):
-        time_convert = {
-            'Секунд': datetime.now() + timedelta(seconds=time),
-            'Минут': datetime.now() + timedelta(minutes=time),
-            'Часов': datetime.now() + timedelta(hours=time),
-            'Дней': datetime.now() + timedelta(days=time)
-        }
+        if time <= 0:
+            raise CustomError("Э! Ниже нуля нельзя! Время укажите, пожалуйста, корректное \🥺")
+        else:
+            time_convert = {
+                'Секунд': datetime.now() + timedelta(seconds=time),
+                'Минут': datetime.now() + timedelta(minutes=time),
+                'Часов': datetime.now() + timedelta(hours=time),
+                'Дней': datetime.now() + timedelta(days=time)
+            }
 
-        embed = await self.bot.embeds.simple(
-            title='> Розыгрыш!', 
-            description=f"**Приз:** {prize}", 
-            footer={"text": f'До окончания: {time} {unit.lower()}', 'icon_url': inter.author.display_avatar.url}
-        )
-        message = await giveaway_channel.send(embed=embed)
-        await message.add_reaction('👍')
-        await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id, "message_id": message.id})
+            embed = await self.bot.embeds.simple(
+                title='> Розыгрыш!', 
+                description=f"**Приз:** {prize}", 
+                footer={"text": f'До окончания: {time} {unit.lower()}', 'icon_url': inter.author.display_avatar.url}
+            )
+            message = await giveaway_channel.send(embed=embed)
+            await message.add_reaction('👍')
+            await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id, "message_id": message.id})
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

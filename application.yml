@@ -1,12 +1,12 @@
 server: # REST and WS server
-  port: 7000
-  address: 127.0.0.1
+  port: 4001
+  address: 10.0.0.153
 spring:
   main:
     banner-mode: log
 lavalink:
   server:
-    password: "test"
+    password: "iamdjoh"
     sources:
       youtube: true
       bandcamp: true
