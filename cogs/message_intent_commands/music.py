@@ -29,7 +29,6 @@ class Music(commands.Cog):
             host=os.environ.get('LAVA_HOST'),
             port=os.environ.get('LAVA_PORT'),
             password=os.environ.get('LAVA_PASS'),
-            region='us'
         )
 
     @commands.Cog.listener()
@@ -42,7 +41,7 @@ class Music(commands.Cog):
         print(f'Node: <{node.identifier}> is ready!')
 
     @commands.command(name="play", description="Включу вам любую музыку, какую вам нужно (ну почти)) :3")
-    async def music_play(self, ctx, *, search: wavelink.YouTubeMusicTrack):
+    async def music_play(self, ctx, *, search: wavelink.YouTubeTrack):
         if not ctx.author.voice:
             raise CustomError("Подключитесь к голосовому каналу!")
         elif not ctx.voice_client:
