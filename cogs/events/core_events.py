@@ -1,4 +1,5 @@
 import disnake
+import wavelink
 from disnake.ext import commands
 
 from core.classes import LeylaTasks as task
@@ -12,6 +13,8 @@ class CoreEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_connect(self):
         print(self.bot.user.name, 'started at:', str(self.bot.uptime))
+        self.bot.checks.nsfw.start()
+        self.bot.checks.giveaway_check.start()
         
     @commands.Cog.listener()
     async def on_message(self, message):

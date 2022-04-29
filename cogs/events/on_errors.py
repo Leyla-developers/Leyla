@@ -12,7 +12,8 @@ DESCRIPTIONS = {
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
     NotLoggedIn: "Авторизация не прошла успешно",
-    DataNotPublic: "Информация не публична"
+    DataNotPublic: "Информация не публична",
+    commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔"
 }
 
 PERMISSIONS = {
@@ -43,6 +44,9 @@ class OnErrors(commands.Cog):
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
+            if isinstance(cmd_error, commands.CommandNotFound):
+                return
+
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
         if isinstance(cmd_error, commands.NSFWChannelRequired):
