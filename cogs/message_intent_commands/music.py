@@ -24,6 +24,7 @@ class Music(commands.Cog):
         self.bot.loop.create_task(self.connect_nodes())
 
     async def connect_nodes(self):
+        await self.bot.wait_until_ready()
         await wavelink.NodePool.create_node(
             bot=self.bot,
             host=os.environ.get('LAVA_HOST'),
