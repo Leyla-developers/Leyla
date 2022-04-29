@@ -101,6 +101,7 @@ class Music(commands.Cog):
     @commands.command(name='stop', description='Прекратить проигрывание музыки')
     async def music_stop(self, ctx):
         vc = ctx.voice_client
+        vc.queue.clear()
         await vc.stop()
         await vc.disconnect()
         await ctx.send('Проигрывание музыки остановлено!')
