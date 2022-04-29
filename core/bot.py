@@ -1,6 +1,7 @@
 from os import listdir
 import aiohttp
 
+import disnake
 import humanize
 from datetime import datetime
 from disnake.ext import commands
@@ -40,6 +41,10 @@ class Leyla(commands.Bot):
 
     def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)
+
+    async def on_socket_raw_receive(self, data):
+        message = disnake.utils._from_json(data)
+        self.dispatch("socket_response", message)
 
     async def get_prefix(self, message):
         if message.guild.id in [i.id for i in self.guilds]:

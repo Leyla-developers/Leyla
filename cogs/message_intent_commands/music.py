@@ -28,7 +28,8 @@ class Music(commands.Cog):
             bot=self.bot,
             host=os.environ.get('LAVA_HOST'),
             port=os.environ.get('LAVA_PORT'),
-            password=os.environ.get('LAVA_PASS')
+            password=os.environ.get('LAVA_PASS'),
+            region='us'
         )
 
     @commands.Cog.listener()

@@ -29,7 +29,7 @@ async def init_and_run_bot(token: str) -> None:
         intents=intents,
         sync_commands=True,
         enable_debug_events=True,
-        help_command=None
+        help_command=None,
     )
     bot.config = config
     await bot.start(token)
