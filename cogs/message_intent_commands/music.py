@@ -102,6 +102,7 @@ class Music(commands.Cog):
     async def music_stop(self, ctx):
         vc = ctx.voice_client
         await vc.stop()
+        await vc.disconnect()
         await ctx.send('Проигрывание музыки остановлено!')
 
     @music_shuffle.before_invoke
