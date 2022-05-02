@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 from Tools.buttons import SupportButton
 from Tools.exceptions import CustomError
-from genshinstats.errors import DataNotPublic, NotLoggedIn
+from genshin import DataNotPublic
 
 DESCRIPTIONS = {
     commands.MissingPermissions: "У тебя недостаточно прав, милый \🥺",
@@ -11,7 +11,6 @@ DESCRIPTIONS = {
     commands.MemberNotFound: "Этот человечек не найден на этом сервере, проверь ID/Тег/Никнейм на правильность :eyes:",
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
-    NotLoggedIn: "Авторизация не прошла успешно",
     DataNotPublic: "Информация не публична",
     commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔"
 }
@@ -65,7 +64,7 @@ class OnErrors(commands.Cog):
             color=disnake.Colour.red()
         )
         embed.description = DESCRIPTIONS.get(type(cmd_error), "Произошла неизвестная ошибка, пожалуйста, отправьте ошибку на [сервер технической поддержки](https://discord.gg/43zapTjgvm)")
-
+        print(cmd_error)
         if isinstance(cmd_error, (commands.MissingPermissions, commands.BotMissingPermissions)):
             embed.add_field(name="Недостающие права", value=", ".join([PERMISSIONS.get(i, i) for i in cmd_error.missing_permissions]))
 
@@ -74,6 +73,9 @@ class OnErrors(commands.Cog):
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
             embed.add_field(name="Описание ошибки", value=cmd_error)
+
+        if isinstance(cmd_error, DataNotPublic):
+            embed.add_field(name="Решение ошибки", value="Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
 
         if isinstance(cmd_error, commands.NSFWChannelRequired):
             channels = list(map(lambda n: n.mention, filter(lambda x: x.nsfw, ctx.guild.text_channels)))

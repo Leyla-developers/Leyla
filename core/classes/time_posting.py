@@ -1,10 +1,11 @@
+import os
 import random
 from datetime import datetime
 
 import disnake
 from disnake.ext import tasks
 import hmtai
-import wavelink
+import lavalink
 
 
 class LeylaTasks:
@@ -65,4 +66,3 @@ class LeylaTasks:
             )
             await message.edit(embed=embed)
             await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
-

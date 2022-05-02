@@ -18,7 +18,8 @@ class Logs(commands.Cog):
     async def on_member_join(self, member):
         if not await self.get_channel(member.guild): return
         else:
-            await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
+            await self.bot.get_channel(
+                await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новый участник тут зашёл :3",
                     fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
                     footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon.url else None},
@@ -44,14 +45,16 @@ class Logs(commands.Cog):
         if not await self.get_channel(message.guild): return
         elif message.author.bot: return
         else:
-            await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
+            await self.bot.get_channel(
+                await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удалённое сообщение.",
                     description=message.content, 
                     footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
                     fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
                     url=message.channel.jump_url,
                     thumbnail=message.author.display_avatar.url,
-                    color=disnake.Colour.red()
+                    color=disnake.Colour.red(),
+                    image=message.attachments[0].proxy_url
                 )
             )
 
@@ -69,7 +72,8 @@ class Logs(commands.Cog):
                     fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{str(after.author)}]"}],
                     url=after.jump_url,
                     thumbnail=after.author.display_avatar.url,
-                    color=disnake.Colour.dark_orange()
+                    color=disnake.Colour.dark_orange(),
+                    image=after.attachments[0].proxy_url if bool(after.attachments) else disnake.embeds.EmptyEmbed
                 )
             )
 

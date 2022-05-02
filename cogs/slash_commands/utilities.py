@@ -1,26 +1,30 @@
-import calendar as cld
-import re
-from datetime import datetime, timedelta
-import typing
-from typing import Dict, List, Literal
-from os import environ
-import random
-import json
-from PIL import Image
-from io import BytesIO
-import aiohttp
 import asyncio
+import calendar as cld
+import json
+import random
+import re
+import typing
+from datetime import datetime, timedelta
+from io import BytesIO
+from os import environ
+from typing import Dict, List, Literal
+
+import aiohttp
+from dotenv import load_dotenv
+from PIL import Image
+
+load_dotenv()
 
 import disnake
-from disnake.ext import commands
-from Tools.links import fotmat_links_for_avatar, emoji_converter, emoji_formats
-from Tools.decoders import Decoder
-from Tools.exceptions import CustomError
 import emoji as emj
 from bs4 import BeautifulSoup
-from Tools.buttons import CurrencyButton
-from Tools.translator import Translator
 from core.classes import LeylaTasks
+from disnake.ext import commands
+from Tools.buttons import CurrencyButton
+from Tools.decoders import Decoder
+from Tools.exceptions import CustomError
+from Tools.links import emoji_converter, emoji_formats, fotmat_links_for_avatar
+from Tools.translator import Translator
 
 
 class Utilities(commands.Cog):

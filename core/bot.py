@@ -20,7 +20,7 @@ class Leyla(commands.Bot):
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.ignore_cogs = []
+        self.ignore_cogs = ['music']
         self.wavelink = None
         self.humanize = humanize.i18n.activate("ru_RU")
 
@@ -29,12 +29,11 @@ class Leyla(commands.Bot):
                 try:
                     for ignore_cog in self.ignore_cogs:
                         if cog in f'cogs.{folder}.{ignore_cog}':
-                            raise CustomError(f"Игнорируемый ког замечен {cog}")
+                            raise CustomError(f'Игнорируемый ког: {cog}')
                     else:
                         self.load_extension(cog)
                 except Exception as e:
                     print(f'{folder}.{cog} fucked up by Hueila', e)
-                    print(f'https://stackoverflow.com/{e}')
                     
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
@@ -44,7 +43,7 @@ class Leyla(commands.Bot):
 
     async def on_socket_raw_receive(self, data):
         message = disnake.utils._from_json(data)
-        self.dispatch("socket_response", message)
+        return self.dispatch("socket_response", message)
 
     async def get_prefix(self, message):
         if message.guild.id in [i.id for i in self.guilds]:

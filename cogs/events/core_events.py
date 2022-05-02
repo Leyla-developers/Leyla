@@ -15,12 +15,12 @@ class CoreEvents(commands.Cog):
         print(self.bot.user.name, 'started at:', str(self.bot.uptime))
         self.bot.checks.nsfw.start()
         self.bot.checks.giveaway_check.start()
-        
+        self.bot.load_extension('cogs.message_intent_commands.music')
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.content == self.bot.user.mention:
-            await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать')
-
+            await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать\n\n— Ссылка на сервер: discord.gg/43zapTjgvm\n— Сайт бота: https://leylabot.ml/\n— Пригласи меня и на другие сервера, тыкнув на кнопочку в профиле \🥺')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
