@@ -139,7 +139,7 @@ class Dropdown(disnake.ui.Select):
     async def callback(self, interaction: disnake.MessageInteraction):
         await interaction.response.defer()
         if self.values[0].lower() == "низкий":
-            
+            ...
         await interaction.send(f"Басс выбран на уровне :: {self.values[0]}")
 
 class Music(commands.Cog):
@@ -250,10 +250,11 @@ class Music(commands.Cog):
         if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
             return await ctx.send('Вы не в моём голосовом канале!')
 
-        player.queue.clear()
-        await player.stop()
-        await ctx.voice_client.disconnect(force=True)
-        await ctx.send('Ну и ладно. Я отключилась.')
+        vc = ctx.voice_client
+        vc.queue.clear()
+        await vc.stop()
+        await vc.disconnect()
+        await ctx.send('Проигрывание музыки остановлено!')
 
 def setup(bot):
     bot.add_cog(Music(bot))
