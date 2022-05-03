@@ -1,9 +1,12 @@
 import os
 import re
+import math
 import random
 from datetime import timedelta
 from collections import deque
+
 from dotenv import load_dotenv
+from itertools import groupby
 
 load_dotenv()
 
@@ -94,8 +97,10 @@ class MusicButtons(disnake.ui.View):
 
         if inter.author.id == self.dj.id:
             if self.player.is_playing:
+                vc = LavalinkVoiceClient(self.bot, inter.me.voice.channel)
                 self.player.queue.clear()
                 await self.player.stop()
+                await vc.disconnect()
                 embed.description = "Плеер остановлен!"
             else:
                 embed.description = "Плеер и так не играет сейчас"
@@ -121,26 +126,46 @@ class MusicButtons(disnake.ui.View):
         await inter.send(embed=embed, ephemeral=True)
 
 class Dropdown(disnake.ui.Select):
-    def __init__(self, bot):
+    def __init__(self, query, bot, dj, select_options):
+        self.dj = dj
         self.bot = bot
-        options = [
-            SelectOption(label="Низкий"),
-            SelectOption(label="Средний"),
-            SelectOption(label="Высокий")
-        ]
+        self.query = query
+        options = select_options
 
         super().__init__(
-            placeholder="Уровень басса",
+            placeholder="Выберите трек",
             min_values=1,
             max_values=1,
             options=options,
+            custom_id="music_dropdown"
         )
 
-    async def callback(self, interaction: disnake.MessageInteraction):
-        await interaction.response.defer()
-        if self.values[0].lower() == "низкий":
-            ...
-        await interaction.send(f"Басс выбран на уровне :: {self.values[0]}")
+    async def callback(self, inter):
+        await inter.response.defer()
+
+        if inter.author.id == self.dj.id:
+            player = self.bot.lavalink.player_manager.get(inter.guild.id)
+            results = await player.node.get_tracks(self.query)
+            track = [i for i in results['tracks'] if self.values[0] == "{author} - {title}".format(author=i['info']['author'], title=i['info']['title'])][0]
+            player.add(requester=inter.author.id, track=track)
+            embed = await self.bot.embeds.simple(
+                title=f'Трек: {track["info"]["title"]}', 
+                url=track["info"]["uri"], 
+                description=f'Длительность: {humanize.naturaldelta(timedelta(milliseconds=track["info"]["length"]))}',
+                fields=[{"name": "Автор", "value": track['info']['author']}]
+            )
+            await inter.send(embed=embed, view=MusicButtons(bot=self.bot, player=player, dj=inter.author))
+
+            if not player.is_playing:
+                await player.play()
+        else:
+            await inter.send('Не вы заказывали музыку!')
+
+class Views(disnake.ui.View):
+
+    def __init__(self, query, bot, dj, options):
+        super().__init__()
+        self.add_item(Dropdown(query, bot, dj, options))
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -210,10 +235,12 @@ class Music(commands.Cog):
         if not state:
             return
 
-        if len(after.channel.members) == 1:
-            await state.set_pause(True)
-        else:
-            await state.set_pause(False)
+        if len(after.channel.members) == 1 and after.channel.members[0].id == self.bot.user.id:
+            player = self.bot.lavalink.player_manager.get(member.guild.id)
+            vc = LavalinkVoiceClient(self.bot, after.member.voice.channel)
+            player.queue.clear()
+            await player.stop()
+            await vc.disconnect()
 
     @commands.command(name='play')
     async def music_play(self, ctx, *, query: str):
@@ -228,33 +255,28 @@ class Music(commands.Cog):
         if not results or not results['tracks']:
             return await ctx.send('Я ничего не нашла(')
 
-        embed = await self.bot.embeds.simple()
+        data = [SelectOption(label=f"{i['info']['author']} - {i['info']['title']}") for i, _ in groupby(results['tracks'][:5])]
+        await ctx.send('Выберите трек', view=Views(query, self.bot, ctx.author, data))
 
-        track = results['tracks'][0]
-        embed.title = f'Трек: {track["info"]["title"]}'
-        embed.url = track["info"]["uri"]
-        embed.description = f'Длительность: {humanize.naturaldelta(timedelta(milliseconds=track["info"]["length"]))}'
-        embed.add_field(name='Автор', value=track['info']['author'])
-        track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
-        player.add(requester=ctx.author.id, track=track)
-
-        await ctx.send(embed=embed, view=MusicButtons(bot=self.bot, player=player, dj=ctx.author))
-
-        if not player.is_playing:
-            await player.play()
-
-    @commands.command(name="stop", description="Выключить плеер")
-    async def music_stop(self, ctx):
+    @commands.command(name='queue')
+    async def music_queue(self, ctx, page: int = 1):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        items_per_page = 10
+        pages = math.ceil(len(player.queue) / items_per_page)
 
-        if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
-            return await ctx.send('Вы не в моём голосовом канале!')
+        start = (page - 1) * items_per_page
+        end = start + items_per_page
 
-        vc = ctx.voice_client
-        vc.queue.clear()
-        await vc.stop()
-        await vc.disconnect()
-        await ctx.send('Проигрывание музыки остановлено!')
+        queue_list = ''
+        for i, j in enumerate(player.queue[start:end], start=start):
+            queue_list += f'[**{i+1}** | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}**]({j.uri})\n'
+
+        embed = await self.bot.embeds.simple(
+            title=f"Очередь песен — {len(player.queue)}",
+            description=queue_list if player.queue else "В очереди нет песен, *буп*",
+            footer={"text": f"Страница: {page}/{pages}", "icon_url": ctx.author.display_avatar.url}
+        )
+        await ctx.reply(embed=embed)
 
 def setup(bot):
     bot.add_cog(Music(bot))

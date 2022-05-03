@@ -558,6 +558,21 @@ class Settings(commands.Cog):
             
             await inter.send(embed=await self.bot.embeds.simple(description=f"Префикс успешно сменён на **{prefix}**!"))
 
+    @settings.sub_command(name="counter", description="Канал, который вы укажете, будет указывать количество участников")
+    async def settings_counter(self, inter, channel_type: Literal['Текстовый', 'Голосовой']):
+        permissions = {inter.guild.default_role: disnake.PermissionOverwrite(send_messages=False, read_messages=False, connect=False)}
+
+        if channel_type == "Текстовый":
+            channel = await inter.guild.create_text_channel(name=f"Участников: {len(inter.guild.members)}", overwrites=permissions)
+        else:
+            channel = await inter.guild.create_voice_channel(name=f"Участников: {len(inter.guild.members)}", overwrites=permissions)
+
+        if await self.bot.config.DB.counter.count_documents({"_id": inter.guild.id}) == 0:
+            await self.bot.config.DB.counter.insert_one({"_id": inter.guild.id, "channel": channel.id})
+        else:
+            await self.bot.config.DB.counter.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+
+        await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(counter)**", description="Всё, счётчик участников включен :)", fields=[{"name": "Канал", "value": channel.mention}]))
 
 def setup(bot):
     bot.add_cog(Settings(bot))

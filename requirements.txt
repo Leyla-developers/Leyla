@@ -17,3 +17,4 @@ genshinstats
 git+https://github.com/helish88/Wavelink.git
 python-dotenv
 genshin
+psutil

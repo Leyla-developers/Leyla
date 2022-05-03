@@ -43,7 +43,7 @@ class DivorceButton(disnake.ui.View):
     @disnake.ui.button(label="Разорвать брак", style=disnake.ButtonStyle.red)
     async def divorce_button_accept(self, button, inter):
         if inter.author.id != self.partner.id:
-            await inter.response.send_message("Принять должен тот, с кем вы сватались!", ephemeral=True)
+            await inter.response.send_message("Нажать должен(а) тот(а), с кем пользователь замужем!", ephemeral=True)
         else:
             await inter.response.send_message(f'{self.partner.mention} Согласился(ась) расторгнуть брак(. Удачи.')
             await self.config.DB.marries.delete_one({"$or": [{"_id": inter.author.id}, {"mate": self.partner.id}]})
@@ -55,7 +55,7 @@ class Marries(commands.Cog):
         self.bot = bot
 
     async def is_married(self, author: disnake.Member):
-            return await self.bot.config.DB.marries.count_documents({'$or': [{'_id': author.id}, {'mate': author.id}]})
+        return await self.bot.config.DB.marries.count_documents({'$or': [{'_id': author.id}, {'mate': author.id}]})
 
     @commands.slash_command(name='marry', description="Свадьбы")
     async def marry_cmd(self, inter):
@@ -78,7 +78,7 @@ class Marries(commands.Cog):
 
     @marry_cmd.sub_command(name='divorce', description="Развод с партнёром")
     async def marry_divorce(self, inter):
-        if not await self.is_married(inter.author):
+        if await self.is_married(inter.author) > 0:
             await inter.send(
                 embed=await self.bot.embeds.simple(
                     title='Вы уверены? :(', 

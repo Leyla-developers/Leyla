@@ -16,7 +16,7 @@ class Owner(commands.Cog):
         ...
 
     @owner.sub_command(name='link')
-    async def link(self, ctx, link: str=None):
+    async def link(self, ctx, link: str = None):
         try:
             await self.bot.config.OLD_DB.links.insert_one({"id": "bad", "link": link})
         except:
@@ -24,7 +24,7 @@ class Owner(commands.Cog):
         await ctx.send('Ссылка была добавлена.')
 
     @owner.sub_command(name='unlink')
-    async def unlink(self, ctx, link: str=None):
+    async def unlink(self, ctx, link: str = None):
         await self.bot.config.OLD_DB.links.delete_one({"id": "bad", "link": link})
         await ctx.send('Ссылка была удалена.')
 

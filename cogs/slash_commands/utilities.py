@@ -327,13 +327,11 @@ class Utilities(commands.Cog):
         await inter.send(embed=embed)
 
     @commands.slash_command(name="afk", description="Встали в афк? Ну ладно, подождём.")
-    async def utilities_afk_command(self, inter):
-        if await self.bot.config.DB.afk.count_documents({"_id": inter.guild.id}) == 0:
-            await self.bot.config.DB.afk.insert_one({"_id": inter.guild.id, "afk_members": [inter.author.id]})
-        else:
-            await self.bot.config.DB.afk.update_one({"_id": inter.guild.id}, {"$push": {"afk_members": inter.author.id}})
+    async def utilities_afk_command(self, inter, reason: str = None):
+        if await self.bot.config.DB.afk.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
+            await self.bot.config.DB.afk.insert_one({"guild": inter.guild.id, "member": inter.author.id, "reason": reason if reason is not None else "Без причины", "time": datetime.now()})
 
-        await inter.send(embed=await self.bot.embeds.simple(description="Я поставила вас в список AFK, ждём вашего возвращения :relaxed:"))
+        await inter.send(embed=await self.bot.embeds.simple(description=f"Я поставила вас в список AFK, ждём вашего возвращения :relaxed:\nПричина: {reason}"))
 
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     @commands.has_permissions(manage_roles=True)
@@ -360,6 +358,25 @@ class Utilities(commands.Cog):
             message = await giveaway_channel.send(embed=embed)
             await message.add_reaction('👍')
             await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id, "message_id": message.id})
+
+    @commands.slash_command(name='role-info', description="Выдам информацию о любой роли на сервере")
+    async def utilities_role_info(self, inter, role: disnake.Role):
+        role_info_array = [
+            f'Цвет роли: **{hex(role.color.value)}**',
+            f'Интеграция: **{"Да" if role.is_integration() else "Нет"}**',
+            f'Участников на этой роли: **{len(role.members)}**',
+            f'Эмодзи роли: **{role.emoji if role.emoji else "Нет эмодзи"}**',
+            f'ID роли: **{role.id}**',
+            f'Упоминание роли: {role.mention}',
+            f'Позиция: **{role.position}**',
+            f'Роль создана: <t:{round(role.created_at.timestamp())}:D>'
+        ]
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title=f"Информация о {role.name}",
+                description='\n'.join(role_info_array)
+            )
+        )
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
