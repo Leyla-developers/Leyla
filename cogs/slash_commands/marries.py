@@ -8,9 +8,10 @@ from Tools.exceptions import CustomError
 
 class MarryButton(disnake.ui.View):
 
-    def __init__(self, partner: disnake.Member):
+    def __init__(self, author, partner: disnake.Member):
         super().__init__()
         self.partner = partner
+        self.author = author
         self.value = None
         self.config = Config()
     
@@ -20,9 +21,8 @@ class MarryButton(disnake.ui.View):
             await inter.response.send_message("Принять должен тот, кого вы попросили!", ephemeral=True)
         else:
             await inter.response.send_message(f'{inter.author.mention} Согласен(на) быть партнёром 🎉')
-            await self.config.DB.marries.insert_one({"_id": inter.author.id, "mate": self.partner.id, 'time': datetime.now()})
+            await self.config.DB.marries.insert_one({"_id": self.author.id, "mate": self.partner.id, 'time': datetime.now()})
             self.stop()
-            self.disable()
 
     @disnake.ui.button(label="Отказать", style=disnake.ButtonStyle.red)
     async def marry_button_cancel(self, button, inter):
@@ -71,7 +71,7 @@ class Marries(commands.Cog):
                     title="Свадьба, получается <3", 
                     description=f"{inter.author.mention} предлагает {member.mention} сыграть свадьбу. Ммм...)",
                     footer={"text": "Только, давайте, без беременная в 16, хорошо?", 'icon_url': inter.author.display_avatar.url}
-                ), view=MarryButton(partner=member)
+                ), view=MarryButton(author=inter.author, partner=member)
             )
         else:
             raise CustomError(f"Эм) Вы и/или {member.mention} женаты. На что вы надеетесь?")
