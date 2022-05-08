@@ -20,3 +20,15 @@ def welcome_function(member, message):
     }
 
     return MyTemplate(message).safe_substitute(variables)
+
+async def level_string(bot, member):
+    data = await bot.config.DB.levels.find_one({"guild": member.guild.id, "member": member.id})
+    message = await bot.config.DB.levels.find_one({"_id": member.guild.id})
+    variables = {
+        'memberMention': member.mention,
+        'member': str(member),
+        'lvl': str(data['lvl']),
+        'xp': str(data['xp'])
+    }
+
+    return MyTemplate(message['message']).safe_substitute(variables)

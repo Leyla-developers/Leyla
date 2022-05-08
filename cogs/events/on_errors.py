@@ -2,7 +2,6 @@ import disnake
 from disnake.ext import commands
 from Tools.buttons import SupportButton
 from Tools.exceptions import CustomError
-from genshin import DataNotPublic
 
 DESCRIPTIONS = {
     commands.MissingPermissions: "У тебя недостаточно прав, милый \🥺",
@@ -11,8 +10,8 @@ DESCRIPTIONS = {
     commands.MemberNotFound: "Этот человечек не найден на этом сервере, проверь ID/Тег/Никнейм на правильность :eyes:",
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
-    DataNotPublic: "Информация не публична",
-    commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔"
+    commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔",
+    commands.NotOwner: "Вы не мой папик, чтобы мне указывать. **Я сама тебе сейчас покажу...** uwu."
 }
 
 PERMISSIONS = {

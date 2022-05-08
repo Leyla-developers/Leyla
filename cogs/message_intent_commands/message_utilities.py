@@ -13,6 +13,12 @@ class MessageUtilities(commands.Cog):
 
     @commands.command(name="stats", description="Статистика бота")
     async def message_utilities_stats(self, ctx):
+        shard_names = {
+            '0': 'Стелла',
+            '1': 'Кристина',
+            '2': 'Виктория',
+            '3': 'Клэр'
+        }
         guilds_info = (
             f"Количество серверов: **{len(self.bot.guilds)}**",
             f"Количество пользователей: **{len(self.bot.users)}**",
@@ -21,7 +27,7 @@ class MessageUtilities(commands.Cog):
         )
         about_me_info = (
             f"Я создана: **13 июля, 2021 года.**",
-            f"Мой сервер поддержки: [тыкни сюда](https://discord.gg/43zapTjgvm)",
+            f"[Мой сервер поддержки](https://discord.gg/43zapTjgvm)",
             f"Операционная система: **{platform.platform()}**",
             f"Язык программирования: **Python {sys.version}**"
         )
@@ -31,10 +37,11 @@ class MessageUtilities(commands.Cog):
             f"Количество обычных команд: **{len([i for i in self.bot.commands if not i.name == 'jishaku'])}**",
             f"Задержка: **{round(self.bot.latency*1000, 2)}ms**",
             f"RAM: **{psutil.virtual_memory().percent}%**",
-            f"CPU: **{psutil.cpu_percent()}%**"
+            f"CPU: **{psutil.Process().cpu_percent()}%**",
+            f"Кластеров: **{len(self.bot.shards)}**",
         )
         embed = await self.bot.embeds.simple(
-            title="Моя статистика и информация обо мне",
+            title=f"Моя статистика и информация обо мне | Кластер сервера: {shard_names[str(ctx.guild.shard_id)]}",
             description=f"Время, сколько я работаю - <t:{round(self.bot.uptime.timestamp())}:R> - ||спасите... ***моргнула 3 раза***||",
             url="https://leylabot.ml/",
             fields=[

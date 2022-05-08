@@ -1,5 +1,5 @@
 import asyncio
-from os import environ, system
+from os import environ
 
 import disnake
 from core import Leyla
@@ -12,6 +12,7 @@ load_dotenv()
 config = Config()
 intents = disnake.Intents.default()
 intents.members = True
+intents.messages = True
 
 async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
@@ -35,4 +36,4 @@ async def init_and_run_bot(token: str) -> None:
     await bot.start(token)
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(init_and_run_bot(environ['TOKEN']))
+loop.run_until_complete(init_and_run_bot(environ.get('TOKEN')))

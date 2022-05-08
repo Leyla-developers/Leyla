@@ -10,7 +10,7 @@ hmtai
 textwrap3
 easy_pil
 bs4
-lavalink
+git+https://github.com/Leyla-developers/Lavalink.py.git
 PyNaCl
 SmallGoogleTranslator
 genshinstats

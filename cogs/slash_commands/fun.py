@@ -14,8 +14,8 @@ from services import waifu_pics
 
 
 OVERLAY_DESCRIPTIONS = {
-    'jail': '{user} За шо сидим?',
-    'wasted': 'R.I.P. {user} погиб(-ла) смретью храбрых :D',
+    'jail': '`{0}` За шо сидим?',
+    'wasted': 'R.I.P. `{0}` погиб(-ла) смертью храбрых :D',
     'gay': '🤭',
     'triggered': 'ВЫАЫВОАЫАОЫВАЫВАРЫРАВЫРАЛО'
 }
@@ -36,8 +36,12 @@ class FunSlashCommands(commands.Cog):
     async def random(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
         if b < a or a == b:
             raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно owo')
-        embed = await self.bot.embeds.simple(inter, title=f'Случайное число от `{a}` до `{b}`', thumbnail=inter.author.avatar.url)
-        embed.add_field(name='Ваше число...', value=randint(a, b))
+
+        embed = await self.bot.embeds.simple(
+            title=f'Случайное число от `{a}` до `{b}`', 
+            thumbnail=inter.author.display_avatar.url,
+            fields=[{"name": f"Разброс чисел, который вы задали: **{a} — {b}**", "value": f"Выпавшее число: {randint(a, b)}"}]
+        )
         return await inter.send(embed=embed)
 
     @commands.slash_command(
@@ -53,11 +57,11 @@ class FunSlashCommands(commands.Cog):
         name='avatar-overlay',
         description="Накладывает разные эффекты на аватар."
     )
-    async def jail_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
+    async def overlay_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
         async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
             image_bytes = BytesIO(await response.read())
             image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
-            embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay, f'`{0}`'.format(user)), image=f'attachment://{image_filename}')
+            embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user), image=f'attachment://{image_filename}')
             await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
             return await response.close()
 

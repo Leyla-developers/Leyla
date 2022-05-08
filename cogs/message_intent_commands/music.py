@@ -125,6 +125,37 @@ class MusicButtons(disnake.ui.View):
             
         await inter.send(embed=embed, ephemeral=True)
 
+    @disnake.ui.button(emoji='🔊')
+    async def music_volume(self, button, inter):
+        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Изменение звука"}])
+
+        if inter.author.id == self.dj.id:
+            view = ForDropdownCallbackViews(inter.author, self.bot)
+            embed.description = "Выберите то, какой уровень звука вы хотите указать :р."
+        else:
+            embed.description = "Не вы включали плеер, так что, ждите того, кто запустил."
+
+        await inter.send(embed=embed, view=view, ephemeral=True)
+
+    @disnake.ui.button(emoji="🔀")
+    async def music_shuffle(self, button, inter):
+        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Перемешка плейлиста"}])
+        
+        if inter.author.id == self.dj.id:
+            if len(self.player.queue) <= 1:
+                embed.description = "Слишком мало песен в плейлисте."
+            else:
+                if self.player.shuffle:
+                    embed.description = "Плейлист и так перемешан"
+                else:
+                    self.player.set_shuffle(True)
+                    embed.description = "Плейлист перемешан!"
+        else:
+            embed.description = "Не вы включали плеер, так что, ждите того, кто запустил."
+
+        await inter.send(embed=embed, ephemeral=True)
+
+
 class Dropdown(disnake.ui.Select):
     def __init__(self, query, bot, dj, select_options):
         self.dj = dj
@@ -146,18 +177,56 @@ class Dropdown(disnake.ui.Select):
         if inter.author.id == self.dj.id:
             player = self.bot.lavalink.player_manager.get(inter.guild.id)
             results = await player.node.get_tracks(self.query)
-            track = [i for i in results['tracks'] if self.values[0] == "{author} - {title}".format(author=i['info']['author'], title=i['info']['title'])][0]
+            track = [i for i in results['tracks'] if self.values[0] == "{author} - {title}".format(author=i['info']['author'], title=i['info']['title']).lower()][0]
             player.add(requester=inter.author.id, track=track)
             embed = await self.bot.embeds.simple(
                 title=f'Трек: {track["info"]["title"]}', 
                 url=track["info"]["uri"], 
                 description=f'Длительность: {humanize.naturaldelta(timedelta(milliseconds=track["info"]["length"]))}',
-                fields=[{"name": "Автор", "value": track['info']['author']}]
+                fields=[{"name": "Автор", "value": track['info']['author']}],
+                thumbnail=f'https://i.ytimg.com/vi/{track["info"]["identifier"]}/maxresdefault.jpg'
             )
-            await inter.send(embed=embed, view=MusicButtons(bot=self.bot, player=player, dj=inter.author))
+
+            await inter.send(embed=embed, view=MusicButtons(self.bot, player, inter.author))
 
             if not player.is_playing:
                 await player.play()
+        else:
+            await inter.send('Не вы заказывали музыку!', ephemeral=True)
+
+class VolumeDropdown(disnake.ui.Select):
+    def __init__(self, dj, bot):
+        self.bot = bot
+        self.dj = dj
+        options = [
+            SelectOption(label="Низко", description="Установить громкость звука на 100"),
+            SelectOption(label="Средне", description="Установить громкость звука на 300"), 
+            SelectOption(label="Высоко", description="Установить громкость звука на 600")
+        ]
+
+        super().__init__(
+            placeholder="Выберите громкость",
+            min_values=1,
+            max_values=1,
+            options=options,
+            custom_id="music_volume_dropdown"
+        )
+
+    async def callback(self, inter):
+        await inter.response.defer()
+
+        if inter.author.id == self.dj.id:
+            player = self.bot.lavalink.player_manager.get(inter.guild.id)
+
+            match self.values[0].lower():
+                case 'низко':
+                    await player.set_volume(100)
+                case 'средне':
+                    await player.set_volume(300)
+                case 'высоко':
+                    await player.set_volume(600)
+            
+            await inter.send(f'Громкость установлена на уровне **{self.values[0].title()}**', ephemeral=True)
         else:
             await inter.send('Не вы заказывали музыку!')
 
@@ -166,6 +235,12 @@ class Views(disnake.ui.View):
     def __init__(self, query, bot, dj, options):
         super().__init__()
         self.add_item(Dropdown(query, bot, dj, options))
+
+class ForDropdownCallbackViews(disnake.ui.View):
+
+    def __init__(self, dj, bot):
+        super().__init__()
+        self.add_item(VolumeDropdown(dj, bot))
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -191,10 +266,6 @@ class Music(commands.Cog):
 
         return guild_check
 
-    async def cog_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandInvokeError):
-            await ctx.send(error.original)
-
     async def ensure_voice(self, ctx):
         player = self.bot.lavalink.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
         should_connect = ctx.command.name in ('play',)
@@ -209,7 +280,7 @@ class Music(commands.Cog):
             permissions = ctx.author.voice.channel.permissions_for(ctx.me)
 
             if not permissions.connect or not permissions.speak:  # Check user limit too?
-                raise commands.BotMissingPermissions()
+                raise commands.BotMissingPermissions(['connect'])
 
             player.store('channel', ctx.channel.id)
 
@@ -255,8 +326,13 @@ class Music(commands.Cog):
         if not results or not results['tracks']:
             return await ctx.send('Я ничего не нашла(')
 
-        data = [SelectOption(label=f"{i['info']['author']} - {i['info']['title']}") for i, _ in groupby(results['tracks'][:5])]
-        await ctx.send('Выберите трек', view=Views(query, self.bot, ctx.author, data))
+        data = []
+        songs_list = [f"{i['info']['author']} - {i['info']['title']}".lower() for i in results['tracks']]
+
+        for i in list(dict.fromkeys(songs_list)):
+            data.append(SelectOption(label=i))
+
+        await ctx.send(view=Views(query, self.bot, ctx.author, data[:5]))
 
     @commands.command(name='queue')
     async def music_queue(self, ctx, page: int = 1):
@@ -269,7 +345,7 @@ class Music(commands.Cog):
 
         queue_list = ''
         for i, j in enumerate(player.queue[start:end], start=start):
-            queue_list += f'[**{i+1}** | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}**]({j.uri})\n'
+            queue_list += f'[{i+1} | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}]({j.uri})\n'
 
         embed = await self.bot.embeds.simple(
             title=f"Очередь песен — {len(player.queue)}",
@@ -277,6 +353,7 @@ class Music(commands.Cog):
             footer={"text": f"Страница: {page}/{pages}", "icon_url": ctx.author.display_avatar.url}
         )
         await ctx.reply(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Music(bot))

@@ -1,9 +1,11 @@
+import math
+import random
 from typing import Literal, Optional
 
 import disnake
+import emoji as emj
 from disnake.ext import commands
 from Tools.exceptions import CustomError
-import emoji as emj
 
 
 class Settings(commands.Cog):
@@ -14,12 +16,14 @@ class Settings(commands.Cog):
     async def cog_check(self, inter):
         if not inter.author.guild_permissions.administrator:
             raise commands.MissingPermissions(['administrator'])
-        else:
-            return True
     
     @commands.slash_command(description="Настрой-ка меня, Сен-пай u-u.")
     @commands.has_permissions(administrator=True)
     async def settings(self, inter):
+        ...
+
+    @settings.sub_command_group(name='trigger')
+    async def trigger(self, inter):
         ...
 
     @settings.sub_command_group(description="Автомодерация")
@@ -573,6 +577,47 @@ class Settings(commands.Cog):
             await self.bot.config.DB.counter.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
 
         await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(counter)**", description="Всё, счётчик участников включен :)", fields=[{"name": "Канал", "value": channel.mention}]))
+
+    @trigger.sub_command(name='set', description="Устанавливает триггер-слово/предложение")
+    async def trigger_set(self, inter, message: str = commands.Param(default=None, name="сообщение"), response: str = commands.Param(default=None, name='ответ-на-сообщение')):
+        if await self.bot.config.DB.trigger.count_documents({"guild": inter.guild.id, "trigger_message": message}) == 0:
+            await self.bot.config.DB.trigger.insert_one({"guild": inter.guild.id, "trigger_message": message.lower(), "response": response.lower(), 'trigger_id': random.randint(10000, 99999)})
+        else:
+            raise CustomError("Триггер на такое сообщение уже существует")
+        
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(trigger)**', description="Триггер-сообщение установлено!", fields=[{"name": 'Сообщение', 'value': message}, {'name': 'Мой ответ на это', 'value': response}]))
+
+    @trigger.sub_command(name='remove', description="Убирает триггер")
+    async def trigger_remove(self, inter, trigger_id: int):
+        if await self.bot.config.DB.trigger.count_documents({"guild": inter.guild.id, "trigger_id": trigger_id}) > 0:
+            await self.bot.config.DB.trigger.delete_one({"guild": inter.guild.id, "trigger_id": trigger_id})
+        else:
+            raise CustomError("Триггер на такое сообщение не существует")
+        
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(trigger)**', description="Триггер-сообщение убрано!"))
+
+    @trigger.sub_command(name='list', description="Список триггеров")
+    async def trigger_list(self, inter, page: int = 1):
+        data = [i async for i in self.bot.config.DB.trigger.find({"guild": inter.guild.id})]
+
+        items_per_page = 10
+        pages = math.ceil(len(data) / items_per_page)
+
+        start = (page - 1) * items_per_page
+        end = start + items_per_page
+
+        trigger = ''
+
+        for i, j in enumerate(data[start:end], start=start):
+            trigger += f'[{i+1}] **{j["trigger_id"]}** | {j["trigger_message"]} | {j["response"]}\n'
+
+        embed = await self.bot.embeds.simple(
+            title=f"Количество триггеров — {len(data)}",
+            description=trigger if data else "На сервере нет триггеров",
+            footer={"text": f"Страница: {page}/{pages}", "icon_url": inter.author.display_avatar.url}
+        )
+
+        await inter.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Settings(bot))

@@ -11,7 +11,7 @@ from .classes.embeds import Embeds
 from .classes import LeylaTasks
 
 
-class Leyla(commands.Bot):
+class Leyla(commands.AutoShardedBot):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -27,11 +27,7 @@ class Leyla(commands.Bot):
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):
                 try:
-                    for ignore_cog in self.ignore_cogs:
-                        if cog in f'cogs.{folder}.{ignore_cog}':
-                            raise CustomError(f'Игнорируемый ког: {cog}')
-                    else:
-                        self.load_extension(cog)
+                    self.load_extension(cog)
                 except Exception as e:
                     print(f'{folder}.{cog} fucked up by Hueila', e)
                     

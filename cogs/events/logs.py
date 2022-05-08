@@ -45,18 +45,20 @@ class Logs(commands.Cog):
         if not await self.get_channel(message.guild): return
         elif message.author.bot: return
         else:
-            await self.bot.get_channel(
-                await self.get_channel(message.guild)).send(embed=await self.bot.embeds.simple(
-                    title="Удалённое сообщение.",
-                    description=message.content, 
-                    footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
-                    fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
-                    url=message.channel.jump_url,
-                    thumbnail=message.author.display_avatar.url,
-                    color=disnake.Colour.red(),
-                    image=message.attachments[0].proxy_url
-                )
+            embed = await self.bot.embeds.simple(
+                title="Удалённое сообщение.",
+                description=message.content, 
+                footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon.url else None},
+                fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
+                url=message.channel.jump_url,
+                thumbnail=message.author.display_avatar.url,
+                color=disnake.Colour.red()
             )
+
+            if message.attachments:
+                embed.set_image(url=message.attachments[0].proxy_url)
+
+            await self.bot.get_channel(await self.get_channel(message.guild)).send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):

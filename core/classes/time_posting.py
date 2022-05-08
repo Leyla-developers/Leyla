@@ -1,11 +1,8 @@
-import os
 import random
 from datetime import datetime
 
-import disnake
 from disnake.ext import tasks
 import hmtai
-import lavalink
 
 
 class LeylaTasks:
@@ -42,13 +39,12 @@ class LeylaTasks:
         'tentacles',
     ]
 
-
     @tasks.loop(seconds=30)
     async def nsfw(self):
         async for i in self.bot.config.DB.nsfw.find():
             try:
                 if self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).is_nsfw():
-                    await self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).send(hmtai.useHM('29', random.choice(self.NSFWS)))
+                    await self.bot.get_channel(dict(await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['channel']).send(hmtai.useHM('2_9', random.choice(self.NSFWS)))
                 else:
                     return
 

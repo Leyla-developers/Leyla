@@ -7,6 +7,7 @@ import typing
 from datetime import datetime, timedelta
 from io import BytesIO
 from os import environ
+from urllib.parse import quote
 from typing import Dict, List, Literal
 
 import aiohttp
@@ -262,7 +263,7 @@ class Utilities(commands.Cog):
 
     @commands.slash_command(description="Помогу решить почти любой пример!")
     async def calculator(self, inter, expression: str):
-        async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={expression}') as response:
+        async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={quote(expression)}') as response:
             data = await response.text()
         
         await inter.send(
