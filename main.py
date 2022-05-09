@@ -14,6 +14,7 @@ intents = disnake.Intents.default()
 intents.members = True
 intents.messages = True
 
+
 async def init_and_run_bot(token: str) -> None:
     bot = Leyla(
         owner_ids=[848593011038224405, 598387707311554570],

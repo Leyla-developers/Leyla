@@ -5,7 +5,6 @@ import disnake
 import humanize
 from datetime import datetime
 from disnake.ext import commands
-from Tools.exceptions import CustomError
 from jishaku.modules import find_extensions_in
 from .classes.embeds import Embeds
 from .classes import LeylaTasks
@@ -49,4 +48,3 @@ class Leyla(commands.AutoShardedBot):
                 prefix = dict(await self.config.DB.prefix.find_one({"_id": message.guild.id}))['prefix']
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
-

@@ -73,9 +73,6 @@ class OnErrors(commands.Cog):
         if not type(cmd_error) in DESCRIPTIONS.keys():
             embed.add_field(name="Описание ошибки", value=cmd_error)
 
-        if isinstance(cmd_error, DataNotPublic):
-            embed.add_field(name="Решение ошибки", value="Информация не публична. Если вы владелец этого аккаунта, то можете зайти на [hoyolab](https://www.hoyolab.com/home), зайти в свой профиль, зайти в настройки профиля, и в категории боевых заслуг нажать на 'Показывать Боевые заслуги в личном кабинете'")
-
         if isinstance(cmd_error, commands.NSFWChannelRequired):
             channels = list(map(lambda n: n.mention, filter(lambda x: x.nsfw, ctx.guild.text_channels)))
             embed.add_field(

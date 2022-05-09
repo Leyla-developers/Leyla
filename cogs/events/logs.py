@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands
-from Tools.exceptions import CustomError
 
 
 class Logs(commands.Cog):

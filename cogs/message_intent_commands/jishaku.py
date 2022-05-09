@@ -15,6 +15,7 @@ class LeylaJishaku(Jishaku):
     async def force_ban(self, ctx, user: disnake.User):
         guilds_were_user_banned = []
 
+
 def setup(bot: commands.Bot):
     jishaku.Flags.NO_UNDERSCORE = True
     jishaku.Flags.FORCE_PAGINATOR = True

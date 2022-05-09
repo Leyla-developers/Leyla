@@ -36,5 +36,6 @@ class ImageEditor(commands.Cog):
         file = disnake.File(image.image_bytes, f'rotated_image.png')
         await inter.send('Люблю всё вертеть.', file=file)
 
+
 def setup(bot):
     bot.add_cog(ImageEditor(bot))

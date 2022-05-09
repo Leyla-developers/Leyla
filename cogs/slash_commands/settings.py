@@ -619,5 +619,6 @@ class Settings(commands.Cog):
 
         await inter.send(embed=embed)
 
+
 def setup(bot):
     bot.add_cog(Settings(bot))

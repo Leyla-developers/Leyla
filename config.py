@@ -2,7 +2,6 @@ from os import environ
 from typing import Union
 
 from disnake import Guild
-from disnake.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
@@ -14,7 +13,7 @@ class Config:
     OLD_MONGO_CLIENT = AsyncIOMotorClient(environ['OLD_DB'])
     OLD_DB = OLD_MONGO_CLIENT.Seriable.main.Seriable
 
-    async def get_guild_data(self, guild: Union[Guild, int], key: str=None) -> dict:
+    async def get_guild_data(self, guild: Union[Guild, int], key: str = None) -> dict:
         guild_id = guild.id if isinstance(guild, Guild) else guild
 
         if await self.DB.guilds.count_documents({"_id": guild_id}) != 0:

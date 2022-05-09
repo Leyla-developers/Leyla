@@ -15,6 +15,7 @@ def user_rank_card(member, lvl, xp, need_xp, percentage: int = 0):
     back.text((1300, 280), str(lvl), font=font, color="#8858ec")
     return back
 
+
 def ship_image(percentage, first_user: disnake.User, second_user: disnake.User):
     back = pil.Editor('data/assets/images/ship_back.jpg')
     heart = pil.Editor(f'data/assets/images/{"heart" if percentage > 30 else "broken_heart"}.png').resize((225, 225))

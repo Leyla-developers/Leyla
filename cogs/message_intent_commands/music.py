@@ -1,12 +1,9 @@
 import os
 import re
 import math
-import random
 from datetime import timedelta
-from collections import deque
 
 from dotenv import load_dotenv
-from itertools import groupby
 
 load_dotenv()
 
@@ -19,6 +16,7 @@ import humanize
 
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 
+
 class LavalinkVoiceClient(disnake.VoiceClient):
 
     def __init__(self, client: disnake.Client, channel: disnake.abc.Connectable):
@@ -28,7 +26,7 @@ class LavalinkVoiceClient(disnake.VoiceClient):
             self.lavalink = self.client.lavalink
         else:
             self.client.lavalink = lavalink.Client(client.user.id)
-            self.client.lavalink.add_node( 
+            self.client.lavalink.add_node(
                 os.environ.get('LAVA_HOST'),
                 os.environ.get('LAVA_PORT'),
                 os.environ.get('LAVA_PASS'),
@@ -52,7 +50,8 @@ class LavalinkVoiceClient(disnake.VoiceClient):
         }
         await self.lavalink.voice_update_handler(lavalink_data)
 
-    async def connect(self, *, timeout: float, reconnect: bool, self_deaf: bool = False, self_mute: bool = False) -> None:
+    async def connect(self, *, timeout: float, reconnect: bool, self_deaf: bool = False,
+                      self_mute: bool = False) -> None:
         self.lavalink.player_manager.create(guild_id=self.channel.guild.id)
         await self.channel.guild.change_voice_state(channel=self.channel, self_mute=self_mute, self_deaf=self_deaf)
 
@@ -66,6 +65,7 @@ class LavalinkVoiceClient(disnake.VoiceClient):
 
         player.channel_id = None
         self.cleanup()
+
 
 class MusicButtons(disnake.ui.View):
 
@@ -88,7 +88,7 @@ class MusicButtons(disnake.ui.View):
                 await self.player.set_pause(True)
         else:
             embed.description = "Не вы включали плеер, так что, ждите того, кто запустил."
-        
+
         await inter.send(embed=embed, ephemeral=True)
 
     @disnake.ui.button(emoji="⏹️")
@@ -106,7 +106,7 @@ class MusicButtons(disnake.ui.View):
                 embed.description = "Плеер и так не играет сейчас"
         else:
             embed.description = "Не вы включали плеер, так что, ждите того, кто запустил."
-            
+
         await inter.send(embed=embed, ephemeral=True)
 
     @disnake.ui.button(emoji="🔁")
@@ -122,7 +122,7 @@ class MusicButtons(disnake.ui.View):
                 embed.description = "Плеер убран с повтора!"
         else:
             embed.description = "Не вы включали плеер, так что, ждите того, кто запустил."
-            
+
         await inter.send(embed=embed, ephemeral=True)
 
     @disnake.ui.button(emoji='🔊')
@@ -139,8 +139,9 @@ class MusicButtons(disnake.ui.View):
 
     @disnake.ui.button(emoji="🔀")
     async def music_shuffle(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Перемешка плейлиста"}])
-        
+        embed = await self.bot.embeds.simple(title='Плеер',
+                                             fields=[{"name": "Действие", "value": "Перемешка плейлиста"}])
+
         if inter.author.id == self.dj.id:
             if len(self.player.queue) <= 1:
                 embed.description = "Слишком мало песен в плейлисте."
@@ -177,11 +178,13 @@ class Dropdown(disnake.ui.Select):
         if inter.author.id == self.dj.id:
             player = self.bot.lavalink.player_manager.get(inter.guild.id)
             results = await player.node.get_tracks(self.query)
-            track = [i for i in results['tracks'] if self.values[0] == "{author} - {title}".format(author=i['info']['author'], title=i['info']['title']).lower()][0]
+            track = [i for i in results['tracks'] if
+                     self.values[0] == "{author} - {title}".format(author=i['info']['author'],
+                                                                   title=i['info']['title']).lower()][0]
             player.add(requester=inter.author.id, track=track)
             embed = await self.bot.embeds.simple(
-                title=f'Трек: {track["info"]["title"]}', 
-                url=track["info"]["uri"], 
+                title=f'Трек: {track["info"]["title"]}',
+                url=track["info"]["uri"],
                 description=f'Длительность: {humanize.naturaldelta(timedelta(milliseconds=track["info"]["length"]))}',
                 fields=[{"name": "Автор", "value": track['info']['author']}],
                 thumbnail=f'https://i.ytimg.com/vi/{track["info"]["identifier"]}/maxresdefault.jpg'
@@ -194,13 +197,14 @@ class Dropdown(disnake.ui.Select):
         else:
             await inter.send('Не вы заказывали музыку!', ephemeral=True)
 
+
 class VolumeDropdown(disnake.ui.Select):
     def __init__(self, dj, bot):
         self.bot = bot
         self.dj = dj
         options = [
             SelectOption(label="Низко", description="Установить громкость звука на 100"),
-            SelectOption(label="Средне", description="Установить громкость звука на 300"), 
+            SelectOption(label="Средне", description="Установить громкость звука на 300"),
             SelectOption(label="Высоко", description="Установить громкость звука на 600")
         ]
 
@@ -225,10 +229,11 @@ class VolumeDropdown(disnake.ui.Select):
                     await player.set_volume(300)
                 case 'высоко':
                     await player.set_volume(600)
-            
+
             await inter.send(f'Громкость установлена на уровне **{self.values[0].title()}**', ephemeral=True)
         else:
             await inter.send('Не вы заказывали музыку!')
+
 
 class Views(disnake.ui.View):
 
@@ -236,11 +241,13 @@ class Views(disnake.ui.View):
         super().__init__()
         self.add_item(Dropdown(query, bot, dj, options))
 
+
 class ForDropdownCallbackViews(disnake.ui.View):
 
     def __init__(self, dj, bot):
         super().__init__()
         self.add_item(VolumeDropdown(dj, bot))
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -250,7 +257,7 @@ class Music(commands.Cog):
             os.environ.get('LAVA_HOST'),
             os.environ.get('LAVA_PORT'),
             os.environ.get('LAVA_PASS'),
-            'us', 
+            'us',
             'default-node'
         )
         lavalink.add_event_hook(self.track_hook)
@@ -345,7 +352,7 @@ class Music(commands.Cog):
 
         queue_list = ''
         for i, j in enumerate(player.queue[start:end], start=start):
-            queue_list += f'[{i+1} | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}]({j.uri})\n'
+            queue_list += f'[{i + 1} | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}]({j.uri})\n'
 
         embed = await self.bot.embeds.simple(
             title=f"Очередь песен — {len(player.queue)}",

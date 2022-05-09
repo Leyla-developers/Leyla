@@ -13,7 +13,6 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.slash_command(
         description="Можете теперь спокойно выдавать предупреждения uwu."
     )
@@ -94,7 +93,12 @@ class Moderation(commands.Cog):
 
     @commands.slash_command(name="timeout", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
     @commands.has_permissions(ban_members=True)
-    async def discord_timeout(self, inter, member: disnake.Member, duration: int, unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни', 'Недели'], reason: str = None):
+    async def discord_timeout(self,
+                              inter,
+                              member: disnake.Member,
+                              duration: int,
+                              unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни', 'Недели'],
+                              reason: str = None):
         units = {
             "Секунды": duration,
             "Минуты": duration * 60,
@@ -141,6 +145,7 @@ class Moderation(commands.Cog):
                 fields=[{"name": "Время", "value": "Нолик :3, Вы убрали медленный режим" if time == 0 else f'{units[unit]} секунд'}]
             )
         )
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

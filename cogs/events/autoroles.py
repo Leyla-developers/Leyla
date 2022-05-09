@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 
 
-class Autoroles(commands.Cog):
+class AutoRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -13,6 +13,7 @@ class Autoroles(commands.Cog):
 
         for role in dict(await self.bot.config.DB.autoroles.find_one({"guild": member.guild.id}))['roles']:
             await member.add_roles(member.guild.get_role(role))
+
 
 def setup(bot):
     bot.add_cog(Autoroles(bot))

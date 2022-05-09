@@ -1,4 +1,3 @@
-import asyncio
 import calendar as cld
 import json
 import random
@@ -8,7 +7,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 from os import environ
 from urllib.parse import quote
-from typing import Dict, List, Literal
+from typing import Literal
 
 import aiohttp
 from dotenv import load_dotenv
@@ -17,14 +16,14 @@ from PIL import Image
 load_dotenv()
 
 import disnake
+from google.translator import GoogleTranslator
 import emoji as emj
 from bs4 import BeautifulSoup
-from core.classes import LeylaTasks
 from disnake.ext import commands
 from Tools.buttons import CurrencyButton
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
-from Tools.links import emoji_converter, emoji_formats, fotmat_links_for_avatar
+from Tools.links import emoji_converter
 from Tools.translator import Translator
 
 
@@ -52,7 +51,8 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description='Перевод в/из азбуки морзе.'
     )
-    async def crypter(self, inter, decoder: typing.Literal['Морзе', 'Шифр Цезаря'], variant: typing.Literal['crypt', 'decrypt'], *, text):
+    async def crypter(self, inter, decoder: typing.Literal['Морзе', 'Шифр Цезаря'],
+                      variant: typing.Literal['crypt', 'decrypt'], *, text):
         if decoder == "Морзе":
             if variant == 'crypt':
                 morse = Decoder().to_morse(text)
@@ -66,10 +66,10 @@ class Utilities(commands.Cog):
 
         elif decoder == "Шифр Цезаря":
             if variant == 'crypt':
-                cezar = ''.join([chr(ord(i)-3) for i in text])
+                cezar = ''.join([chr(ord(i) - 3) for i in text])
 
             elif variant == 'decrypt':
-                cezar = ''.join([chr(ord(i)+3) for i in text])
+                cezar = ''.join([chr(ord(i) + 3) for i in text])
 
             embed = await self.bot.embeds.simple(
                 title='Decoder/Encoder шифра Цезаря (3).',
@@ -115,7 +115,7 @@ class Utilities(commands.Cog):
 
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
-        
+
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
             f"Полный никнейм: **{str(user)}**",
@@ -129,7 +129,8 @@ class Utilities(commands.Cog):
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
             ]
 
-        embed.description = "\n".join(main_information) + "\n" + "\n".join(second_information) if user in inter.guild.members else "\n".join(main_information)
+        embed.description = "\n".join(main_information) + "\n" + "\n".join(
+            second_information) if user in inter.guild.members else "\n".join(main_information)
 
         await inter.send(embed=embed, file=file)
 
@@ -163,39 +164,43 @@ class Utilities(commands.Cog):
         }
 
         async with self.bot.session.post(
-            'https://api.boticord.top/v1/server', 
-            headers={'Authorization': environ['BCORD']}, 
-            json=data
+                'https://api.boticord.top/v1/server',
+                headers={'Authorization': environ['BCORD']},
+                json=data
         ) as response:
             data = await response.json()
-        
+
             if not response.ok:
                 return
             else:
                 server = data["serverID"]
                 embed = await self.bot.embeds.simple(
                     title='Перейти на BotiCord!',
-                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"], 
+                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else
+                    data["message"],
                     url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
                 )
 
-                await inter.send('Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None, embed=embed)
+                await inter.send('Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None,
+                                 embed=embed)
 
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
         emoji = random.choice(self.bot.emojis)
-        await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[{'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
+        await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[
+            {'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
 
-    @commands.slash_command(name="random-anime", description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
+    @commands.slash_command(name="random-anime",
+                            description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
     async def random_anime(self, inter):
         url = 'https://animego.org'
 
         async with aiohttp.ClientSession(
-            headers={
-                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/80.0.4170.91',
-                'cookie': environ['COOKIE']
-            }) as session:
+                headers={
+                    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36 OPR/80.0.4170.91',
+                    'cookie': environ['COOKIE']
+                }) as session:
             async with session.get(f'{url}/anime/random') as res:
                 soup = BeautifulSoup(await res.text(), 'html.parser')
                 name = soup.select('.anime-title')[0].find('h1', class_=False).text
@@ -205,10 +210,10 @@ class Utilities(commands.Cog):
                 await session.close()
         desc = re.sub('\n', '', desc, 1)
         await inter.send(embed=await self.bot.embeds.simple(
-                description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
-                thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
-            )
+            description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
+            thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
         )
+                         )
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
     async def currency_converter(self, inter, currency, how_many: float = 0):
@@ -216,7 +221,7 @@ class Utilities(commands.Cog):
             cb_data = await response.text()
 
         json_cb_data = json.loads(cb_data)
-        get_currency = {i:j['Name'] for i, j in json_cb_data['Valute'].items()}
+        get_currency = {i: j['Name'] for i, j in json_cb_data['Valute'].items()}
         data = json_cb_data["Valute"]
         view = CurrencyButton()
 
@@ -229,35 +234,43 @@ class Utilities(commands.Cog):
                     description=f'Один {get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"], 2) / data[upper_currency]["Nominal"]}** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
                     fields=[
                         {
-                            "name": "Абсолютная погрешность", 
-                            "value": abs(data[upper_currency]["Value"] - round(data[upper_currency]["Value"])), 
+                            "name": "Абсолютная погрешность",
+                            "value": abs(data[upper_currency]["Value"] - round(data[upper_currency]["Value"])),
                             'inline': True
-                        }, 
+                        },
                         {
-                            "name": "Прошлая стоимость", 
-                            "value": data[upper_currency]['Previous'] / data[upper_currency]['Nominal'], 
+                            "name": "Прошлая стоимость",
+                            "value": data[upper_currency]['Previous'] / data[upper_currency]['Nominal'],
                             'inline': True
                         }, None if how_many == 0 else {
-                            "name": f"Сколько **{how_many} {upper_currency}** в рублях", 
-                            "value": round(how_many * (data[upper_currency]['Value'] / data[upper_currency]['Nominal']), 2),
+                            "name": f"Сколько **{how_many} {upper_currency}** в рублях",
+                            "value": round(how_many * (data[upper_currency]['Value'] / data[upper_currency]['Nominal']),
+                                           2),
                         },
                     ],
-                    footer={"text": 'Вся информация взята с официального API ЦБ РФ.', 'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
+                    footer={"text": 'Вся информация взята с официального API ЦБ РФ.',
+                            'icon_url': 'https://cdn.discordapp.com/attachments/894108349367484446/951452412714045460/unknown.png?width=493&height=491'}
                 ), view=view
             )
         else:
-            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп', description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"), view=view)
+            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп',
+                                                                description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"),
+                             view=view)
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
-    async def trasnlate(self, inter, text, to_language, from_language = 'ru'):
-        data = await Translator().translate(text, to_language, from_language)
+    async def trasnlate(self, inter, text, to_language, from_language='ru'):
+        google = GoogleTranslator()
+        data = await google.translate_async(text, to_language, from_language)
 
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Лейла-переводчик',
                 description=data,
                 fields=[{"name": "Оригинальный текст", "value": text}],
-                footer={"text": f'Переводено с {from_language} на {to_language}', 'icon_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png'}
+                footer={
+                    "text": f'Переводено с {from_language} на {to_language}',
+                    'icon_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Google_Translate_logo.svg/1200px-Google_Translate_logo.svg.png'
+                }
             )
         )
 
@@ -265,34 +278,43 @@ class Utilities(commands.Cog):
     async def calculator(self, inter, expression: str):
         async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={quote(expression)}') as response:
             data = await response.text()
-        
+
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Калькулятор',
-                fields=[{"name": "Введённый пример", "value": expression, 'inline': True}, {'name': "Результат", "value": data, 'inline': True}]
+                fields=[{"name": "Введённый пример", "value": expression, 'inline': True},
+                        {'name': "Результат", "value": data, 'inline': True}]
             )
         )
 
     @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
-    async def boticord_info_cmd(self, inter, guild = None):
-        async with self.bot.session.get(f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}') as response:
+    async def boticord_info_cmd(self, inter, guild=None):
+        async with self.bot.session.get(
+                f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}') as response:
             request = await response.json()
 
         if 'information' in request.keys():
             links_array = [
-                f"Инвайт: {request['information']['links']['invite']}" if request['information']['links']['invite'] else None,
-                f"Твич: {request['information']['links']['twitch']}" if request['information']['links']['twitch'] else None,
-                f"Стим: {request['information']['links']['steam']}" if request['information']['links']['steam'] else None,
+                f"Инвайт: {request['information']['links']['invite']}" if request['information']['links'][
+                    'invite'] else None,
+                f"Твич: {request['information']['links']['twitch']}" if request['information']['links'][
+                    'twitch'] else None,
+                f"Стим: {request['information']['links']['steam']}" if request['information']['links'][
+                    'steam'] else None,
                 f"ВК: {request['information']['links']['vk']}" if request['information']['links']['vk'] else None,
                 f"Сайт: {request['information']['links']['site']}" if request['information']['links']['site'] else None,
-                f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links']['youtube'] else None,
+                f"Ютуб: {request['information']['links']['youtube']}" if request['information']['links'][
+                    'youtube'] else None,
             ]
             md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
             embed = await self.bot.embeds.simple(
                 title=request['information']['name'],
-                description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' + request['information']['longDescription'] if guild in self.bot.guilds else '' + request['information']['longDescription'],
+                description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' +
+                            request['information']['longDescription'] if guild in self.bot.guilds else '' + request[
+                    'information']['longDescription'],
                 url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
-                footer={"text": request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
+                footer={"text": request['information']['shortDescription'],
+                        'icon_url': inter.author.display_avatar.url},
                 fields=[
                     {
                         "name": f"Количество бампов (оценок) | До сброса (дней)",
@@ -306,7 +328,8 @@ class Utilities(commands.Cog):
                     },
                     {
                         "name": "Тэги",
-                        "value": ', '.join(request['information']['tags']) if len(request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
+                        "value": ', '.join(request['information']['tags']) if len(
+                            request['information']['tags']) > 0 else "У этого сервера нет тэгов.",
                         "inline": True
                     },
                     {
@@ -330,16 +353,19 @@ class Utilities(commands.Cog):
     @commands.slash_command(name="afk", description="Встали в афк? Ну ладно, подождём.")
     async def utilities_afk_command(self, inter, reason: str = None):
         if await self.bot.config.DB.afk.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
-            await self.bot.config.DB.afk.insert_one({"guild": inter.guild.id, "member": inter.author.id, "reason": reason if reason is not None else "Без причины", "time": datetime.now()})
+            await self.bot.config.DB.afk.insert_one({"guild": inter.guild.id, "member": inter.author.id,
+                                                     "reason": reason if reason is not None else "Без причины",
+                                                     "time": datetime.now()})
 
-        await inter.send(embed=await self.bot.embeds.simple(description=f"Я поставила вас в список AFK, ждём вашего возвращения :relaxed:\nПричина: {reason}"))
+        await inter.send(embed=await self.bot.embeds.simple(
+            description=f"Я поставила вас в список AFK, ждём вашего возвращения :relaxed:\nПричина: {reason}"))
 
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     @commands.has_permissions(manage_roles=True)
     async def utilities_giveaway(
-        self, inter, 
-        giveaway_channel: disnake.TextChannel, prize: str,
-        time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
+            self, inter,
+            giveaway_channel: disnake.TextChannel, prize: str,
+            time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
     ):
         if time <= 0:
             raise CustomError("Э! Ниже нуля нельзя! Время укажите, пожалуйста, корректное \🥺")
@@ -352,13 +378,16 @@ class Utilities(commands.Cog):
             }
 
             embed = await self.bot.embeds.simple(
-                title='> Розыгрыш!', 
-                description=f"**Приз:** {prize}", 
+                title='> Розыгрыш!',
+                description=f"**Приз:** {prize}",
                 footer={"text": f'До окончания: {time} {unit.lower()}', 'icon_url': inter.author.display_avatar.url}
             )
             message = await giveaway_channel.send(embed=embed)
             await message.add_reaction('👍')
-            await self.bot.config.DB.giveaway.insert_one({"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit], "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id, "message_id": message.id})
+            await self.bot.config.DB.giveaway.insert_one(
+                {"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit],
+                 "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id,
+                 "message_id": message.id})
 
     @commands.slash_command(name='role-info', description="Выдам информацию о любой роли на сервере")
     async def utilities_role_info(self, inter, role: disnake.Role):
@@ -378,6 +407,7 @@ class Utilities(commands.Cog):
                 description='\n'.join(role_info_array)
             )
         )
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

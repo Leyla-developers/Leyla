@@ -43,6 +43,7 @@ RP_DESCRIPTIONS_LEYLA = {
     'highfive': '🖐️'
 }
 
+
 class RP(commands.Cog):
 
     COG_EMOJI = '🎭'

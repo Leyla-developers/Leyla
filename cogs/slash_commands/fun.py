@@ -1,9 +1,5 @@
 from io import BytesIO
-from PIL import Image
-from random import randint, choice
-from typing import Literal
-import time
-import datetime
+from random import randint
 
 import disnake
 from disnake.ext import commands
@@ -11,7 +7,6 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 from Tools.images import ship_image
 from services import waifu_pics
-
 
 OVERLAY_DESCRIPTIONS = {
     'jail': '`{0}` За шо сидим?',
@@ -99,6 +94,7 @@ class FunSlashCommands(commands.Cog):
                 image='attachment://ship_img.png'
             ), file=file
         )
+
 
 def setup(bot):
     bot.add_cog(FunSlashCommands(bot))

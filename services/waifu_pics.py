@@ -1,8 +1,6 @@
 import aiohttp
 
-
 __all__ = ['get_image']
-
 BASE_URL = 'https://api.waifu.pics'
 
 

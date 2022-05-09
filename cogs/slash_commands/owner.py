@@ -19,7 +19,7 @@ class Owner(commands.Cog):
     async def link(self, ctx, link: str = None):
         try:
             await self.bot.config.OLD_DB.links.insert_one({"id": "bad", "link": link})
-        except:
+        finally:
             raise CustomError('Ссылка уже есть в базе.')
         await ctx.send('Ссылка была добавлена.')
 
@@ -60,6 +60,7 @@ class Owner(commands.Cog):
     async def force_marry(self, inter, first_user: disnake.User, second_user: disnake.User):
         await self.bot.config.DB.marries.insert_one({"_id": first_user.id, "mate": second_user.id, "time": datetime.now()})
         await inter.send('Пользователь принудительно пожени.. на.. бл*ть, как это писать')
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

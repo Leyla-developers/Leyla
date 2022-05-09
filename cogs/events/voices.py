@@ -13,7 +13,14 @@ class Voices(commands.Cog):
             ...
         else:
             data = await self.bot.config.DB.voice.find_one({"_id": member.guild.id})
-            permissions = {member: disnake.PermissionOverwrite(connect=True, mute_members=True, move_members=True, manage_channels=True)}
+            permissions = {
+                member: disnake.PermissionOverwrite(
+                    connect=True,
+                    mute_members=True,
+                    move_members=True,
+                    manage_channels=True
+                )
+            }
 
             if 'lobby' in data.keys():
                 category = self.bot.get_channel(data['lobby'])
@@ -34,8 +41,9 @@ class Voices(commands.Cog):
                 await member.move_to(voice_channel)
                 await self.bot.wait_for('voice_state_update', check=lambda x, y, z: len(voice_channel.members) == 0)
                 await voice_channel.delete()
-            except:
+            finally:
                 pass
-            
+
+
 def setup(bot):
     bot.add_cog(Voices(bot))

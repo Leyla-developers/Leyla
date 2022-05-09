@@ -39,6 +39,7 @@ class Welcome(commands.Cog):
 
                 await member.guild.get_channel(data['goodbye_channel']).send(message)
 
+
 def setup(bot):
     bot.add_cog(Welcome(bot))
     

@@ -1,6 +1,5 @@
 import random
 
-import disnake
 from disnake.ext import commands
 
 
@@ -9,7 +8,7 @@ class Markov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def generate(self, words):
+    def generate(words):
         for i in range(len(words) - 1):
             yield (words[i], words[i + 1])
 
@@ -43,6 +42,7 @@ class Markov(commands.Cog):
                     chain.append(random.choice(word_dict[chain[-1]]))
 
             await self.bot.get_channel(data['channel']).send(' '.join(chain))
+
 
 def setup(bot):
     bot.add_cog(Markov(bot))

@@ -32,6 +32,7 @@ class MarryButton(disnake.ui.View):
             await inter.response.send_message(f'{inter.author.id} Не согласен(на) быть партнёром')
             self.stop()
 
+
 class DivorceButton(disnake.ui.View):
 
     def __init__(self, partner: disnake.Member):
@@ -48,6 +49,7 @@ class DivorceButton(disnake.ui.View):
             await inter.response.send_message(f'{self.partner.mention} Согласился(ась) расторгнуть брак(. Удачи.')
             await self.config.DB.marries.delete_one({"$or": [{"_id": inter.author.id}, {"mate": self.partner.id}]})
             self.stop()
+
 
 class Marries(commands.Cog):
 
@@ -92,6 +94,7 @@ class Marries(commands.Cog):
     async def marry_marries(self, inter):
         data = [f"`{self.bot.get_user(i['_id']).name}` + `{self.bot.get_user(i['mate']).name}` | <t:{round(i['time'].timestamp())}:D>" async for i in self.bot.config.DB.marries.find() if i['_id'] and i['mate'] in [i.id for i in inter.guild.members]]
         await inter.send(embed=await self.bot.embeds.simple(title='Парочки, которые есть тута', description='\n'.join(data) if len(data) != 0 else "Нет парочек, получается."))
+
 
 def setup(bot):
     bot.add_cog(Marries(bot))

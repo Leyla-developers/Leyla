@@ -3,8 +3,6 @@ import asyncio
 import disnake
 from disnake.ext import commands
 
-from core.classes import LeylaTasks as task
-
 
 class CoreEvents(commands.Cog):
     
@@ -69,6 +67,7 @@ class CoreEvents(commands.Cog):
                 color=disnake.Color.red()
             )
         )
+
 
 def setup(bot):
     bot.add_cog(CoreEvents(bot))

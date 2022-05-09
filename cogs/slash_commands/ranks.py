@@ -16,6 +16,7 @@ LeylaMemberID = NewType('LeylaMemberID', int)
 LeylaRoleID = NewType('LeylaRoleID', int)
 LeylaGuildID = NewType('LeylaGuildID', int)
 
+
 @dataclass
 class RankData:
     level: Level
@@ -23,9 +24,11 @@ class RankData:
     role: LeylaRoleID
     guild_id: LeylaGuildID
 
+
 class RanksRepository(ABC):
     @abstractmethod
     async def get_role_by_member_data(self, member: LeylaMemberID, lvl: Level, role: LeylaRoleID) -> RankData: ...
+
 
 class Ranks(RanksRepository):
 
@@ -39,6 +42,7 @@ class Ranks(RanksRepository):
             member_object = guild_object.get_member(member_id)
             role_object = guild_object.get_role(role_id)
             return await member_object.add_roles(role_object)
+
 
 class RanksCog(commands.Cog):
     
@@ -129,6 +133,7 @@ class RanksCog(commands.Cog):
                 (data['xp'] / (5*(data['lvl']**2)+50*data['lvl']+100)) * 100
             ).save('user_card.png')
             await inter.send(file=disnake.File(BytesIO(open('user_card.png', 'rb').read()), 'user_card.png'), ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(RanksCog(bot))

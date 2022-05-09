@@ -1,5 +1,6 @@
 from string import Template
 
+
 class MyTemplate(Template):
     delimiter = '['
     pattern = r'''
@@ -11,6 +12,7 @@ class MyTemplate(Template):
     )
     '''
 
+
 def welcome_function(member, message):
     variables = {
         'memberMention': member.mention,
@@ -20,6 +22,7 @@ def welcome_function(member, message):
     }
 
     return MyTemplate(message).safe_substitute(variables)
+
 
 async def level_string(bot, member):
     data = await bot.config.DB.levels.find_one({"guild": member.guild.id, "member": member.id})

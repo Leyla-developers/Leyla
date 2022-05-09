@@ -54,5 +54,6 @@ class MessageUtilities(commands.Cog):
 
         await ctx.reply(embed=embed)
 
+
 def setup(bot):
     bot.add_cog(MessageUtilities(bot))

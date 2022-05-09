@@ -30,6 +30,7 @@ NSFW_DESCRIPTIONS = {
     'Щупальца (tentacles)': 'tentacles'
 }
 
+
 class NSFW(commands.Cog):
 
     def __init__(self, bot: commands.Bot):

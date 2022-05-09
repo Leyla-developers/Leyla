@@ -1,4 +1,3 @@
-import disnake
 from disnake.ext import commands
 
 
@@ -43,6 +42,7 @@ class CapsLockAutoMod(commands.Cog):
                         await message.channel.send(data['message'])
                         
                     await message.delete()
+
 
 def setup(bot):
     bot.add_cog(CapsLockAutoMod(bot))

@@ -8,6 +8,7 @@ def fotmat_links_for_avatar(avatar) -> dict:
 
     return {format_name: avatar.replace(format=format_name, size='1024').url for format_name in formats}
 
+
 async def emoji_converter(format, url):
     async with aiohttp.ClientSession().get(url) as response:
         data = str(response)
@@ -16,6 +17,7 @@ async def emoji_converter(format, url):
         url = url.replace('gif', format)
 
     return url
+
 
 async def emoji_formats(url):
     formats = ['png', 'jpeg', 'webp']
