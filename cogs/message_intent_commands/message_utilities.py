@@ -1,7 +1,7 @@
 import sys
 import platform
+from datetime import datetime
 
-import disnake
 import psutil
 from disnake.ext import commands
 
@@ -10,6 +10,19 @@ class MessageUtilities(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name="afk", description="Встали в афк? Ну ладно, подождём.")
+    async def message_utilities_afk_command(self, inter, reason: str = None):
+        if await self.bot.config.DB.afk.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
+            await self.bot.config.DB.afk.insert_one({"guild": inter.guild.id, "member": inter.author.id,
+                                                     "reason": reason if reason else "Без причины",
+                                                     "time": datetime.now()})
+
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                description=f"Я поставила вас в список AFK, ждём вашего возвращения :relaxed:\nПричина: {reason if reason else 'Без причины'}"
+            )
+        )
 
     @commands.command(name="stats", description="Статистика бота")
     async def message_utilities_stats(self, ctx):

@@ -350,16 +350,6 @@ class Utilities(commands.Cog):
 
         await inter.send(embed=embed)
 
-    @commands.slash_command(name="afk", description="Встали в афк? Ну ладно, подождём.")
-    async def utilities_afk_command(self, inter, reason: str = None):
-        if await self.bot.config.DB.afk.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
-            await self.bot.config.DB.afk.insert_one({"guild": inter.guild.id, "member": inter.author.id,
-                                                     "reason": reason if reason is not None else "Без причины",
-                                                     "time": datetime.now()})
-
-        await inter.send(embed=await self.bot.embeds.simple(
-            description=f"Я поставила вас в список AFK, ждём вашего возвращения :relaxed:\nПричина: {reason}"))
-
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     @commands.has_permissions(manage_roles=True)
     async def utilities_giveaway(
