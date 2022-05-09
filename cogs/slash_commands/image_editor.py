@@ -18,11 +18,13 @@ class ImageEditor(commands.Cog):
         ...
 
     @image_editor.sub_command(name='resize', description="Изменение вашего изображения")
-    async def image_resize(self, inter, image_link: str, x: int, y: int):
+    async def image_resize(self, inter, x: int, y: int, image_link: str = None):
+        image = inter.author.display_avatar.url if not image_link else image_link
+
         if (x+y) > (2048+1080):
             raise CustomError('Можно максимум 2К (2048 x 1080)')
         else:
-            async with self.bot.session.get(image_link) as response:
+            async with self.bot.session.get(image) as response:
                 data = await response.read()
 
             img = Image.open(BytesIO(data)).resize((x, y))

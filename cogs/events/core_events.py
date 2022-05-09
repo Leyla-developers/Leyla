@@ -29,9 +29,8 @@ class CoreEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_connect(self):
         print(self.bot.user.name, 'started at:', str(self.bot.uptime))
-        self.bot.checks.nsfw.start()
-        self.bot.checks.giveaway_check.start()
-        self.bot.load_extension('cogs.message_intent_commands.music')
+        await self.bot.load_extensions()
+        await self.bot.start_checkers()
 
     @commands.Cog.listener()
     async def on_message(self, message):

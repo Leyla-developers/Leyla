@@ -286,7 +286,7 @@ class Music(commands.Cog):
 
             permissions = ctx.author.voice.channel.permissions_for(ctx.me)
 
-            if not permissions.connect or not permissions.speak:  # Check user limit too?
+            if not permissions.connect or not permissions.speak:
                 raise commands.BotMissingPermissions(['connect'])
 
             player.store('channel', ctx.channel.id)

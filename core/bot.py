@@ -23,13 +23,6 @@ class Leyla(commands.AutoShardedBot):
         self.wavelink = None
         self.humanize = humanize.i18n.activate("ru_RU")
 
-        for folder in listdir('cogs'):
-            for cog in find_extensions_in(f'cogs/{folder}'):
-                try:
-                    self.load_extension(cog)
-                except Exception as e:
-                    print(f'{folder}.{cog} fucked up by Hueila', e)
-                    
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
 
@@ -40,6 +33,10 @@ class Leyla(commands.AutoShardedBot):
         message = disnake.utils._from_json(data)
         return self.dispatch("socket_response", message)
 
+    async def start_checkers(self):
+        self.checks.giveaway_check.start()
+        self.checks.nsfw.start()
+
     async def get_prefix(self, message):
         if message.guild.id in [i.id for i in self.guilds]:
             if await self.config.DB.prefix.count_documents({"_id": message.guild.id}) == 0:
@@ -48,3 +45,11 @@ class Leyla(commands.AutoShardedBot):
                 prefix = dict(await self.config.DB.prefix.find_one({"_id": message.guild.id}))['prefix']
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
+
+    async def load_exceptions(self):
+        for folder in listdir('cogs'):
+            for cog in find_extensions_in(f'cogs/{folder}'):
+                try:
+                    self.load_extension(cog)
+                except Exception as e:
+                    print(f'{folder}.{cog} fucked up by Hueila', e)

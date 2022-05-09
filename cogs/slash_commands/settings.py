@@ -54,7 +54,7 @@ class Settings(commands.Cog):
     async def voice_settings(self, inter):
         ...
 
-    @settings.sub_command()
+    @settings.sub_command(description="Установка авто-постинга NSFW канала")
     @commands.is_nsfw()
     async def nsfw(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
