@@ -9,6 +9,7 @@ from jishaku.features.baseclass import Feature
 
 class LeylaJishaku(Jishaku):
 
+    hidden = True
     COG_EMOJI = '👑'
 
     @Feature.Command(parent="jsk", name="force-ban")

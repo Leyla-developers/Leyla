@@ -6,10 +6,12 @@ import psutil
 from disnake.ext import commands
 
 
-class MessageUtilities(commands.Cog):
+class MessageUtilities(commands.Cog, name='Утилиты'):
 
     def __init__(self, bot):
         self.bot = bot
+
+    COG_EMOJI = '🔧'
 
     @commands.command(name="afk", description="Встали в афк? Ну ладно, подождём.")
     async def message_utilities_afk_command(self, inter, reason: str = None):

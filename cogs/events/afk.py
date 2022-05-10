@@ -12,6 +12,9 @@ class Afk(commands.Cog):
         if await self.bot.config.DB.afk.count_documents({"guild": message.guild.id}) == 0:
             return
 
+        if message.author.bot:
+            return
+
         guild_afk_members = [i['member'] async for i in self.bot.config.DB.afk.find({"guild": message.guild.id})]
 
         if message.author.id in guild_afk_members:

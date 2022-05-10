@@ -13,9 +13,12 @@ class TriggerEvent(commands.Cog):
         if await db.trigger.count_documents({"guild": message.guild.id, "trigger_message": message.content.lower()}) == 0:
             return
 
+        if message.author.bot:
+            return
+
         data = await db.trigger.find_one({"guild": message.guild.id, "trigger_message": message.content.lower()})
 
-        await message.channel.send(data['response'].replace('\n', '\n'))
+        return await message.channel.send(data['response'])
 
 
 def setup(bot):

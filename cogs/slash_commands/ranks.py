@@ -52,13 +52,14 @@ class RanksCog(commands.Cog):
     async def cog_check(self, inter):
         return dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['mode']
 
-    async def add_level_role(self, member, lvl):
+    async def add_level_role(self, guild, member, lvl):
         ranks_class = Ranks(self.bot)
-        db = await self.bot.config.DB.levels.find_one({"_id": member.guild.id})
+        db = await self.bot.config.DB.levels.find_one({"_id": guild})
         row_data = [{j:k for k, j in i.items()} for i in db['roles']]
-        role = int([i for i in row_data if str(lvl) in i][0][str(lvl)])
+        roles = [int(i[0]) for i in list(filter(None, [[k for j, k in i.items() if int(j) <= lvl] for i in row_data]))] # Не делайте так, вы матерям ещё нужны
 
-        return await ranks_class.get_role_by_member_data(role)
+        for role_id in roles:
+            await ranks_class.get_role_by_member_data(guild, member, lvl, role_id)
 
     async def formula(self, member: disnake.Member):
         data = dict(await self.bot.config.DB.levels.find_one({"guild": member.guild.id, "member": member.id}))
@@ -101,13 +102,14 @@ class RanksCog(commands.Cog):
             return
 
         else:
-            data = dict(await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id}))
+            data = await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id})
 
             if dict(await self.bot.config.DB.levels.find_one({"_id": message.guild.id}))['mode']:
                 if await self.formula(message.author):
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": 0, "lvl": data['lvl'] + 1}})
                     await self.get_level_up_message(message)
-                    await self.add_level_role(message.author, data['lvl'])
+                    kostil_ebani = await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id})
+                    await self.add_level_role(message.author.guild.id, message.author.id, kostil_ebani['lvl'])
                 else:
                     if not message.guild.id == 864367089102749726:
                         await sleep(60)
