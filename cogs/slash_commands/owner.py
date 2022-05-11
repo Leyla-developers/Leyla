@@ -5,7 +5,11 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 
 
-class Owner(commands.Cog):
+class Owner(commands.Cog, description="Люблю ебаться в задницу"):
+
+    COG_EMOJI = "👑"
+
+    hidden = True
 
     def __init__(self, bot):
         self.bot = bot
@@ -15,12 +19,22 @@ class Owner(commands.Cog):
     async def owner(self, inter):
         ...
 
+    @owner.sub_command(name='give-badge')
+    async def owner_give_badge(self, inter, user: disnake.User, badge):
+        if await self.bot.config.DB.badges.count_documents({"_id": user.id}) == 0:
+            await self.bot.config.DB.badges.insert_one({"_id": user.id, "badges": [str(badge)]})
+        else:
+            await self.bot.config.DB.badges.update_one({"_id": user.id}, {"$push": {"badges": str(badge)}})
+
+        await inter.send(f'Значок {badge} был выдан **{user.name}**! Интересно, за что?')
+
     @owner.sub_command(name='link')
     async def link(self, ctx, link: str = None):
         try:
             await self.bot.config.OLD_DB.links.insert_one({"id": "bad", "link": link})
-        finally:
+        except:
             raise CustomError('Ссылка уже есть в базе.')
+
         await ctx.send('Ссылка была добавлена.')
 
     @owner.sub_command(name='unlink')

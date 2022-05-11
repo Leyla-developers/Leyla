@@ -31,7 +31,7 @@ async def level_string(bot, member):
         'memberMention': member.mention,
         'member': str(member),
         'lvl': str(data['lvl']),
-        'xp': str(data['xp'])
+        'xp': str(5*(data['lvl']**2)+50*data['lvl']+100)
     }
 
     return MyTemplate(message['message']).safe_substitute(variables)

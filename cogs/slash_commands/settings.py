@@ -8,7 +8,9 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 
 
-class Settings(commands.Cog):
+class Settings(commands.Cog, name='настройки', description="ЧТО ДЕЛАЕТ ЭТА КОМАНДА?!?!?!"):
+
+    COG_EMOJI = "⚙️"
 
     def __init__(self, bot):
         self.bot = bot

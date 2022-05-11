@@ -4,6 +4,7 @@ from os import environ
 import disnake
 from core import Leyla
 from config import Config
+from Tools.help import LeylaHelp
 
 from dotenv import load_dotenv
 
@@ -12,7 +13,7 @@ load_dotenv()
 config = Config()
 intents = disnake.Intents.default()
 intents.members = True
-intents.messages = True
+intents.message_content = True
 
 
 async def init_and_run_bot(token: str) -> None:
@@ -31,9 +32,9 @@ async def init_and_run_bot(token: str) -> None:
         intents=intents,
         sync_commands=True,
         enable_debug_events=True,
-        help_command=None,
     )
     bot.config = config
+    bot.help_command = LeylaHelp()
     await bot.start(token)
 
 loop = asyncio.get_event_loop()

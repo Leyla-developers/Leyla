@@ -24,10 +24,11 @@ from Tools.buttons import CurrencyButton
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 from Tools.links import emoji_converter
-from Tools.translator import Translator
 
 
-class Utilities(commands.Cog):
+class Utilities(commands.Cog, name="слэш-утилиты", description="Вроде некоторые команды полезны, хд."):
+
+    COG_EMOJI = "🔧"
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -81,23 +82,70 @@ class Utilities(commands.Cog):
     @commands.slash_command(
         description="Вывод информации о гильдии",
     )
-    async def guild(self, inter: disnake.ApplicationCommandInteraction):
-        information = (
-            f'Участников: **{len(inter.guild.members)}**',
-            f'Эмодзи: **{len(inter.guild.emojis)}**',
-            f'Количество ролей: **{len(inter.guild.roles)}**',
-            f'Ботов на сервере: **{len(list(filter(lambda user: user.bot, inter.guild.members)))}**'
+    async def guild(self, inter: disnake.ApplicationCommandInteraction, guild: disnake.Guild = commands.Param(lambda inter: inter.guild)):
+        channel_ids = sorted(list(i.id for i in guild.channels if not isinstance(i, disnake.CategoryChannel)))
+        role_ids = sorted(list(i.id for i in guild.roles if i.id != guild.default_role.id and not i.is_integration()))
+        member_ids = sorted(list(i.id for i in guild.members if not i.bot))
+        members = (
+            f'Ботов: **{len(list(i.id for i in guild.members if i.bot))}**',
+            f'Участников (не считая ботов): **{len(list(i.id for i in guild.members if not i.bot))}**'
         )
+        dates = (
+            f'Дата создания сервера: <t:{round(guild.created_at.timestamp())}:R>',
+            f'Самый старый канал: {guild.get_channel(channel_ids[0]).mention} | <t:{round(guild.get_channel(channel_ids[0]).created_at.timestamp())}:R>',
+            f'Самый молодой канал: {guild.get_channel(channel_ids[-1]).mention} | <t:{round(guild.get_channel(channel_ids[-1]).created_at.timestamp())}:R>',
+            f'Самая старая роль: {guild.get_role(role_ids[0]).mention} | <t:{round(guild.get_role(role_ids[0]).created_at.timestamp())}:R>',
+            f'Самая молодая роль: {guild.get_role(role_ids[-1]).mention} | <t:{round(guild.get_role(role_ids[-1]).created_at.timestamp())}:R>',
+            f'Самый старый участник: {guild.get_member(member_ids[0]).mention} | <t:{round(guild.get_member(member_ids[0]).created_at.timestamp())}:R>',
+            f'Самый молодой участник: {guild.get_member(member_ids[-1]).mention} | <t:{round(guild.get_member(member_ids[-1]).created_at.timestamp())}:R>',
+        )
+        boosts = (
+            f'Включен ли прогресс бустов: **{"Да" if guild.premium_progress_bar_enabled else "Нет"}**',
+            f'Бустеров: **{len(guild.premium_subscribers)}**',
+            f'Уровень буста: **{guild.premium_tier}**'
+        )
+        channels = (
+            f'Всего каналов: **{len(guild.channels)}**',
+            f'Голосовых: **{len(guild.voice_channels)}**',
+            f'Текстовых: **{len(guild.text_channels)}**',
+            f'Веток: **{len(guild.threads)}**',
+            f'Канал правил: {guild.rules_channel.mention if guild.rules_channel else "Отсутствует"}',
+            f'Системный канал (чат, куда приходят о том, что кто-то зашёл, бустах и пр.): {guild.system_channel.mention if guild.system_channel else "Отсутствует"}',
+        )
+        other = (
+            f'Стикеров: **{len(guild.stickers)}**',
+            f'Эмодзи: **{len(guild.emojis)}**',
+            f'Сплэш: Отсутствует' if not guild.splash else f'Сплэш: [ссылка здесь]({guild.splash})',
+            f'Создатель сервера: {guild.owner.name}',
+            f'Максимальное количество участников: **{guild.max_members}**',
+            f'Айди кластера: **{guild.shard_id}**',
+        )
+        roles = (
+            f'Количество ролей: **{len(guild.roles)}**',
+            f'Ваша высшая роль: {inter.author.top_role.mention if inter.author in guild.members else "Вам нет на этом сервере("}',
+            f'Роль бустеров: {guild.premium_subscriber_role.mention if bool(guild.premium_subscriber_role) else "На сервере нет роли бустеров"}',
+            f'Айди everyone: **{guild.default_role.id}**',
+        )
+
+        fields = [
+            {'name': '> Участники', 'value': '\n'.join(members)},
+            {'name': '> Даты', 'value': '\n'.join(dates)},
+            {'name': '> Бусты', 'value': '\n'.join(boosts)},
+            {'name': '> Каналы', 'value': '\n'.join(channels)},
+            {'name': '> Роли', 'value': '\n'.join(roles)},
+            {'name': '> Прочее', 'value': '\n'.join(other)},
+        ]
         embed = await self.bot.embeds.simple(
-            title=f'Информация о гильдии {inter.guild.name}',
-            description="\n".join(information)
+            title=f'Информация о {guild.name}', 
+            description='У сервера нет описания :(' if not guild.description else guild.description, 
+            fields=fields,
         )
 
-        if inter.guild.banner:
-            embed.set_thumbnail(inter.guild.banner.url)
+        if guild.icon:
+            embed.set_thumbnail(url=guild.icon.url)
 
-        if inter.guild.icon:
-            embed.set_thumbnail(inter.guild.icon)
+        if guild.banner:
+            embed.set_image(url=guild.banner.url)
 
         await inter.send(embed=embed)
 

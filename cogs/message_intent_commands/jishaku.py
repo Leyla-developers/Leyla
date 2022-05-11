@@ -7,7 +7,7 @@ from jishaku.cog import Jishaku
 from jishaku.features.baseclass import Feature
 
 
-class LeylaJishaku(Jishaku):
+class LeylaJishaku(Jishaku, name="икэс бокэс икэс", description="Команды моих папиков, хд."):
 
     hidden = True
     COG_EMOJI = '👑'

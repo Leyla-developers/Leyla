@@ -44,7 +44,7 @@ RP_DESCRIPTIONS_LEYLA = {
 }
 
 
-class RP(commands.Cog):
+class RP(commands.Cog, name="ролевые игры", description="Люблю РП. :р"):
 
     COG_EMOJI = '🎭'
 

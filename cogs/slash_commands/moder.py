@@ -8,7 +8,9 @@ from Tools.exceptions import CustomError
 from Tools.buttons import Warns
 
 
-class Moderation(commands.Cog):
+class Moderation(commands.Cog, name="модерация", description="Теперь можно давать не только в жопу, но и по ней!"):
+
+    COG_EMOJI = "🔨"
 
     def __init__(self, bot):
         self.bot = bot

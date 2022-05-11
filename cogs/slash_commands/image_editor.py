@@ -8,12 +8,14 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 
 
-class ImageEditor(commands.Cog):
+class ImageEditor(commands.Cog, name="картинки", description="Работа с изображениями"):
+
+    COG_EMOJI = "<:comen:875434518746644531>"
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='images')
+    @commands.slash_command(name='images', description="Всячески можно изменять картинки")
     async def image_editor(self, inter):
         ...
 

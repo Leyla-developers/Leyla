@@ -16,7 +16,9 @@ OVERLAY_DESCRIPTIONS = {
 }
 
 
-class FunSlashCommands(commands.Cog):
+class FunSlashCommands(commands.Cog, name="развлечения", description="Всякие там развлекающие команды, да."):
+
+    COG_EMOJI = "⚽"
 
     def __init__(self, bot):
         self.bot = bot

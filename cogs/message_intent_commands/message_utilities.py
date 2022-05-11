@@ -3,10 +3,12 @@ import platform
 from datetime import datetime
 
 import psutil
+import disnake
 from disnake.ext import commands
+from Tools.exceptions import CustomError
 
 
-class MessageUtilities(commands.Cog, name='Утилиты'):
+class MessageUtilities(commands.Cog, name='утилиты', description="Всякие ненужные, а может быть, и, вспомогательные команды"):
 
     def __init__(self, bot):
         self.bot = bot
@@ -68,7 +70,24 @@ class MessageUtilities(commands.Cog, name='Утилиты'):
         )
 
         await ctx.reply(embed=embed)
+        
 
+    @commands.group(name="profile", description="Информация о вас во мне, как бы странно это не звучало", invoke_without_command=True)
+    async def message_utilities_profile(self, ctx, user: disnake.User):
+        if await self.bot.config.DB.badges.count_documents({"_id": user.id}) > 0:
+            badge_data = dict(await self.bot.config.DB.badges.find_one({"_id": user.id}))['badges']
+        else:
+            badge_data = 'Значков нет'
+
+        fields = [
+            {'name': 'Значки', 'value': badge_data},
+        ]
+        embed = await self.bot.emebds.simple(
+            title=f'Профиль пользователя {user.id}',
+            description=f"Статус **{user.name}** в боте: {'Просто пользователь' if not user.id in self.bot.owner_ids else 'Разработчик'}"
+        )
+
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(MessageUtilities(bot))

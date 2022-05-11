@@ -11,7 +11,8 @@ DESCRIPTIONS = {
     CustomError: "Произошла какая-то ошибка, можешь прочитать ошибку ниже, Милое моё существо.",
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
     commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔",
-    commands.NotOwner: "Вы не мой папик, чтобы мне указывать. **Я сама тебе сейчас покажу...** uwu."
+    commands.NotOwner: "Вы не мой папочка, чтобы мне указывать uwu.",
+    commands.GuildNotFound: "Я не нашла такого сервера!\nПроверьте правильность написания названия/ID. [Ну или вы можете добавить меня туда!)](https://discord.com/oauth2/authorize?client_id=828934385112711188&scope=bot+applications.commands)"
 }
 
 PERMISSIONS = {
@@ -43,7 +44,7 @@ class OnErrors(commands.Cog):
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
             if isinstance(cmd_error, commands.CommandNotFound):
-                return
+                ...
 
             embed.add_field(name="Описание ошибки", value=cmd_error)
 

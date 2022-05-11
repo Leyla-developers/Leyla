@@ -1,7 +1,7 @@
 PyYAML
 asyncio
 aiohttp
-disnake==2.4.0
+disnake==2.5.0
 disnake-jishaku
 motor
 dnspython

@@ -51,7 +51,9 @@ class DivorceButton(disnake.ui.View):
             self.stop()
 
 
-class Marries(commands.Cog):
+class Marries(commands.Cog, name="свадьбы", description="Можно пожениться с кем-нибудь, хихи"):
+
+    COG_EMOJI = "💍"
 
     def __init__(self, bot):
         self.bot = bot

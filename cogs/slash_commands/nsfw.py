@@ -31,13 +31,15 @@ NSFW_DESCRIPTIONS = {
 }
 
 
-class NSFW(commands.Cog):
+class NSFW(commands.Cog, name="nsfw", description="NSFW команды, что-то ещё?"):
+
+    COG_EMOJI = "🥵"
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.slash_command(
-        description='Взаимодействовать с пользователем',
+        description='Ну... Это было неплохо.',
         options=[
             disnake.Option(
                 'choice', 'Выбор картинки', 

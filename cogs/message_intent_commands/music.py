@@ -241,7 +241,7 @@ class ForDropdownCallbackViews(disnake.ui.View):
         self.add_item(VolumeDropdown(dj, bot))
 
 
-class Music(commands.Cog, name="Музыка"):
+class Music(commands.Cog, name="музыка", description="Всякие команды по музыке и... И всё."):
 
     COG_EMOJI = '🎵'
 
@@ -316,7 +316,7 @@ class Music(commands.Cog, name="Музыка"):
             await player.stop()
             await vc.disconnect(force=True)
 
-    @commands.command(name='play')
+    @commands.command(name='play', description="Спою... Точнее, включу песню, которую вы попросите :р")
     async def music_play(self, ctx, *, query: str):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         query = query.strip('<>')
@@ -348,7 +348,7 @@ class Music(commands.Cog, name="Музыка"):
 
             await ctx.reply(view=Views(query, self.bot, ctx.author, data[:5]))
 
-    @commands.command(name='queue')
+    @commands.command(name='queue', description="Вывод очереди песен")
     async def music_queue(self, ctx, page: int = 1):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         items_per_page = 10

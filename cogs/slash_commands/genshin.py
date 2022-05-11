@@ -8,7 +8,9 @@ from disnake.ext import commands
 from Tools.exceptions import CustomError
 
 
-class Genshin(commands.Cog):
+class Genshin(commands.Cog, name="гейщит", description="Команды, для того, чтобы получить информацию о каком-либо игроке."):
+
+    COG_EMOJI = "<:WAAAAAAAAA:918940472674758706>"
 
     def __init__(self, bot):
         self.bot = bot

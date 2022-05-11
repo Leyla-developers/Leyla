@@ -44,8 +44,10 @@ class Ranks(RanksRepository):
             return await member_object.add_roles(role_object)
 
 
-class RanksCog(commands.Cog):
+class RanksCog(commands.Cog, name="уровни", description="Ну, уровни, да"):
     
+    COG_EMOJI = "<:flying_hearts:875710807206416455>"
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -111,10 +113,7 @@ class RanksCog(commands.Cog):
                     kostil_ebani = await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id})
                     await self.add_level_role(message.author.guild.id, message.author.id, kostil_ebani['lvl'])
                 else:
-                    if not message.guild.id == 864367089102749726:
-                        await sleep(60)
-                    else:
-                        await sleep(0)
+                    await sleep(60)
                     await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": data['xp']+__import__('random').randint(15, 25)}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
