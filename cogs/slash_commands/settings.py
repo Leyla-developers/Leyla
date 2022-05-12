@@ -66,6 +66,16 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
 
         await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был установлен, картинка отсылается каждые 30 секунд."))
 
+    @settings.sub_command(name='remove', description="Убирает авто-постинг в NSFW канал")
+    @commands.is_nsfw()
+    async def nsfw_remove(self, inter):
+        if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
+            raise CustomError('Ну... Сейчас нет каналов, куда я бы постила NSFW.')
+        else:
+            await self.bot.config.DB.nsfw.delete_one({"_id": inter.guild.id})
+
+        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был убран."))
+        
     @autoroles.sub_command(name="add-role", description="Настройка авторолей")
     async def add_autoroles(self, inter, role: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
