@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from disnake import SelectOption
 
+from Tools.exceptions import CustomError
 
 class DropDown(disnake.ui.Select):
 
@@ -20,7 +21,7 @@ class DropDown(disnake.ui.Select):
     async def callback(self, inter):
         cog = self.bot.get_cog(self.values[0].lower())
         prefix_data = await self.bot.config.DB.prefix.find_one({"_id": inter.guild.id})
-        prefix = prefix_data['prefix'] if prefix_data else {'prefix': 'l.'}
+        prefix = prefix_data if prefix_data else {'prefix': 'l.'}
         commands = [f'**{prefix["prefix"]}{i.name}** - {i.description}' for i in cog.get_commands()] if len(cog.get_commands()) > 0 else [f'**/{i.name}** - {i.description}' for i in cog.get_slash_commands()]
 
         if self.author != inter.author.id:
@@ -45,19 +46,37 @@ class LeylaHelp(commands.HelpCommand):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def generate_options(self, cogs):
+    def generate_options(self, cogs) -> list:
         return [SelectOption(label=cog.qualified_name.capitalize(), description=cog.description, emoji=getattr(cog, 'COG_EMOJI', None)) for cog in cogs]
 
-    def help_message_intent_cog_check(self, cog):
-        return (hasattr(cog, 'hidden') and self.context.author.id in self.context.bot.owner_ids) and len(cog.get_commands()) > 0
+    def help_message_intent_cog_check(self, cog) -> None:
+        ignore = ['LeylaJustify', 'LeylaJishaku']
+        return len(cog.get_commands()) > 0 and not hasattr(cog, 'hidden') and not cog.qualified_name in ignore
 
-    def help_slash_cog_check(self, cog):
+    def help_slash_cog_check(self, cog) -> None:
         return not hasattr(cog, 'hidden') and len(cog.get_slash_commands()) > 0 and cog.qualified_name != 'Activities'
+    
+    async def command_not_found(self, *, string) -> str:
+        raise CustomError(f"Я не нашла такой команды, как **{string}**! Проверьте правильность написания команды.")
 
-    def get_all_cogs(self):
+
+    def get_all_cogs(self) -> None:
         cogs = list(filter(self.help_message_intent_cog_check, [self.context.bot.get_cog(cog) for cog in self.context.bot.cogs]))
         slash_cogs = list(filter(self.help_slash_cog_check, [self.context.bot.get_cog(cog) for cog in self.context.bot.cogs]))
         return cogs + slash_cogs
+
+    
+    async def send_command_help(self, command) -> str:
+        embed = await self.context.bot.embeds.simple(
+            title=f'Справка по заклинанию {command.qualified_name}',
+            description=command.description,
+        )
+
+        if command.usage:
+            embed.add_field(name='Правильное использование', value=self.context.clean_prefix + command.usage)
+
+        await self.context.reply(embed=embed, view=Views(self.context.author, self.generate_options(self.get_all_cogs()), self.context.bot))
+
 
     async def send_bot_help(self, mapping):
         embed = await self.context.bot.embeds.simple(

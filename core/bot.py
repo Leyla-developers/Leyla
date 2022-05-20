@@ -1,5 +1,6 @@
 from os import listdir
 import aiohttp
+import sys
 
 import disnake
 import humanize
@@ -36,9 +37,11 @@ class Leyla(commands.AutoShardedBot):
     def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)
 
+
     async def on_socket_raw_receive(self, data):
         message = disnake.utils._from_json(data)
         return self.dispatch("socket_response", message)
+
 
     async def get_prefix(self, message):
         if message.guild.id in [i.id for i in self.guilds]:
@@ -48,4 +51,3 @@ class Leyla(commands.AutoShardedBot):
                 prefix = dict(await self.config.DB.prefix.find_one({"_id": message.guild.id}))['prefix']
 
         return commands.when_mentioned_or(*[prefix.lower(), prefix.upper()])(self, message)
-

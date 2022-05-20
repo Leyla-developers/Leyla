@@ -35,6 +35,7 @@ class Ranks(RanksRepository):
     def __init__(self, bot):
         self.bot = bot
 
+
     async def get_role_by_member_data(self, guild_id: LeylaGuildID, member_id: LeylaMemberID, lvl: Level, role_id: LeylaRoleID) -> RankData:
         db = await self.bot.config.DB.levels.find_one({"guild": guild_id, 'member': member_id})
         if db['lvl'] >= lvl:

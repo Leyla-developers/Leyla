@@ -11,7 +11,7 @@ NSFW_DESCRIPTIONS = {
     'Девушки тоже умеют... (femdom)': 'femdom', 
     'Просто хентай (hentai)': 'hentai',
     '×Агрессивные звуки осуждения× (incest)': 'incest',
-    'Мальчики не одни любят др×чить( (masturbation)': 'masturbation',
+    'Оказывается, не только мальчики др×чат (masturbation)': 'masturbation',
     'Эээ.. Ладно. (public)': 'public', 
     'ПаЛюБуЙтЕсЬ (ero)': 'ero', 
     'Оргия (orgy)': 'orgy', 
@@ -26,7 +26,7 @@ NSFW_DESCRIPTIONS = {
     'Ещё больше хентая (hentai gifs)': 'hnt_gifs', 
     'Дыротька, не моя, нет( (vagina)': 'vagina', 
     'Ахегао, что ещё говорить? (ahegao)': 'ahegao', 
-    'Школьницы и не только.. ой. (uniform)': 'uniform', 
+    'Школьницы и не только... ой. (uniform)': 'uniform', 
     'Щупальца (tentacles)': 'tentacles'
 }
 

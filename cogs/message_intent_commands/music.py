@@ -307,16 +307,19 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
 
         if not state:
             return
-        
-        channel = self.bot.get_channel(int(state.channel_id))
-        if len(channel.members) == 1:
-            player = self.bot.lavalink.player_manager.get(member.guild.id)
-            vc = LavalinkVoiceClient(self.bot, channel)
-            player.queue.clear()
-            await player.stop()
-            await vc.disconnect(force=True)
 
-    @commands.command(name='play', description="Спою... Точнее, включу песню, которую вы попросите :р")
+        try:
+            channel = self.bot.get_channel(int(state.channel_id))
+            if len(channel.members) == 1:
+                player = self.bot.lavalink.player_manager.get(member.guild.id)
+                vc = LavalinkVoiceClient(self.bot, channel)
+                player.queue.clear()
+                await player.stop()
+                await vc.disconnect(force=True)
+        except:
+            return # просто задолбала ошибка в консоли
+
+    @commands.command(name='play', description="Спою... Точнее, включу песню, которую вы попросите :р", usage="play <Название песни>")
     async def music_play(self, ctx, *, query: str):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         query = query.strip('<>')
@@ -368,6 +371,16 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
         )
         await ctx.reply(embed=embed)
 
+    @commands.command(name='current', description="Показать, какая играет сейчас песня")
+    async def music_current(self, ctx):
+        song = self.bot.lavalink.player_manager.get(ctx.guild.id).current
+        embed = await self.bot.embeds.simple(
+            title=song.title, 
+            url=song.uri, 
+            description=f'Длительность: {humanize.naturaldelta(timedelta(milliseconds=song.duration))} | Автор: {song.author}'
+        )
+        await ctx.reply(embed=embed)
+        
 
 def setup(bot):
     bot.add_cog(Music(bot))

@@ -33,8 +33,8 @@ async def init_and_run_bot(token: str) -> None:
         sync_commands=True,
         enable_debug_events=True,
     )
-    bot.config = config
     bot.help_command = LeylaHelp()
+    bot.config = config
     await bot.start(token)
 
 loop = asyncio.get_event_loop()

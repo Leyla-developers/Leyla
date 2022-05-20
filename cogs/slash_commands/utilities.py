@@ -116,15 +116,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f'Стикеров: **{len(guild.stickers)}**',
             f'Эмодзи: **{len(guild.emojis)}**',
             f'Сплэш: Отсутствует' if not guild.splash else f'Сплэш: [ссылка здесь]({guild.splash})',
-            f'Создатель сервера: {guild.owner.name}',
+            f'Владелец: {guild.owner.name}',
             f'Максимальное количество участников: **{guild.max_members}**',
-            f'Айди кластера: **{guild.shard_id}**',
+            f'Айди шарда: **{guild.shard_id}**',
         )
         roles = (
             f'Количество ролей: **{len(guild.roles)}**',
             f'Ваша высшая роль: {inter.author.top_role.mention if inter.author in guild.members else "Вам нет на этом сервере("}',
             f'Роль бустеров: {guild.premium_subscriber_role.mention if bool(guild.premium_subscriber_role) else "На сервере нет роли бустеров"}',
-            f'Айди everyone: **{guild.default_role.id}**',
         )
 
         fields = [
@@ -212,26 +211,24 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         }
 
         async with self.bot.session.post(
-                'https://api.boticord.top/v1/server',
-                headers={'Authorization': environ['BCORD']},
-                json=data
+            'https://api.boticord.top/v1/server',
+            headers={'Authorization': environ['BCORD']},
+            json=data
         ) as response:
             data = await response.json()
+            server = data["serverID"]
+            embed = await self.bot.embeds.simple(
+                title='Перейти на BotiCord!',
+                description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"],
+                url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
+            )
 
-            if not response.ok:
-                return
-            else:
-                server = data["serverID"]
-                embed = await self.bot.embeds.simple(
-                    title='Перейти на BotiCord!',
-                    description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else
-                    data["message"],
-                    url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
-                )
+            await inter.send(
+                'Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None,
+                embed=embed
+            )
 
-                await inter.send('Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None,
-                                 embed=embed)
-
+    @commands.is_nsfw()
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
         emoji = random.choice(self.bot.emojis)
@@ -301,9 +298,12 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 ), view=view
             )
         else:
-            await inter.send(embed=await self.bot.embeds.simple(title='Курс... Так, стоп',
-                                                                description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"),
-                             view=view)
+            await inter.send(
+                embed=await self.bot.embeds.simple(
+                    title='Курс... Так, стоп',
+                    description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"
+                ), view=view
+            )
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
     async def trasnlate(self, inter, text, to_language, from_language='ru'):
@@ -433,18 +433,29 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f'Цвет роли: **{hex(role.color.value)}**',
             f'Интеграция: **{"Да" if role.is_integration() else "Нет"}**',
             f'Участников на этой роли: **{len(role.members)}**',
-            f'Эмодзи роли: **{role.emoji if role.emoji else "Нет эмодзи"}**',
             f'ID роли: **{role.id}**',
             f'Упоминание роли: {role.mention}',
             f'Позиция: **{role.position}**',
             f'Роль создана: <t:{round(role.created_at.timestamp())}:D>'
         ]
-        await inter.send(
-            embed=await self.bot.embeds.simple(
-                title=f"Информация о {role.name}",
-                description='\n'.join(role_info_array)
-            )
+        embed = await self.bot.embeds.simple(
+            title=f"Информация о {role.name}",
+            description='\n'.join(role_info_array),
         )
+
+        if role.icon:
+            embed.set_thumbnail(url=role.icon.url)
+
+        await inter.send(embed=embed)
+
+    @commands.slash_command(
+        name="notebook",
+        description="Всякие заметки и прочее"
+    )
+    async def message_utilities_notebook(self, ctx):
+        if 
+        embed = await self.bot.embeds.simple(title="Заметки", description="")
+
 
 
 def setup(bot: commands.Bot):

@@ -481,24 +481,24 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         )
 
     @reaction_role.sub_command(name="set", description="Установка роли за реакцию на сообщение")
-    async def reaction_role_set(self, inter, channel: disnake.TextChannel, message_id: Optional[disnake.Message], role: disnake.Role, emoji):
-        get_message = await channel.fetch_message(message_id) if message_id else inter.message
+    async def reaction_role_set(self, inter, channel: disnake.TextChannel, message_id: str, role: disnake.Role, emoji):
+        message = await channel.fetch_message(int(message_id))
         emoji_data = emoji if emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(emoji)
 
-        if await self.bot.config.DB.emojirole.count_documents({"_id": message_id.id}) == 0:
-            await self.bot.config.DB.emojirole.insert_one({"_id": get_message.id, "emojis": [{emoji_data: [role.id]}]})
+        if await self.bot.config.DB.emojirole.count_documents({"_id": int(message_id)}) == 0:
+            await self.bot.config.DB.emojirole.insert_one({"_id": message.id, "emojis": [{emoji_data: [role.id]}]})
         else:
-            await self.bot.config.DB.emojirole.update_one({"_id": get_message.id}, {"$push": {"emojis": {emoji_data: [role.id]}}})
+            await self.bot.config.DB.emojirole.update_one({"_id": message.id}, {"$push": {"emojis": {emoji_data: [role.id]}}})
 
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title="Leyla settings **(reaction role)**", 
                 description=f"Теперь при нажатии на реакцию, на том сообщение, что вы указали, будет выдаваться роль", 
-                fields=[{"name": "Роль", "value": role, "inline": True}, {"name": "ID сообщения", "value": message_id.id, "inline": True}],
+                fields=[{"name": "Роль", "value": role, "inline": True}, {"name": "ID сообщения", "value": message_id, "inline": True}],
                 thumbnail=inter.author.display_avatar.url
             ), ephemeral=True
         )
-        await get_message.add_reaction(emoji)
+        await message.add_reaction(emoji)
 
     @reaction_role.sub_command(name="remove", description="Удаление ролей за реакцию на сообщении")
     async def reaction_role_remove(self, inter, message_id: Optional[disnake.Message]):
@@ -611,13 +611,10 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     @trigger.sub_command(name='list', description="Список триггеров")
     async def trigger_list(self, inter, page: int = 1):
         data = [i async for i in self.bot.config.DB.trigger.find({"guild": inter.guild.id})]
-
         items_per_page = 10
         pages = math.ceil(len(data) / items_per_page)
-
         start = (page - 1) * items_per_page
         end = start + items_per_page
-
         trigger = ''
 
         for i, j in enumerate(data[start:end], start=start):

@@ -14,7 +14,7 @@ git+https://github.com/Leyla-developers/Lavalink.py.git
 PyNaCl
 SmallGoogleTranslator
 genshinstats
-git+https://github.com/helish88/Wavelink.git
 python-dotenv
 genshin
 psutil
+git+https://github.com/Leyla-developers/leyla-justify.git

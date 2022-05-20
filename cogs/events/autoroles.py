@@ -16,4 +16,4 @@ class AutoRoles(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Autoroles(bot))
+    bot.add_cog(AutoRoles(bot))

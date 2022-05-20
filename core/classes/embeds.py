@@ -1,15 +1,22 @@
-from typing import Union
+from dataclasses import dataclass
+from typing import Union, List
 
 import disnake
 from disnake import Embed
 from disnake.ext.commands import Context
 from config import Config
 
+@dataclass
+class Field:
+    name: str
+    value: str
+    inline: str
 
 class Embeds(Embed):
 
     def __init__(self, default_color) -> None:
         self.default_color = default_color
+        self.fields = fields
 
     async def simple(
         self, 
@@ -44,3 +51,5 @@ class Embeds(Embed):
                     pass
 
         return embed
+
+                
