@@ -448,15 +448,6 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
         await inter.send(embed=embed)
 
-    @commands.slash_command(
-        name="notebook",
-        description="Всякие заметки и прочее"
-    )
-    async def message_utilities_notebook(self, ctx):
-        if 
-        embed = await self.bot.embeds.simple(title="Заметки", description="")
-
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))
