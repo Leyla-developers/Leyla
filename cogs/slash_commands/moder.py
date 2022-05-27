@@ -26,7 +26,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
         
         if inter.author == member:
             raise CustomError("Зачем вы пытаетесь себя предупредить?")
-        elif inter.author.top_role.position <= member.top_role.position:
+        elif inter.author.top_role <= member.top_role:
             raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
         else:
             embed.description = f"**{member.name}** было выдано предупреждение"

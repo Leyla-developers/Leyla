@@ -56,11 +56,11 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
     )
     async def overlay_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
         async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
-            image_bytes = BytesIO(await response.read())
+            data = await response.read()
+            image_bytes = BytesIO(data)
             image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
-            embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user), image=f'attachment://{image_filename}')
+            embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
             await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
-            return await response.close()
 
     @commands.slash_command(
         options=[

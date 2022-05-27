@@ -10,10 +10,7 @@ from urllib.parse import quote
 from typing import Literal
 
 import aiohttp
-from dotenv import load_dotenv
 from PIL import Image
-
-load_dotenv()
 
 import disnake
 from google.translator import GoogleTranslator
@@ -306,7 +303,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             )
 
     @commands.slash_command(description="Переведу тебе всё, что можно!")
-    async def trasnlate(self, inter, text, to_language, from_language='ru'):
+    async def translate(self, inter, text, to_language, from_language='auto'):
         google = GoogleTranslator()
         data = await google.translate_async(text, to_language, from_language)
 
@@ -336,7 +333,11 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         )
 
     @commands.slash_command(name="bcinfo", description="Вывод информации о сервере с BotiCord")
-    async def boticord_info_cmd(self, inter, guild=None):
+    async def boticord_info_cmd(self, inter):
+        ...
+
+    @boticord_info_cmd.sub_command(name='server', description="Вывод информации о сервере с BotiCord'a!")
+    async def boticord_server_info(self, inter, guild=None):
         async with self.bot.session.get(
                 f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}') as response:
             request = await response.json()
@@ -397,6 +398,38 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             raise CustomError("Сервера нет на ботикорд (или произошла какая-либо непредвиденная ошибка).")
 
         await inter.send(embed=embed)
+
+    @boticord_info_cmd.sub_command(name='bot', description="Вывод информации о боте с BotiCord'a!")
+    async def boticord_bot_info(self, inter, bot=None):
+        async with self.bot.session.get(f'https://api.boticord.top/v1/bot/{bot}') as response:
+            request = await response.json()
+
+        if 'information' in request:
+            fetch_developers = [await self.bot.fetch_user(i) for i in request["information"]["developers"]]
+            fields = [
+                {
+                    "name": "Статистика", "value": f'Серверов: {request["information"]["stats"]["servers"]}\n' + \
+                                                f'Пользователей: {request["information"]["stats"]["users"]}\n' + \
+                                                f'Шардов: {request["information"]["stats"]["shards"]}\n', "inline": True
+                }, 
+                {"name": "Тэги", "value": ', '.join(request['information']['tags']), "inline": True},
+                {
+                    "name": "BCord статистика", "value": f'Оценок: {request["information"]["bumps"]}\n' + \
+                                                        f'Добавлен раз: {request["information"]["added"]}\n' + \
+                                                        f'Префикс: {request["information"]["prefix"]}\n', "inline": True
+                },
+                {"name": "Разработчики", "value": f'Разработчики: {", ".join([str(i) for i in fetch_developers])}\n', "inline": True}
+            ]
+
+            embed = await self.bot.embeds.simple(
+                title=f'Информация о {bot}', 
+                description=request['information']['longDescription'], 
+                footer={'text': request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
+                fields=fields
+            )
+            await inter.send(embed=embed)
+        else:
+            raise CustomError("Я не нашла ничего по такому запросу!")
 
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     @commands.has_permissions(manage_roles=True)

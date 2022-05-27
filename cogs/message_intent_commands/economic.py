@@ -1,3 +1,4 @@
+from typing import Union
 from datetime import datetime, timedelta
 from random import choice, randint
 
@@ -154,6 +155,33 @@ class Economy(commands.Cog, name="экономика", description="Типа э�
                         await ctx.reply(f'Вы ограбили **{member.name}** на **{robbed}** 💰. Зачем?')
                 else:
                     raise CustomError(f"Ээ... Время ещё не пришло! Приходите чуть позже, пожалуйста. Вам нужно ждать до <t:{round((robber['rob_time']+timedelta(hours=5)).timestamp())}:D>")
+
+    """@commands.command(name='shop', description='Магазин. Просто магазин')
+    async def economy_shop(self, ctx):
+        db = self.bot.config.DB.economic
+        if await db.count_documents({"shop_guild": ctx.guild.id}) == 0:
+            raise CustomError("Магазин пустой.")
+        else:
+            data = [i async for i in db.find({"shop_guild": ctx.guild.id})]
+            description = ''
+            for i, j in enumerate(data):
+                description += f'{i+1} | {j["name"] if not isinstance(j["name"], disnake.Role) else ctx.guild.get_role(j["name"]).mention} - {j["price"]}'
+
+            await ctx.reply(embed=await self.bot.embeds.simple(title=f'Магазинчик {ctx.guild.name}', description=description))
+
+    @commands.command(name='add-product', description='Добавление товара в магазинчик', usage="add-product <Название товара> <Цена>")
+    @commands.has_permissions(manage_guild=True)
+    async def economy_add_product(self, ctx, product: Union[str, disnake.Role], price: int):
+        db = self.bot.config.DB.economic
+        if await db.count_documents({"shop_guild": ctx.guild.id, "product": {'name:': product, 'price': price}}) == 0:
+            await db.insert_one({"shop_guild": ctx.guild.id, "product": {'name:': product if not isinstance(product, disnake.Role) else product.id, 'price': price}})
+        else:
+            raise CustomError("Такой товар уже есть в магазине")
+
+    @commands.command(name="buy", description="Купить какой-то предмет, да", usage="buy <Название товара>")
+    async def economy_buy(self, ctx, product: Union[str, disnake.Role]):
+        db = self.bot.config.DB.economic"""
+
 
 
 def setup(bot):

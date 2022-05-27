@@ -9,9 +9,7 @@ class EmojiRole(commands.Cog):
         self.bot = bot
 
     async def get_data_from_db(self, message):
-        if await self.bot.config.DB.emojirole.count_documents({"_id": message}) == 0:
-            return False
-        else:
+        if not await self.bot.config.DB.emojirole.count_documents({"_id": message}) == 0:
             return await self.bot.config.DB.emojirole.find_one({"_id": message})
 
     @commands.Cog.listener()
