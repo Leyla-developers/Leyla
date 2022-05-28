@@ -24,6 +24,9 @@ class AntiInvite(commands.Cog):
         if data['admin_ignore']:
             return
             
+        if message.author.bot:
+            return
+
         if data['mode']:
             await message.channel.send(data['message']) if data['message'] else None
 
