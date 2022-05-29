@@ -11,9 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 config = Config()
-intents = disnake.Intents.default()
-intents.members = True
-intents.message_content = True
 
 bot = Leyla(
     owner_ids=[598387707311554570],
@@ -27,7 +24,7 @@ bot = Leyla(
     strip_after_prefix=True,
     case_insensitive=True,
     status=disnake.Status.dnd,
-    intents=intents,
+    intents=disnake.Intents.all(),
     sync_commands=True,
     enable_debug_events=True,
 )
