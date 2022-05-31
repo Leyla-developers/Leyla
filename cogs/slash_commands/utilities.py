@@ -10,6 +10,7 @@ from urllib.parse import quote
 from typing import Literal
 
 import aiohttp
+from humanize import naturaldelta
 from PIL import Image
 
 import disnake
@@ -83,9 +84,21 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         channel_ids = sorted(list(i.id for i in guild.channels if not isinstance(i, disnake.CategoryChannel)))
         role_ids = sorted(list(i.id for i in guild.roles if i.id != guild.default_role.id and not i.is_integration()))
         member_ids = sorted(list(i.id for i in guild.members if not i.bot))
+        last_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(
+            list(map(lambda x: x.joined_at, list(
+                filter(lambda x: x.id != guild.owner_id, guild.members)))))[-1])
+
+        first_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(
+            list(map(lambda x: x.joined_at, list(
+                filter(lambda x: x.id != guild.owner_id, guild.members)))))[0]) # Колбаски ^--------------^
+
         members = (
             f'Ботов: **{len(list(i.id for i in guild.members if i.bot))}**',
-            f'Участников (не считая ботов): **{len(list(i.id for i in guild.members if not i.bot))}**'
+            f'Участников (не считая ботов): **{len(list(i.id for i in guild.members if not i.bot))}**',
+            f'Участников <:leyla_online:980318029764251679> (считая ботов): **{len(list(filter(lambda x: x.status == disnake.Status.online, guild.members)))}**',
+            f'Участников <:leyla_dnd:980318029860704317>: **{len(list(filter(lambda x: x.status == disnake.Status.dnd, guild.members)))}**',
+            f'Участников <:leyla_idle:980318419859685457>: **{len(list(filter(lambda x: x.status == disnake.Status.idle, guild.members)))}**',
+            f'Участников <:leyla_offline:980318029877502003>: **{len(list(filter(lambda x: x.status == disnake.Status.offline, guild.members)))}**',
         )
         dates = (
             f'Дата создания сервера: <t:{round(guild.created_at.timestamp())}:R>',
@@ -95,6 +108,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f'Самая молодая роль: {guild.get_role(role_ids[-1]).mention} | <t:{round(guild.get_role(role_ids[-1]).created_at.timestamp())}:R>',
             f'Самый старый участник: {guild.get_member(member_ids[0]).mention} | <t:{round(guild.get_member(member_ids[0]).created_at.timestamp())}:R>',
             f'Самый молодой участник: {guild.get_member(member_ids[-1]).mention} | <t:{round(guild.get_member(member_ids[-1]).created_at.timestamp())}:R>',
+            f'Первый зашедший участник: {"".join(first_joined)}',
+            f'Последний зашедший участник: {"".join(last_joined)}'
         )
         boosts = (
             f'Включен ли прогресс бустов: **{"Да" if guild.premium_progress_bar_enabled else "Нет"}**',
@@ -149,34 +164,64 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         description="Вывод информации о юзере"
     )
     async def user(self, inter, user: disnake.User = commands.Param(lambda inter: inter.author)):
+        statuses = {
+            disnake.Status.online: '<:leyla_online:980318029764251679>',
+            disnake.Status.dnd: '<:leyla_dnd:980318029860704317>',
+            disnake.Status.idle: '<:leyla_idle:980318419859685457>',
+            disnake.Status.offline: '<:leyla_offline:980318029877502003>'
+        }
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
         user = await self.bot.fetch_user(user.id)
-        color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
-        img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
-        img.save('banner.png', 'png')
-        file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
-        embed.set_image(url='attachment://banner.png')
 
+        if not user.banner:
+            color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
+            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
+            img.save('banner.png', 'png')
+            file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
+            
+            embed.set_image(url='attachment://banner.png')
+        else:
+            embed.set_image(url=user.banner.url)
+    
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
 
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
             f"Полный никнейм: **{str(user)}**",
-            f"Бот?: **{'Да' if user.bot else 'Нет'}**"
+            f"Бот?: **{'Да' if user.bot else 'Нет'}**",
         ]
 
         if user in inter.guild.members:
             user_to_member = inter.guild.get_member(user.id)
+
+            embed.title = f'Информация о {"боте" if user.bot else "пользователе"} {user.name} {"📱" if user_to_member.is_on_mobile() else "🖥️"}'
+
+            spotify = list(filter(lambda x: isinstance(x, disnake.activity.Spotify), user_to_member.activities))
             second_information = [
                 f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user_to_member.joined_at.replace(tzinfo=None)).days} дней**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
+                f"Статус: {str(user_to_member.activity) + ' | ' if user_to_member.activity else ''}{statuses[user_to_member.status]}"
             ]
+
+            if len(spotify):
+                data = spotify[0]
+                timestamps = (str(data._timestamps['end'])[:10], str(data._timestamps['start'])[:10])
+
+                embed.add_field(
+                    name="Информация про трек спотифай", 
+                    value=f"Песня: [{data.title} | {', '.join(data.artists)}]({data.track_url})\n" \
+                        f"Альбом: [{data.album}]({data.album_cover_url})\n" \
+                        f"Длительность песни: {naturaldelta(data.duration.total_seconds())} | <t:{timestamps[0]}:R> - <t:{timestamps[-1]}:R>"
+                )
 
         embed.description = "\n".join(main_information) + "\n" + "\n".join(
             second_information) if user in inter.guild.members else "\n".join(main_information)
 
-        await inter.send(embed=embed, file=file)
+        try:
+            await inter.send(embed=embed, file=file)
+        except:
+            await inter.send(embed=embed)
 
     @commands.slash_command(
         description="Получить эмодзик"
@@ -458,7 +503,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             await self.bot.config.DB.giveaway.insert_one(
                 {"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit],
                  "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id,
-                 "message_id": message.id})
+                 "message_id": message.id}
+            )
 
     @commands.slash_command(name='role-info', description="Выдам информацию о любой роли на сервере")
     async def utilities_role_info(self, inter, role: disnake.Role):

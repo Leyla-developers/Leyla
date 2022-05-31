@@ -74,7 +74,7 @@ class Economy(commands.Cog, name="экономика", description="Типа э�
 
     @commands.command(name="balance", aliases=['bal'], description="Вывод баланса пользователя", usage="balance [Пользователь]")
     async def economy_balance(self, ctx, user: disnake.User = None):
-        user = user if bool(user) else ctx.author 
+        user = user if user else ctx.author 
         db = self.bot.config.DB.economic
         embed = await self.bot.embeds.simple(title=f'Баланс {user.name}')
         
