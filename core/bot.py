@@ -16,7 +16,7 @@ class Leyla(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.config = kwargs.get('config')
-        self.uptime = datetime.utcnow()
+        self.uptime = datetime.now()
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()

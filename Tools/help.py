@@ -1,5 +1,6 @@
 import disnake
 from disnake.ext import commands
+from disnake.ext.commands import HelpCommand
 from disnake import SelectOption
 
 from Tools.exceptions import CustomError
@@ -7,7 +8,7 @@ from Tools.exceptions import CustomError
 class DropDown(disnake.ui.Select):
 
     def __init__(self, author, options, bot):
-        options = options
+        self.options = options
         self.bot = bot
         self.author = author
         super().__init__(
@@ -30,10 +31,11 @@ class DropDown(disnake.ui.Select):
                     title=f"{cog.COG_EMOJI} | {cog.qualified_name}",
                     description=cog.description,
                     fields=[{"name": "Команды этого модуля", "value": '\n'.join(commands)}]
-                ), ephemeral=True
+                ), ephemeral=True, view=Views(inter.author, self.options, self.bot)
             )
         else:
             await inter.send('Не вы вызывали справочник!', ephemeral=True)
+
 
 class Views(disnake.ui.View):
 
@@ -41,29 +43,33 @@ class Views(disnake.ui.View):
         super().__init__()
         self.add_item(DropDown(author, options, bot))
 
-class LeylaHelp(commands.HelpCommand):
+
+class LeylaHelp(HelpCommand):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
     def generate_options(self, cogs) -> list:
         return [SelectOption(label=cog.qualified_name.capitalize(), description=cog.description, emoji=getattr(cog, 'COG_EMOJI', None)) for cog in cogs]
 
-    def help_message_intent_cog_check(self, cog) -> None:
-        ignore = ['LeylaJustify', 'LeylaJishaku']
-        return len(cog.get_commands()) > 0 and not hasattr(cog, 'hidden') and not cog.qualified_name in ignore
 
-    def help_slash_cog_check(self, cog) -> None:
-        return not hasattr(cog, 'hidden') and len(cog.get_slash_commands()) > 0 and cog.qualified_name != 'Activities'
+    def help_message_intent_cog_check(self, cog) -> bool:
+        return len(cog.get_commands()) > 0 and not hasattr(cog, 'hidden')
+
+
+    def help_slash_cog_check(self, cog) -> bool:
+        return not hasattr(cog, 'hidden') and len(cog.get_slash_commands()) > 0 and cog.qualified_name
     
-    async def command_not_found(self, *, string) -> str:
+
+    async def command_not_found(self, string) -> str:
         raise CustomError(f"Я не нашла такой команды, как **{string}**! Проверьте правильность написания команды.")
 
 
-    def get_all_cogs(self) -> None:
+    def get_all_cogs(self) -> list:
         cogs = list(filter(self.help_message_intent_cog_check, [self.context.bot.get_cog(cog) for cog in self.context.bot.cogs]))
         slash_cogs = list(filter(self.help_slash_cog_check, [self.context.bot.get_cog(cog) for cog in self.context.bot.cogs]))
-        return cogs + slash_cogs
+        return (cogs + slash_cogs)
 
     
     async def send_command_help(self, command) -> str:
@@ -75,7 +81,7 @@ class LeylaHelp(commands.HelpCommand):
         if command.usage:
             embed.add_field(name='Правильное использование', value=self.context.clean_prefix + command.usage)
 
-        await self.context.reply(embed=embed, view=Views(self.context.author, self.generate_options(self.get_all_cogs()), self.context.bot))
+        return await self.context.reply(embed=embed, view=Views(self.context.author, self.generate_options(self.get_all_cogs()), self.context.bot))
 
 
     async def send_bot_help(self, mapping):

@@ -6,17 +6,11 @@ from disnake import Embed
 from disnake.ext.commands import Context
 from config import Config
 
-@dataclass
-class Field:
-    name: str
-    value: str
-    inline: str
 
 class Embeds(Embed):
 
     def __init__(self, default_color) -> None:
         self.default_color = default_color
-        self.fields = fields
 
     async def simple(
         self, 
@@ -27,7 +21,7 @@ class Embeds(Embed):
         fields: list = None,
         color: disnake.Colour = None,
         **kwargs
-    ):
+    ) -> None:
         embed = Embed(**kwargs)
         embed.color = color if color else self.default_color if not interaction else await Config().get_guild_data(guild=interaction.guild.id, key='color')
 

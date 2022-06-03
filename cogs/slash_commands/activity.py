@@ -5,7 +5,7 @@ from disnake.ext import commands
 from DiscordActivity import Activity
 
 
-class Activities(commands.Cog):
+class Activities(commands.Cog, name='активности'):
 
     def __init__(self, bot):
         self.bot = bot

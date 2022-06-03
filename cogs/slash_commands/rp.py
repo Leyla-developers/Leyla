@@ -64,6 +64,7 @@ class RP(commands.Cog, name="ролевые игры", description="Люблю �
         ]
     )
     async def rp(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User = commands.Param(lambda inter: inter.author), choice: str = None):
+        await inter.response.defer()
         descriptions = RP_DESCRIPTIONS if user != inter.author and user != self.bot.user else RP_DESCRIPTIONS_MYSELF if user == inter.author else RP_DESCRIPTIONS_LEYLA
         embed = await self.bot.embeds.simple(
             inter, 
