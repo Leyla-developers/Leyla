@@ -248,6 +248,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             "serverName": inter.guild.name,
             "serverAvatar": inter.guild.icon.url if inter.guild.icon else None,
             "serverMembersAllCount": len(inter.guild.members),
+            "serverMembersOnlineCount": len(list(filter(lambda x: not x.status == disnake.Status.offline, inter.guild.members))),
             "serverOwnerID": str(inter.guild.owner_id),
             "serverOwnerTag": str(inter.guild.owner),
         }
