@@ -5,6 +5,7 @@ from disnake import SelectOption
 
 from Tools.exceptions import CustomError
 
+
 class DropDown(disnake.ui.Select):
 
     def __init__(self, author, options, bot):
