@@ -56,6 +56,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     async def voice_settings(self, inter):
         ...
 
+
     @settings.sub_command(description="Установка авто-постинга NSFW канала")
     @commands.is_nsfw()
     async def nsfw(self, inter, channel: disnake.TextChannel):
@@ -89,7 +90,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         await inter.send(embed=await self.bot.embeds.simple(
                 title='Leyla settings **(autoroles)**', 
                 description="Роль при входе на сервер установлена", 
-                footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon.url else None}
+                footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon else None}
             )
         )
 
@@ -137,7 +138,13 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         else:
             await self.bot.config.DB.logs.update_one({"guild": inter.guild.id}, {"$set": {"channel": channel.id}})
         
-        await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(logs)**", description="Канал логов был установлен", fields=[{"name": "Канал", "value": channel.mention}]))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Leyla settings **(logs)**", 
+                description="Канал логов был установлен", 
+                fields=[{"name": "Канал", "value": channel.mention}]
+            )
+        )
 
     @logs.sub_command(name="remove", description="Убирает кАнал логов")
     async def log_channel_remove(self, inter):
@@ -176,7 +183,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             embed=await self.bot.embeds.simple(
                 title='Leyla settings **(automoderation (caps-lock.))**', 
                 description=f"Настройки были успешно сохранены и применены",
-                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
+                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon else None}
             )
         )
 
@@ -208,34 +215,84 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             embed=await self.bot.embeds.simple(
                 title='Leyla settings **(automoderation (a-invites.))**', 
                 description=f"Настройки были успешно сохранены и применены",
-                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon.url else None}
+                footer={"text": f"Наказание: {action}", "icon_url": inter.guild.icon.url if inter.guild.icon else None}
             )
         )
+
+    @automoderation.sub_command(name="warn-limit", description="Указание наказания за достижение определённого количества предупреждений")
+    async def warn_limit(
+        self, inter, mode: Literal['Включить', 'Выключить'] = "Включить", 
+        action: Literal['Кик', 'Мут', 'Бан'] = 'Мут', limit: int = 10,
+        timeout_duration: int = None, timeout_unit: str = None
+    ):
+        actions = {
+            'Мут': 'mute',
+            'Бан': 'ban',
+            'Кик': 'kick',
+        }
+        modes = {
+            'Включить': True,
+            'Выключить': False
+        }
+
+        if not None in (timeout_duration, timeout_unit):
+            units = {
+                'Секунды': timeout_duration,
+                'Минуты': timeout_duration * 60,
+                'Часы': timeout_duration * 60 * 60,
+                'Дни': timeout_duration * 60 * 60 * 24
+            }
+
+        data = {"_id": inter.guild.id, "mode": modes[mode], "action": actions[action], "limit": limit}
+        embed = await self.bot.embeds.simple(
+            title='Leyla settings **(automoderation (warn-limit))**',
+            fields=[
+                {"name": "Режим", "value": mode, "inline": True},
+                {"name": "Действие", "value": action, "inline": True},
+                {"name": "Лимит", "value": limit, "inline": True}
+            ]
+        )
+
+        if await self.bot.config.DB.warn_limit.count_documents({"_id": inter.guild.id}) == 0:
+            match action:
+                case 'Мут':
+                    if not None in (timeout_duration, timeout_unit):
+                        data.update({'timeout_duration': units[timeout_duration]})
+                        await self.bot.config.DB.warn_limit.insert_one(data)
+                    else:
+                        await self.bot.config.DB.warn_limit.insert_one(data)
+                case 'Бан':
+                    await self.bot.config.DB.warn_limit.insert_one(data)
+                case 'Кик':
+                    await self.bot.config.DB.warn_limit.insert_one(data)
+        else:
+            match action:
+                case 'Мут':
+                    if not None in (timeout_duration, timeout_unit):
+                        data.update({'timeout_duration': units[timeout_duration]})
+                        await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})
+                    else:
+                        await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})
+                case 'Бан':
+                    await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})
+                case 'Кик':
+                    await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})
+
+        await inter.send(embed=embed)
+
 
     @level.sub_command(name="info", description="Вся информация о ваших настройках в уровнях")
     async def level_info(self, inter):
         all_level_data = await self.bot.config.DB.levels.find_one({"_id": inter.guild.id})
-        fields_data = [{
-            "name": "Режим", "value": "Включен" if all_level_data['mode'] else "Выключен", "inline": True,
-        },
-        {
-            "name": "Канал оповещений", "value": inter.guild.get_channel(all_level_data['channel']).mention if all_level_data['channel'] and all_level_data['channel'] in inter.guild.text_channels else "Канал не указан", "inline": True,
-        },
-        {
-            "name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if int(i) in [i.id for i in inter.guild.roles]]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"
-        },
-        {
-            "name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено", "inline": True,
-        },
-        {
-            "name": "Игнорируемые каналы", "value": ', '.join([self.bot.get_channel(i).mention for i in all_level_data['channels']]) if len(all_level_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True,
-        },
-        {
-            "name": "Игнорируемые категории", "value": ', '.join([self.bot.get_channel(i).name for i in all_level_data['category']]) if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True,
-        },
-        {
-            "name": "Игнорируемые пользователи", "value": ', '.join([inter.guild.get_member(i).mention for i in all_level_data['users']]) if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True,
-        }]
+        fields_data = [
+            {"name": "Режим", "value": "Включен" if all_level_data['mode'] else "Выключен", "inline": True},
+            {"name": "Канал оповещений", "value": inter.guild.get_channel(all_level_data['channel']).mention if all_level_data['channel'] and all_level_data['channel'] in inter.guild.text_channels else "Канал не указан", "inline": True},
+            {"name": "Роли, выдающиеся при повышении уровня", "value": ', '.join([''.join([inter.guild.get_role(int(i)).mention for i in list(i.keys()) if int(i) in [i.id for i in inter.guild.roles]]) for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']]) if all_level_data['roles'] else "Ролей нет"},
+            {"name": "Сообщение при повышении уровня", "value": all_level_data['message'] if all_level_data['message'] else "Сообщение не настроено", "inline": True},
+            {"name": "Игнорируемые каналы", "value": ', '.join([self.bot.get_channel(i).mention for i in all_level_data['channels']]) if len(all_level_data['channels']) != 0 else "Игнорируемые каналы отсутствуют", "inline": True},
+            {"name": "Игнорируемые категории", "value": ', '.join([self.bot.get_channel(i).name for i in all_level_data['category']]) if len(all_level_data['category']) != 0 else "Игнорируемые категории отсутствуют", "inline": True},
+            {"name": "Игнорируемые пользователи", "value": ', '.join([inter.guild.get_member(i).mention for i in all_level_data['users']]) if len(all_level_data['users']) != 0 else "Игнорируемые пользователи отсутствуют", "inline": True}
+        ]
         embed = await self.bot.embeds.simple(
             title=f"Информация о системе уровней на {inter.guild.name}",
             thumbnail=inter.guild.icon.url if inter.guild.icon else None,
@@ -323,7 +380,13 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         else:
             raise CustomError("Роль, которую вы указали, не удалось найти в лвл-ролях((")
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(ranks)**', description="Роль была успешно убрана!", fields=[{'name': 'Роль', 'value': role.mention}]))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(ranks)**', 
+                description="Роль была успешно убрана!", 
+                fields=[{'name': 'Роль', 'value': role.mention}]
+            )
+        )
 
     @level.sub_command(name="help", description="Справка по уровням (Сообщение при повышении уровня)")
     async def level_help(self, inter):
@@ -558,7 +621,9 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             embed=await self.bot.embeds.simple(
                 title="Приватные голосовые каналы",
                 description="Голосовой канал для приватных комнат был создан",
-                fields=[{"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}]
+                fields=[
+                    {"name": "Канал", "value": channel.mention, "inline": True}, None if not bool(channel.category) else {"name": "Лобби", "value": channel.category.name, "inline": True}
+                ]
             )
         )
 
@@ -576,7 +641,13 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
 
     @settings.sub_command(name="counter", description="Канал, который вы укажете, будет указывать количество участников")
     async def settings_counter(self, inter, channel_type: Literal['Текстовый', 'Голосовой']):
-        permissions = {inter.guild.default_role: disnake.PermissionOverwrite(send_messages=False, read_messages=False, connect=False)}
+        permissions = {
+            inter.guild.default_role: disnake.PermissionOverwrite(
+                send_messages=False, 
+                read_messages=False, 
+                connect=False
+            )
+        }
 
         if channel_type == "Текстовый":
             channel = await inter.guild.create_text_channel(name=f"Участников: {len(inter.guild.members)}", overwrites=permissions)
@@ -588,7 +659,13 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         else:
             await self.bot.config.DB.counter.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
 
-        await inter.send(embed=await self.bot.embeds.simple(title="Leyla settings **(counter)**", description="Всё, счётчик участников включен :)", fields=[{"name": "Канал", "value": channel.mention}]))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title="Leyla settings **(counter)**", 
+                description="Всё, счётчик участников включен :)", 
+                fields=[{"name": "Канал", "value": channel.mention}]
+            )
+        )
 
     @trigger.sub_command(name='set', description="Устанавливает триггер-слово/предложение")
     async def trigger_set(self, inter, message: str = commands.Param(default=None, name="сообщение"), response: str = commands.Param(default=None, name='ответ-на-сообщение')):
@@ -597,7 +674,16 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         else:
             raise CustomError("Триггер на такое сообщение уже существует")
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(trigger)**', description="Триггер-сообщение установлено!", fields=[{"name": 'Сообщение', 'value': message}, {'name': 'Мой ответ на это', 'value': response}]))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(trigger)**',
+                description="Триггер-сообщение установлено!",
+                fields=[
+                    {"name": 'Сообщение', 'value': message},
+                    {'name': 'Мой ответ на это', 'value': response}
+                ]
+            )
+        )
 
     @trigger.sub_command(name='remove', description="Убирает триггер")
     async def trigger_remove(self, inter, trigger_id: int):
@@ -606,7 +692,12 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         else:
             raise CustomError("Триггер на такое сообщение не существует")
         
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(trigger)**', description="Триггер-сообщение убрано!"))
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(trigger)**',
+                description="Триггер-сообщение убрано!"
+            )
+        )
 
     @trigger.sub_command(name='list', description="Список триггеров")
     async def trigger_list(self, inter, page: int = 1):

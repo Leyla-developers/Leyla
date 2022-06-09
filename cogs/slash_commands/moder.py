@@ -15,6 +15,34 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     def __init__(self, bot):
         self.bot = bot
 
+    async def warn_limit_action(self, interaction: disnake.ApplicationCommandInteraction, member: disnake.Member):
+        if not None in (timeout_duration, timeout_unit):
+            units = {
+                'Секунды': timeout_duration,
+                'Минуты': timeout_duration * 60,
+                'Часы': timeout_duration * 60 * 60,
+                'Дни': timeout_duration * 60 * 60 * 24
+            }
+
+        if await self.bot.config.DB.warn_limit.count_documents({"_id": interaction.guild.id}) == 0:
+            return
+
+        user_data = await self.bot.config.DB.warns.count_documents({"guild": interaction.guild.id, "member": member.id})
+        data = await self.bot.config.DB.warn_limit.find_one({"_id": interaction.guild.id})
+
+        if data['limit'] >= user_data:
+            match data['action']:
+                case 'mute':
+                    if not None in (timeout_duration, timeout_unit):
+                        await member.timeout(reason=f'Лимит предупреждений (>={data["limit"]})', duration=units[timeout_unit])
+                    else:
+                        await member.timeout(reason=f'Лимит предупреждений (>={data["limit"]})', duration=43600)
+                case 'ban':
+                    await member.ban(reason=f'Лимит предупреждений (>={data["limit"]})')
+                case 'kick':
+                    await member.kick(reason=f'Лимит предупреждений (>={data["limit"]})')
+
+
     @commands.slash_command(
         description="Можете теперь спокойно выдавать предупреждения uwu."
     )
@@ -30,6 +58,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
             raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
         else:
             embed.description = f"**{member.name}** было выдано предупреждение"
+            await self.warn_limit_action(interaction=inter, member=member)
             await self.bot.config.DB.warns.insert_one({"guild": inter.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
 
         await inter.send(embed=embed)

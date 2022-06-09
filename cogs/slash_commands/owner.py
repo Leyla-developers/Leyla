@@ -47,7 +47,6 @@ class Owner(commands.Cog, description="Люблю ебаться в задниц
         if await self.bot.config.OLD_DB.jail.count_documents({"_id": user.id}) == 0:
             await self.bot.config.OLD_DB.jail.insert_one({"_id": user.id})
             await inter.send(f'Эта бяка занесена в чёрный список! (**{await self.bot.config.OLD_DB.jail.count_documents({})}**)')
-            await inter.send('Эта бяка и так в чёрном списке! (>~<)')
         else:
             await inter.send('Эта бяка и так в чёрном списке! (>~<)')
 
