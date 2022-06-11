@@ -15,7 +15,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, inter):
+    def cog_check(self, inter):
         if not inter.author.guild_permissions.administrator:
             raise commands.MissingPermissions(['administrator'])
     
@@ -223,7 +223,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     async def warn_limit(
         self, inter, mode: Literal['Включить', 'Выключить'] = "Включить", 
         action: Literal['Кик', 'Мут', 'Бан'] = 'Мут', limit: int = 10,
-        timeout_duration: int = None, timeout_unit: str = None
+        timeout_duration: int = None, timeout_unit: Literal['Секунды', 'Минуты', 'Часы', 'Дни'] = 'Секунды'
     ):
         actions = {
             'Мут': 'mute',
@@ -257,7 +257,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             match action:
                 case 'Мут':
                     if not None in (timeout_duration, timeout_unit):
-                        data.update({'timeout_duration': units[timeout_duration]})
+                        data.update({'timeout_duration': units[timeout_unit]})
                         await self.bot.config.DB.warn_limit.insert_one(data)
                     else:
                         await self.bot.config.DB.warn_limit.insert_one(data)
@@ -269,7 +269,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             match action:
                 case 'Мут':
                     if not None in (timeout_duration, timeout_unit):
-                        data.update({'timeout_duration': units[timeout_duration]})
+                        data.update({'timeout_duration': units[timeout_unit]})
                         await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})
                     else:
                         await self.bot.config.DB.warn_limit.update_one({"_id": inter.guild.id}, {"$set": data})

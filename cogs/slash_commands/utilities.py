@@ -12,16 +12,47 @@ from typing import Literal
 import aiohttp
 from humanize import naturaldelta
 from PIL import Image
+from textwrap3 import wrap
 
 import disnake
 from google.translator import GoogleTranslator
 import emoji as emj
 from bs4 import BeautifulSoup
 from disnake.ext import commands
+from disnake.ui import Select
+from disnake import SelectOption
+import wikipedia
+
 from Tools.buttons import CurrencyButton
 from Tools.decoders import Decoder
 from Tools.exceptions import CustomError
 from Tools.links import emoji_converter
+from Tools.paginator import Paginator
+
+
+class WikiDropdown(disnake.ui.Select):
+    def __init__(self, bot, author: disnake.Member, wiki_options: list):
+        self.bot = bot
+        self.author = author
+
+        options = wiki_options
+        super().__init__(
+            placeholder="Выберите статью",
+            min_values=1,
+            max_values=1,
+            options=options,
+            custom_id="wiki_dropdown"
+        )
+
+    async def callback(self, inter):
+        await inter.response.defer()
+
+        if inter.author.id == self.author.id:
+            data = wikipedia.page(title=wikipedia.search(self.values[0])[0])
+            embeds = [await self.bot.embeds.simple(title=data.title, url=data.url, description=i) for i in wrap(data.content, 1998)]
+            await inter.edit_original_message(embed=embeds[0], view=Paginator(pages=embeds, author=inter.author))
+        else:
+            await inter.send('Не ты вызывал команду!', ephemeral=True)
 
 
 class Utilities(commands.Cog, name="слэш-утилиты", description="Вроде некоторые команды полезны, хд."):
@@ -455,14 +486,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             fields = [
                 {
                     "name": "Статистика", "value": f'Серверов: {request["information"]["stats"]["servers"]}\n' + \
-                                                f'Пользователей: {request["information"]["stats"]["users"]}\n' + \
-                                                f'Шардов: {request["information"]["stats"]["shards"]}\n', "inline": True
+                                                   f'Пользователей: {request["information"]["stats"]["users"]}\n' + \
+                                                   f'Шардов: {request["information"]["stats"]["shards"]}\n', "inline": True
                 }, 
                 {"name": "Тэги", "value": ', '.join(request['information']['tags']), "inline": True},
                 {
                     "name": "BCord статистика", "value": f'Оценок: {request["information"]["bumps"]}\n' + \
-                                                        f'Добавлен раз: {request["information"]["added"]}\n' + \
-                                                        f'Префикс: {request["information"]["prefix"]}\n', "inline": True
+                                                         f'Добавлен раз: {request["information"]["added"]}\n' + \
+                                                         f'Префикс: {request["information"]["prefix"]}\n', "inline": True
                 },
                 {"name": "Разработчики", "value": f'Разработчики: {", ".join([str(i) for i in fetch_developers])}\n', "inline": True}
             ]
@@ -527,6 +558,27 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             embed.set_thumbnail(url=role.icon.url)
 
         await inter.send(embed=embed)
+
+    @commands.slash_command(
+        name='wikipedia',
+        description="Найдётся всё!"
+    )
+    async def utilities_wiki(self, inter, query: str) -> str:
+        wikipedia.set_lang(prefix='ru')
+        wiki_view = disnake.ui.View()
+
+        if len(wikipedia.search(query)):
+            wiki_view.add_item(
+                WikiDropdown(
+                    wiki_options=[SelectOption(label=i) for i in wikipedia.search(query)],
+                    bot=self.bot,
+                    author=inter.author
+                )
+            )
+        else:
+            wiki_view.add_item(disnake.ui.Button(label='Ничего не найдено :(', disabled=True))
+
+        await inter.send(view=wiki_view)
 
 
 def setup(bot: commands.Bot):

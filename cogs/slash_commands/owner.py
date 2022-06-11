@@ -59,7 +59,7 @@ class Owner(commands.Cog, description="Люблю ебаться в задниц
             await inter.send(f'Эта бяка не в чёрном списке!')
 
     @owner.sub_command(name="forced-divorce")
-    async def force_divorce(self, inter, first_user: disnake.User, second_user: disnake.User):
+    async def force_divorce(self, inter, user: disnake.User):
         marry_data = await self.bot.config.DB.marry.find_one({'$or': [{'_id': user.id}, {'mate': user.id}]})
         user = await self.bot.fetch_user(marry_data['_id'] if marry_data['_id'] != inter.author.id else marry_data['mate'])
 

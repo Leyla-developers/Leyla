@@ -87,9 +87,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
 
         await inter.send(embed=embed, view=Warns(member))
 
-    @commands.slash_command(
-        description="Удаление предупреждений участника"
-    )
+    @commands.slash_command(description="Удаление предупреждений участника")
     @commands.has_permissions(ban_members=True)
     async def unwarn(self, inter, member: disnake.Member, warn_id: int):
         if inter.author == member:

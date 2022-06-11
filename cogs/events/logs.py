@@ -21,7 +21,7 @@ class Logs(commands.Cog):
                 await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новый участник тут зашёл :3",
                     fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
-                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else None},
+                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else self.bot.user.avatar.url},
                     thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )
@@ -34,7 +34,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Кто-то ушёл отседова...(",
                     fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
-                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else None},                    thumbnail=member.display_avatar.url,
+                    footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else self.bot.user.avatar.url},                    thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )
             )
@@ -47,7 +47,7 @@ class Logs(commands.Cog):
             embed = await self.bot.embeds.simple(
                 title="Удалённое сообщение.",
                 description=message.content, 
-                footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon else None},
+                footer={"text": f"Канал: {message.channel.name}", "icon_url": message.guild.icon.url if message.guild.icon else self.bot.user.avatar.url},
                 fields=[{"name": "Автор сообщения", "value": f"{message.author.mention} [{message.author.name}]"}],
                 url=message.channel.jump_url,
                 thumbnail=message.author.display_avatar.url,
@@ -69,7 +69,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=await self.bot.embeds.simple(
                     title="Изменённое сообщение.",
                     description=f'**До:** {before.content}\n**После:** {after.content}',
-                    footer={"text": f"Канал: {after.channel.name}", "icon_url": after.guild.icon.url if after.guild.icon else None},
+                    footer={"text": f"Канал: {after.channel.name}", "icon_url": after.guild.icon.url if after.guild.icon else self.bot.user.avatar.url},
                     fields=[{"name": "Автор сообщения", "value": f"{after.author.mention} [{str(after.author)}]"}],
                     url=after.jump_url,
                     thumbnail=after.author.display_avatar.url,
@@ -88,7 +88,7 @@ class Logs(commands.Cog):
             embed = await self.bot.embeds.simple(title=f'Изменение участника', url=f"https://discord.com/users/{after.id}")
 
             if before.banner != after.banner:
-                embed.description = f"Баннер {after.name} был сменён.\n[Прошлый баннер]({before.banner.url if before.banner else None}) | [Новый баннер]({after.banner.url if after.banner else None})"
+                embed.description = f"Баннер {after.name} был сменён.\n[Прошлый баннер]({before.banner.url if before.banner else self.bot.user.avatar.url}) | [Новый баннер]({after.banner.url if after.banner else None})"
                 embed.set_image(url=after.banner.url)
             elif before.display_avatar.url != after.display_avatar.url:
                 embed.description = f"Аватар {after.display_avatar.url} был сменён."
@@ -136,8 +136,8 @@ class Logs(commands.Cog):
                     title="Новая ветка :eyes:",
                     url=thread.jump_url,
                     description=f"Название ветки: **{thread.name}**",
-                    footer={"text": f"Дата создания: {thread.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": thread.guild.icon.url if thread.guild.icon else None},
-                    thumbnail=thread.guild.icon.url if thread.guild.icon else None,
+                    footer={"text": f"Дата создания: {thread.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": thread.guild.icon.url if thread.guild.icon else self.bot.user.avatar.url},
+                    thumbnail=thread.guild.icon.url if thread.guild.icon else self.bot.user.avatar.url,
                     color=disnake.Colour.red()
                 )
             )
@@ -149,7 +149,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(await self.get_channel(thread.guild)).send(embed=await self.bot.embeds.simple(
                     title="Удаление ветки :eyes:",
                     description=f"Ветка называлась **{thread.name}**",
-                    thumbnail=thread.guild.icon.url if thread.guild.icon else None,
+                    thumbnail=thread.guild.icon.url if thread.guild.icon else self.bot.user.avatar.url,
                     color=disnake.Colour.red()
                 )
             )
