@@ -29,7 +29,7 @@ class DropDown(disnake.ui.Select):
         if self.author != inter.author.id:
             await inter.send(
                 embed=await self.bot.embeds.simple(
-                    title=f"{cog.COG_EMOJI} | {cog.qualified_name}",
+                    title=f"{cog.COG_EMOJI} | {cog.qualified_name.capitalize()}",
                     description=cog.description,
                     fields=[{"name": "Команды этого модуля", "value": '\n'.join(commands)}]
                 ), ephemeral=True, view=Views(inter.author, self.options, self.bot)

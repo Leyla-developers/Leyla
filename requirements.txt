@@ -20,3 +20,4 @@ psutil
 git+https://github.com/Leyla-developers/leyla-justify.git
 git+https://github.com/MagM1go/DiscordActivity.git
 wikipedia
+git+https://github.com/boticord/blurplefier.git

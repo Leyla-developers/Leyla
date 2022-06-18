@@ -1,3 +1,4 @@
+import asyncio
 import calendar as cld
 import json
 import random
@@ -19,7 +20,6 @@ from google.translator import GoogleTranslator
 import emoji as emj
 from bs4 import BeautifulSoup
 from disnake.ext import commands
-from disnake.ui import Select
 from disnake import SelectOption
 import wikipedia
 
@@ -328,11 +328,12 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 url = f'{url}{res.url._val.path}'
                 await session.close()
         desc = re.sub('\n', '', desc, 1)
-        await inter.send(embed=await self.bot.embeds.simple(
-            description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
-            thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
+                thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
+            )
         )
-                         )
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
     async def currency_converter(self, inter, currency, how_many: float = 0):
@@ -534,7 +535,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             await message.add_reaction('👍')
             await self.bot.config.DB.giveaway.insert_one(
                 {"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit],
-                 "channel": giveaway_channel.id if giveaway_channel is not None else inter.channel.id,
+                 "channel": giveaway_channel.id,
                  "message_id": message.id}
             )
 
@@ -579,6 +580,91 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             wiki_view.add_item(disnake.ui.Button(label='Ничего не найдено :(', disabled=True))
 
         await inter.send(view=wiki_view)
+
+
+    @commands.slash_command(
+        name="reminder",
+        description='Напоминалка'
+    )
+    async def utilities_reminder(self, inter):
+        ...
+
+    async def reminder_task(self):
+        await asyncio.sleep(1)
+        db = self.bot.config.DB.reminder
+        reminders = db.find({'time': {'$lte': datetime.now()}})
+
+        async for reminder in reminders:
+            ids = reminder['member']
+            member = await self.bot.fetch_user(ids)
+            channel = await self.bot.fetch_channel(reminder['channel'])
+            embed = await self.bot.embeds.simple(
+                title='Вы ничего не забыли?',
+                description='Вы просили меня, напомнить Вас о чём-то важном, наверное',
+                fields=[{'name': 'Напоминание', 'value': reminder['text'] if len(reminder['text']) < 1024 else reminder['text'][:1023]+'...'}]
+            )
+
+            await channel.send(content=member.mention, embed=embed)
+            return await db.delete_one(reminder)
+
+    @utilities_reminder.sub_command(
+        name="set",
+        description='Установка напоминания',
+    )
+    async def reminder_set(self, inter, text: str, duration: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней']):
+        time_convert = {
+            'Секунд': datetime.now() + timedelta(seconds=duration),
+            'Минут': datetime.now() + timedelta(minutes=duration),
+            'Часов': datetime.now() + timedelta(hours=duration),
+            'Дней': datetime.now() + timedelta(days=duration)
+        }
+        db = self.bot.config.DB.reminder
+
+        if not re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)', text):
+            await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
+            await inter.send(
+                embed=await self.bot.embeds.simple(
+                    title="Напоминалка установлена!",
+                    fields=[
+                        {'name': 'Сообщение', 'value': text[:1023]},
+                        {'name': 'Время', 'value': f'{duration} {unit.lower()}'}
+                    ]
+                )
+            )
+            await asyncio.create_task(self.reminder_task())
+        else:
+            await inter.send('Нельзя добавлять ссылки, увы :(')
+
+
+    async def aenumerate(self, iterator, limit):
+        output = ''
+        counter = 0
+
+        async for i in iterator:
+            output += i
+            counter += 1
+
+            if len(output.split()) == limit:
+                break
+
+            yield (counter, output)
+
+
+    @utilities_reminder.sub_command(
+        name="list",
+        description="Просмотр всех ваших последующих напоминалок"
+    )
+    async def utilities_reminder_list(self, inter):
+        db = self.bot.config.DB.reminder
+
+        if await db.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
+            raise CustomError("У тебя нет напоминалок!")
+        else:
+            # Не бейте
+            reminders = ''
+
+            async for i in db.find({"guild": inter.guild.id, "member": inter.author.id}):
+                reminders += f''
 
 
 def setup(bot: commands.Bot):

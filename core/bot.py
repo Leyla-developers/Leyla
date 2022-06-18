@@ -1,38 +1,50 @@
-from os import listdir
-import aiohttp
 import sys
+import aiohttp
+from os import listdir
+from datetime import datetime
 
 import disnake
 import humanize
-from datetime import datetime
 from disnake.ext import commands
+from disnake.gateway import DiscordWebSocket
 from jishaku.modules import find_extensions_in
+
 from .classes.embeds import Embeds
 from .classes import LeylaTasks
+from Tools.mobile_status import leyla_mobile_identify
+from config import Config
 
 
 class Leyla(commands.AutoShardedBot):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.config = kwargs.get('config')
+        kwargs['command_prefix'] = self.get_prefix
+        kwargs['config'] = Config()
+
+        self.config = Config()
         self.uptime = datetime.now()
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.ignore_cogs = ['music']
+        self.ignore_cogs = []
         self.wavelink = None
         self.humanize = humanize.i18n.activate("ru_RU")
 
+        DiscordWebSocket.identify = leyla_mobile_identify
+
         for folder in listdir('cogs'):
             for cog in find_extensions_in(f'cogs/{folder}'):
-                try:
-                    self.load_extension(cog)
-                except Exception as e:
-                    print(f'{folder}.{cog} fucked up by Hueila', e)
+                if not cog.split('.')[-1] in self.ignore_cogs:
+                    try:
+                        self.load_extension(cog)
+                    except Exception as e:
+                        print(f'{folder}.{cog} fucked up by Hueila', e)
+
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
+
 
     def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)

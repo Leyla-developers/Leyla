@@ -57,17 +57,27 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         ...
 
 
-    @settings.sub_command(description="Установка авто-постинга NSFW канала")
+    @settings.sub_command_group(description="Установка авто-постинга NSFW канала")
     @commands.is_nsfw()
-    async def nsfw(self, inter, channel: disnake.TextChannel):
+    async def nsfw(self, inter):
+        ...
+
+    @nsfw.sub_command(name='set', description='Установка авто-постинга NSFW канала')
+    @commands.is_nsfw()
+    async def nsfw_set(self, inter, channel: disnake.TextChannel):
         if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
             await self.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "channel": channel.id})
         else:
             await self.bot.config.DB.nsfw.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
 
-        await inter.send(embed=await self.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был установлен, картинка отсылается каждые 30 секунд."))
-
-    @settings.sub_command(name='remove', description="Убирает авто-постинг в NSFW канал")
+        await inter.send(
+            embed=await self.bot.embeds.simple(
+                title='Leyla settings **(posting)**',
+                description="Канал автопостинга NSFW был установлен, картинка отсылается каждые 30 секунд."
+            )
+        )
+    
+    @nsfw.sub_command(name='remove', description="Убирает авто-постинг в NSFW канал")
     @commands.is_nsfw()
     async def nsfw_remove(self, inter):
         if await self.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
@@ -98,7 +108,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     async def remove_autorrole(self, inter, role: disnake.Role):
         if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
             raise CustomError('А где? Авторолей здесь нет ещё(')
-        elif not role.id in dict(await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}))['roles']:
+        elif not role.id in dict(await self.bot.config.DB.autoroles.find_one({"guild": inter.guild.id}))['roles']:
             raise CustomError("Эта роль не стоит в авторолях!")
         else:
             await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$pull": {"roles": role.id}})
@@ -375,11 +385,13 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
 
     @level.sub_command(name='role-remove', description="Настройка ролей, которые будут даваться за определённый уровень")
     async def level_roles_remove(self, inter, role: disnake.Role):
-        if str(role) in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles']:
-            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$pull": {"roles": role}})
+        dict_data = [i for i in dict(await self.bot.config.DB.levels.find_one({"_id": inter.guild.id}))['roles'] if str(role.id) in i] # ААААААААААААААААААААААААААААААААА
+
+        if len(dict_data):
+            await self.bot.config.DB.levels.update_one({"_id": inter.guild.id}, {"$pull": {"roles": dict_data[0]}})
         else:
-            raise CustomError("Роль, которую вы указали, не удалось найти в лвл-ролях((")
-        
+            raise CustomError("Роль, которую вы указали, не удалось найти в лвл-ролях(")
+
         await inter.send(
             embed=await self.bot.embeds.simple(
                 title='Leyla settings **(ranks)**', 
@@ -670,7 +682,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     @trigger.sub_command(name='set', description="Устанавливает триггер-слово/предложение")
     async def trigger_set(self, inter, message: str = commands.Param(default=None, name="сообщение"), response: str = commands.Param(default=None, name='ответ-на-сообщение')):
         if await self.bot.config.DB.trigger.count_documents({"guild": inter.guild.id, "trigger_message": message}) == 0:
-            await self.bot.config.DB.trigger.insert_one({"guild": inter.guild.id, "trigger_message": message.lower(), "response": response.lower(), 'trigger_id': random.randint(10000, 99999)})
+            await self.bot.config.DB.trigger.insert_one({"guild": inter.guild.id, "trigger_message": message.lower(), "response": response, 'trigger_id': random.randint(10000, 99999)})
         else:
             raise CustomError("Триггер на такое сообщение уже существует")
         

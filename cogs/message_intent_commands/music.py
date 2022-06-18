@@ -247,15 +247,17 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
 
     def __init__(self, bot):
         self.bot = bot
-        self.bot.lavalink = lavalink.Client(self.bot.user.id)
-        self.bot.lavalink.add_node(
-            os.environ.get('LAVA_HOST'),
-            os.environ.get('LAVA_PORT'),
-            os.environ.get('LAVA_PASS'),
-            'us',
-            'default-node'
-        )
-        lavalink.add_event_hook(self.track_hook)
+
+        if not hasattr(bot, 'lavalink'):
+            self.bot.lavalink = lavalink.Client(self.bot.user.id)
+            self.bot.lavalink.add_node(
+                os.environ.get('LAVA_HOST'),
+                os.environ.get('LAVA_PORT'),
+                os.environ.get('LAVA_PASS'),
+                'us',
+                'default-node'
+            )
+            lavalink.add_event_hook(self.track_hook)
 
     def cog_unload(self):
         self.bot.lavalink._event_hooks.clear()

@@ -122,7 +122,6 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
         message = await channel.send(f'Пришла новая идея от: **{ctx.author.name}**\nС сервера: **{ctx.guild.name}**\n\nСама идея: {text}')
         await message.add_reaction('👍')
         await message.add_reaction('👎')
-        channel: disnake.TextChannel = channel.history() 
 
 
 def setup(bot):

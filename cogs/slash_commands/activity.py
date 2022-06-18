@@ -7,6 +7,8 @@ from DiscordActivity import Activity
 
 class Activities(commands.Cog, name='активности'):
 
+    COG_EMOJI = "<:AVAVVAVA:919119257063792670>"
+
     def __init__(self, bot):
         self.bot = bot
         self.activity = Activity(bot)

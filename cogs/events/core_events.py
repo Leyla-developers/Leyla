@@ -29,8 +29,12 @@ class CoreEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_connect(self):
         print('Я подключилась к этой хуйне.')
-        self.bot.checks.giveaway_check.start()
-        self.bot.checks.nsfw.start()
+        if not self.bot.checks.giveaway_check.is_running():
+            self.bot.checks.giveaway_check.start()
+
+        if not self.bot.checks.nsfw.is_running():
+            self.bot.checks.nsfw.start()
+            
         self.bot.load_extension('cogs.message_intent_commands.music')
 
     @commands.Cog.listener()

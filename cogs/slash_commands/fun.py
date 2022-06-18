@@ -3,6 +3,7 @@ from random import randint
 
 import disnake
 from disnake.ext import commands
+import blurplefier
 
 from Tools.exceptions import CustomError
 from Tools.images import ship_image
@@ -47,7 +48,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
                 'overlay', 'выберите наложение', 
                 type=disnake.OptionType.string,
                 required=True, 
-                choices=['wasted', 'jail', 'comrade', 'gay', 'glass', 'passed', 'triggered']
+                choices=['wasted', 'jail', 'comrade', 'gay', 'glass', 'passed', 'triggered', 'blurple']
             ),
             disnake.Option('user', 'Выберите пользователя', type=disnake.OptionType.user, required=False)
         ],
@@ -55,12 +56,21 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
         description="Накладывает разные эффекты на аватар."
     )
     async def overlay_image(self, inter: disnake.ApplicationCommandInteraction, overlay: str, user: disnake.User = commands.Param(lambda inter: inter.author)):
-        async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
-            data = await response.read()
-            image_bytes = BytesIO(data)
-            image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
-            embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
-            await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
+        if overlay == 'blurple':
+            input_bytes = await user.display_avatar.read()
+            extension, blurplefied_bytes = blurplefier.convert_image(
+                input_bytes, blurplefier.Methods.CLASSIC
+            )
+            avatar_bytes = BytesIO(blurplefied_bytes)
+
+            await inter.send(file=disnake.File(avatar_bytes, filename=f'blurplefied_file.{extension}'))
+        else:
+            async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
+                data = await response.read()
+                image_bytes = BytesIO(data)
+                image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
+                embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
+                await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
 
     @commands.slash_command(
         options=[
