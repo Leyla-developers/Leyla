@@ -1,3 +1,7 @@
+from string import punctuation
+
+check = lambda x: ''.join([i for i in x if i not in ' '.join(punctuation).split()])
+
 class Decoder:
 
     def __init__(self):
@@ -26,7 +30,7 @@ class Decoder:
         self.morse_reverse = {value: key for key, value in self.morse_dict.items()}
 
     def to_morse(self, string):
-        return " ".join(self.morse_dict.get(i.upper()) for i in string)        
+        return " ".join(self.morse_dict.get(i.upper()) for i in check(string))        
 
     def from_morse(self, string):
         return "".join(self.morse_reverse.get(i.upper()) for i in string.split())

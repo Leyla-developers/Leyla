@@ -9,6 +9,7 @@ from io import BytesIO
 from os import environ
 from urllib.parse import quote
 from typing import Literal
+from string import punctuation
 
 import aiohttp
 from humanize import naturaldelta
@@ -82,8 +83,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         description='Перевод в/из азбуки морзе.'
     )
     async def crypter(self, inter, decoder: typing.Literal['Морзе', 'Шифр Цезаря'],
-                      variant: typing.Literal['crypt', 'decrypt'], *, text):
-        if decoder == "Морзе":
+                      variant: typing.Literal['crypt', 'decrypt'], text):
+        if decoder == "Морзе":            
             if variant == 'crypt':
                 morse = Decoder().to_morse(text)
             elif variant == 'decrypt':
@@ -96,10 +97,10 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
         elif decoder == "Шифр Цезаря":
             if variant == 'crypt':
-                cezar = ''.join([chr(ord(i) - 3) for i in text])
+                cezar = ''.join([chr(ord(i) + 3) for i in text])
 
             elif variant == 'decrypt':
-                cezar = ''.join([chr(ord(i) + 3) for i in text])
+                cezar = ''.join([chr(ord(i) - 3) for i in text])
 
             embed = await self.bot.embeds.simple(
                 title='Decoder/Encoder шифра Цезаря (3).',
@@ -115,13 +116,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         channel_ids = sorted(list(i.id for i in guild.channels if not isinstance(i, disnake.CategoryChannel)))
         role_ids = sorted(list(i.id for i in guild.roles if i.id != guild.default_role.id and not i.is_integration()))
         member_ids = sorted(list(i.id for i in guild.members if not i.bot))
-        last_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(
-            list(map(lambda x: x.joined_at, list(
-                filter(lambda x: x.id != guild.owner_id, guild.members)))))[-1])
-
-        first_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(
-            list(map(lambda x: x.joined_at, list(
-                filter(lambda x: x.id != guild.owner_id, guild.members)))))[0]) # Колбаски ^--------------^
+        last_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(list(map(lambda x: x.joined_at, list(filter(lambda x: x.id != guild.owner_id, guild.members)))))[-1])
+        first_joined = list(i.mention + ' | ' + f'<t:{round(i.joined_at.timestamp())}:R>' for i in guild.members if i.joined_at == sorted(list(map(lambda x: x.joined_at, list(filter(lambda x: x.id != guild.owner_id, guild.members)))))[0]) # Колбаски ^--------------^
 
         members = (
             f'Ботов: **{len(list(i.id for i in guild.members if i.bot))}**',
@@ -309,8 +305,11 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[
             {'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
 
-    @commands.slash_command(name="random-anime",
-                            description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!")
+    @commands.slash_command(
+        name="random-anime",
+        description="Вы же любите аниме? Я да, а вот тут я могу порекомендовать вам аниме!",
+        guild_ids=[864367089102749726]
+    )
     async def random_anime(self, inter):
         url = 'https://animego.org'
 
@@ -509,12 +508,27 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         else:
             raise CustomError("Я не нашла ничего по такому запросу!")
 
+    async def giveaway_check(self):
+        await asyncio.sleep(1)
+
+        async for i in self.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
+            if self.bot.get_guild(i['guild']) in self.bot.guilds:
+                message = await self.bot.get_channel(i['channel']).fetch_message(i['message_id'])
+                embed = await self.bot.embeds.simple(
+                    title='> Розыгрыш окончен!', 
+                    description=f"**Приз:** {i['prize']}\n**Победитель:** {''.join(random.choices([i.mention async for i in message.reactions[0].users()], k=i['count']))}",
+                )
+                await message.edit(embed=embed)
+        
+            return await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
+
+
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
     @commands.has_permissions(manage_roles=True)
     async def utilities_giveaway(
-            self, inter,
-            giveaway_channel: disnake.TextChannel, prize: str,
-            time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
+        self, inter,
+        giveaway_channel: disnake.TextChannel, prize: str,
+        time: int, unit: Literal['Секунд', 'Минут', 'Часов', 'Дней'], prizes_count: int = 1
     ):
         if time <= 0:
             raise CustomError("Э! Ниже нуля нельзя! Время укажите, пожалуйста, корректное \🥺")
@@ -538,6 +552,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                  "channel": giveaway_channel.id,
                  "message_id": message.id}
             )
+            asyncio.create_task(self.giveaway_check())
 
     @commands.slash_command(name='role-info', description="Выдам информацию о любой роли на сервере")
     async def utilities_role_info(self, inter, role: disnake.Role):
@@ -634,38 +649,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             await asyncio.create_task(self.reminder_task())
         else:
             await inter.send('Нельзя добавлять ссылки, увы :(')
-
-
-    async def aenumerate(self, iterator, limit):
-        output = ''
-        counter = 0
-
-        async for i in iterator:
-            output += i
-            counter += 1
-
-            if len(output.split()) == limit:
-                break
-
-            yield (counter, output)
-
-
-    @utilities_reminder.sub_command(
-        name="list",
-        description="Просмотр всех ваших последующих напоминалок"
-    )
-    async def utilities_reminder_list(self, inter):
-        db = self.bot.config.DB.reminder
-
-        if await db.count_documents({"guild": inter.guild.id, "member": inter.author.id}) == 0:
-            raise CustomError("У тебя нет напоминалок!")
-        else:
-            # Не бейте
-            reminders = ''
-
-            async for i in db.find({"guild": inter.guild.id, "member": inter.author.id}):
-                reminders += f''
-
+        
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

@@ -80,6 +80,8 @@ class Genshin(commands.Cog, name="гейщит", description="Команды, д
             raise CustomError("Аккаунт не найден")
         except genshin.errors.DataNotPublic:
             raise CustomError("Информация игрока не опубликована на hoyolab")
+        except genshin.errors.InvalidCookies:
+            raise CustomError("Произошла ошибка при поиске. Попробуйте снова.")
 
 
 def setup(bot):

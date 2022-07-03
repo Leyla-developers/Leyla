@@ -5,6 +5,8 @@ from typing import Literal, Optional
 import disnake
 import emoji as emj
 from disnake.ext import commands
+
+from core.classes.another_embeds import Field
 from Tools.exceptions import CustomError
 
 
@@ -62,6 +64,10 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     async def nsfw(self, inter):
         ...
 
+    @settings.sub_command_group(name="word-game", description='Натсройка игры "в слова"')
+    async def word_game(self, inter):
+        ...
+
     @nsfw.sub_command(name='set', description='Установка авто-постинга NSFW канала')
     @commands.is_nsfw()
     async def nsfw_set(self, inter, channel: disnake.TextChannel):
@@ -89,20 +95,25 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         
     @autoroles.sub_command(name="add-role", description="Настройка авторолей")
     async def add_autoroles(self, inter, role: disnake.Role):
-        if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
-            await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": [role.id]})
+        if role.is_integration():
+            raise CustomError('Я не могу установить роль интеграции, как роль на авто-выдачу!')
+        elif role >= inter.me.top_role:
+            raise CustomError('Эта роль выше моей!')
         else:
-            if role.id in dict(await self.bot.config.DB.autoroles.find_one({"guild": inter.guild.id}))['roles']:
-                raise CustomError("Роль уже установлена")
+            if await self.bot.config.DB.autoroles.count_documents({"guild": inter.guild.id}) == 0:
+                await self.bot.config.DB.autoroles.insert_one({"guild": inter.guild.id, "roles": [role.id]})
             else:
-                await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
+                if role.id in dict(await self.bot.config.DB.autoroles.find_one({"guild": inter.guild.id}))['roles']:
+                    raise CustomError("Роль уже установлена")
+                else:
+                    await self.bot.config.DB.autoroles.update_one({"guild": inter.guild.id}, {"$push": {"roles": role.id}})
 
-        await inter.send(embed=await self.bot.embeds.simple(
-                title='Leyla settings **(autoroles)**', 
-                description="Роль при входе на сервер установлена", 
-                footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon else None}
+            await inter.send(embed=await self.bot.embeds.simple(
+                    title='Leyla settings **(autoroles)**', 
+                    description="Роль при входе на сервер установлена", 
+                    footer={'text': f'Роль: {role.name}', 'icon_url': inter.guild.icon.url if inter.guild.icon else None}
+                )
             )
-        )
 
     @autoroles.sub_command(name='remove-role', description='Удаляет роль с авторолей')
     async def remove_autorrole(self, inter, role: disnake.Role):
@@ -730,6 +741,22 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         )
 
         await inter.send(embed=embed)
+
+    @word_game.sub_command(name='channel', description='Установка канала для игры в слова')
+    async def word_game_channel(self, inter, channel: disnake.TextChannel):
+        db = self.bot.config.DB.word_game
+
+        if await db.count_documents({"_id": inter.guild.id}) == 0:
+            await db.insert_one({"_id": inter.guild.id, "channel": channel.id})
+        else:
+            await db.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+        
+        await inter.send(
+            embed=self.bot.embed(
+                title='Leyla settings **(word game)**',
+                description="Канал на игру в слова был выбран! Наслаждайтесь"
+            ).start(fields=[Field(name="Канал", value=channel.mention)])
+        )
 
 
 def setup(bot):

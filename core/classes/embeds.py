@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import Union, List
+from typing import Union
 
 import disnake
 from disnake import Embed

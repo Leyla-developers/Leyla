@@ -1,5 +1,8 @@
+from asyncio import sleep
 from io import BytesIO
+from typing import Literal
 from random import randint
+from string import punctuation, whitespace
 
 import disnake
 from disnake.ext import commands
@@ -24,23 +27,17 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(
-        options=[
-            disnake.Option(name='a', type=disnake.OptionType.integer, description='Число от:'),
-            disnake.Option(name='b', type=disnake.OptionType.integer, description='Число до:')
-        ],
-        description='Случайное число в заданном диапазоне'
-    )
-    async def random(self, inter: disnake.ApplicationCommandInteraction, a: int, b: int):
+    def word_game_validator(self, message: disnake.Message, author: disnake.Member):
+        check = lambda x: ''.join([i for i in x if i not in ' '.join(punctuation).split()])
+        return check(message.replace('ъ', '').replace('ь', '').replace(' ', '')), author
+
+
+    @commands.slash_command(description="Случайное число от a до b")
+    async def random(self, inter: disnake.ApplicationCommandInteraction, a: int = commands.Param(description="Первое число"), b: int = commands.Param(description="Второе число")):
         if b < a or a == b:
             raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно owo')
 
-        embed = await self.bot.embeds.simple(
-            title=f'Случайное число от `{a}` до `{b}`', 
-            thumbnail=inter.author.display_avatar.url,
-            fields=[{"name": f"Разброс чисел, который вы задали: **{a} — {b}**", "value": f"Выпавшее число: {randint(a, b)}"}]
-        )
-        return await inter.send(embed=embed)
+        return await inter.send(f'Выпавшее число: {randint(a, b)}')
 
     @commands.slash_command(
         options=[
@@ -106,6 +103,124 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
                 image='attachment://ship_img.png'
             ), file=file
         )
+
+    @commands.slash_command(
+        name="russian-roulette",
+        description="Мой хозяин научил меня пользоваться револьвером"
+    )
+    async def fun_russian_roulette(self, inter, join_or_start_game: Literal['Начать', 'Присоединиться']):
+        user_choice = {
+            'Начать': 1,
+            'Присоединиться': 2
+        }
+        db = self.bot.config.DB.russian_roulette
+
+        if user_choice[join_or_start_game] == 1:
+            if await db.count_documents({"_id": inter.guild.id, "status": 0}) == 0: # "status": 0 = набор игроков, игра не началась. "status": 1 = игра началась
+                await db.insert_one({"_id": inter.guild.id, "status": 0, "users": [], "queue": [inter.author.id], "host": inter.author.id})
+                await inter.send(
+                    embed=await self.bot.embeds.simple(
+                        title='Русская рулетка',
+                        description="Новая игра начата! Ждём людей. Есть минута на подключение, если не будет хотя бы одного игрока - игра будет отменена"
+                    )
+                )
+                await sleep(60)
+
+                data = await db.find_one({"_id": inter.guild.id})
+
+                if len(data['users']) > 0:
+                    await inter.send(f'Игра началась! {inter.author.mention} ваш ход! (Игра будет длиться 600 секунд (10 минут))\nНужно ввести `выстрел`, чтоб сделать ход.')
+                    await sleep(600)
+                    await db.delete_one({"_id": inter.guild.id})
+                else:
+                    await inter.send("Игра была отменена. Недостаточно участников.")
+                    await db.delete_one({"_id": inter.guild.id})
+            else:
+                game_status = await db.find_one({"_id": inter.author.id})
+
+                if game_status['status'] == 0:
+                    await inter.send(
+                        embed=await self.bot.embeds.simple(
+                            title='Русская рулетка', 
+                            description="На сервере уже есть действующее лобби, вы можете подключиться к нему!"
+                        )
+                    )
+                else:
+                    await inter.send(
+                        embed=await self.bot.embeds.simple(
+                            title='Русская рулетка', 
+                            description="На сервере уже есть действующее лобби, дождитесь окончания игры!"
+                        )
+                    )
+        else:
+            if await db.count_documents({"_id": inter.guild.id, "status": 0}) == 0:
+                await inter.send('На сервере нет действующих лобби, вы можете попробовать создать новое!')
+            else:
+                data = await db.find_one({"_id": inter.guild.id})
+
+                if data['host'] == inter.author.id:
+                    await inter.send("Вы - хостер игры. Просто ожидайте чьего-нибудь подключения.")
+                else:
+                    await inter.send("Поздравляю! Вы вступили в игру, ожидайте.")
+                    await db.update_one({"_id": inter.guild.id}, {"$push": {"users": inter.author.id}})
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        db = self.bot.config.DB.russian_roulette
+
+        if await db.count_documents({"_id": message.guild.id}) == 0:
+            return
+
+        data = await db.find_one({"_id": message.guild.id})
+        n = randint(1, 2) # 1 - выжил, 2 - нет
+
+        if message.author.id in data['users'] or message.author.id in data['queue']:
+            if data['queue'][0] == message.author.id:
+                if message.content.lower() == "выстрел":
+                    get_last_user_id = data['users'][-1]
+                    if n == 1:
+                        await message.channel.send(f'{message.author.mention} тебе повезло. Следующий! {message.guild.get_member(get_last_user_id).mention}')
+                        await db.update_one({"_id": message.guild.id}, {"$pull": {'queue': message.author.id}})
+                        await db.update_one({"_id": message.guild.id}, {"$push": {'queue': get_last_user_id}})
+                        await db.update_one({"_id": message.guild.id}, {"$pull": {'users': get_last_user_id}})
+                        await db.update_one({"_id": message.guild.id}, {"$push": {'users': message.author.id}})
+                    else:
+                        await db.update_one({"_id": message.guild.id}, {"$pull": {'queue': message.author.id}})
+                        await db.update_one({"_id": message.guild.id}, {"$push": {'queue': get_last_user_id}})
+                        await db.update_one({"_id": message.guild.id}, {"$pull": {'users': get_last_user_id}})
+
+                        updated_data = await db.find_one({"_id": message.guild.id})
+
+                        if len(updated_data['users']) + len(updated_data['queue']) == 1:
+                            await message.channel.send(f'Игра окончена! Победитель: {message.guild.get_member(updated_data["queue"][0]).mention}')
+                            await db.delete_one({"_id": message.guild.id})
+                        else:
+                            await message.channel.send(f'Застрелился(-ась) {message.author.mention}. Помянем. Следующий! {message.guild.get_member(get_last_user_id).mention}')
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        db = self.bot.config.DB.word_game
+
+        if await db.count_documents({"_id": message.guild.id}) == 0:
+            return
+
+        data = db.find_one({'_id': message.guild.id})
+
+        if message.channel.id == dict(await data)['channel']:
+            if len([i async for i in message.channel.history()]) == 0:
+                return
+            
+            if len([i async for i in message.channel.history()]) == 1:
+                return
+            
+            last_message = [i async for i in message.channel.history()][1]
+            msg = self.word_game_validator(last_message.content, last_message.author)
+
+            if len(message.attachments) > 0:
+                await message.delete()
+
+            if message.content[0].lower() != msg[0][-1].lower() or message.author.id == msg[-1].id:
+                await message.delete()
 
 
 def setup(bot):

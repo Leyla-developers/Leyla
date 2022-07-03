@@ -115,7 +115,8 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
                     await self.add_level_role(message.author.guild.id, message.author.id, kostil_ebani['lvl'])
                 else:
                     await sleep(60)
-                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": data['xp']+__import__('random').randint(15, 25)}})
+                    kostil_ebani = await self.bot.config.DB.levels.find_one({"guild": message.guild.id, "member": message.author.id})
+                    await self.bot.config.DB.levels.update_one({"guild": message.guild.id, "member": message.author.id}, {"$set": {"xp": kostil_ebani['xp']+__import__('random').randint(15, 25)}})
 
     @commands.slash_command(description="Узнать свой (или пользователя) опыт/уровень")
     async def rank(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):

@@ -22,7 +22,8 @@ PERMISSIONS = {
     "kick_members": "Выгонять участников",
     "manage_guild": "Управлять сервером",
     "send_messages": "Отправлять сообщения",
-    "view_channel": "Просматривать канал"
+    "view_channel": "Просматривать канал",
+    "manage_roles": "Управлять ролями"
 }
 
 class OnErrors(commands.Cog):

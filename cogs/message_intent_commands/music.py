@@ -1,6 +1,7 @@
 import os
 import re
 import math
+import asyncio
 from datetime import timedelta
 
 from dotenv import load_dotenv
@@ -22,6 +23,7 @@ class LavalinkVoiceClient(disnake.VoiceClient):
     def __init__(self, client: disnake.Client, channel: disnake.abc.Connectable):
         self.client = client
         self.channel = channel
+
         if hasattr(self.client, 'lavalink'):
             self.lavalink = self.client.lavalink
         else:
@@ -50,8 +52,13 @@ class LavalinkVoiceClient(disnake.VoiceClient):
         }
         await self.lavalink.voice_update_handler(lavalink_data)
 
-    async def connect(self, *, timeout: float, reconnect: bool, self_deaf: bool = False,
-                      self_mute: bool = False) -> None:
+    async def connect(
+        self, *, 
+        timeout: float, 
+        reconnect: bool, 
+        self_deaf: bool = False,
+        self_mute: bool = False
+    ) -> None:
         self.lavalink.player_manager.create(guild_id=self.channel.guild.id)
         await self.channel.guild.change_voice_state(channel=self.channel, self_mute=self_mute, self_deaf=self_deaf)
 
@@ -69,15 +76,14 @@ class LavalinkVoiceClient(disnake.VoiceClient):
 
 class MusicButtons(disnake.ui.View):
 
-    def __init__(self, bot, player, dj):
+    def __init__(self, player, dj):
         super().__init__()
         self.player = player
         self.dj = dj
-        self.bot = bot
 
     @disnake.ui.button(emoji="⏸️")
     async def music_pause(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Пауза"}])
+        embed = await inter.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Пауза"}])
         if self.player.paused:
             embed.description = "Пауза была убрана. Приятного прослушивания!"
             await self.player.set_pause(False)
@@ -89,10 +95,10 @@ class MusicButtons(disnake.ui.View):
 
     @disnake.ui.button(emoji="⏹️")
     async def music_stop(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Стоп"}])
+        embed = await inter.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Стоп"}])
 
         if self.player.is_playing:
-            vc = LavalinkVoiceClient(self.bot, inter.me.voice.channel)
+            vc = LavalinkVoiceClient(inter, inter.me.voice.channel)
             self.player.queue.clear()
             await self.player.stop()
             await vc.disconnect(force=True)
@@ -104,7 +110,7 @@ class MusicButtons(disnake.ui.View):
 
     @disnake.ui.button(emoji="🔁")
     async def music_repeat(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Повтор"}])
+        embed = await inter.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Повтор"}])
 
         if inter.author.id == self.dj.id:
             if not self.player.repeat:
@@ -120,15 +126,15 @@ class MusicButtons(disnake.ui.View):
 
     @disnake.ui.button(emoji='🔊')
     async def music_volume(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Изменение звука"}])
-        view = ForDropdownCallbackViews(inter.author, self.bot)
+        embed = await inter.bot.embeds.simple(title='Плеер', fields=[{"name": "Действие", "value": "Изменение звука"}])
+        view = ForDropdownCallbackViews(inter.author, inter)
         embed.description = "Выберите то, какой уровень звука вы хотите указать :р."
 
         await inter.send(embed=embed, view=view, ephemeral=True)
 
     @disnake.ui.button(emoji="🔀")
     async def music_shuffle(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер',
+        embed = await inter.bot.embeds.simple(title='Плеер',
                                              fields=[{"name": "Действие", "value": "Перемешка плейлиста"}])
         if len(self.player.queue) <= 1:
             embed.description = "Слишком мало песен в плейлисте."
@@ -143,9 +149,11 @@ class MusicButtons(disnake.ui.View):
 
     @disnake.ui.button(emoji="➡️")
     async def music_skip(self, button, inter):
-        embed = await self.bot.embeds.simple(title='Плеер',
-                                             description="Трек пропущен!",
-                                             fields=[{"name": "Действие", "value": "Пропуск трека"}])
+        embed = await inter.bot.embeds.simple(
+            title='Плеер',
+            description="Трек пропущен!",
+            fields=[{"name": "Действие", "value": "Пропуск трека"}]
+        )
         await self.player.skip()
         await inter.send(embed=embed, ephemeral=True)
 
@@ -161,7 +169,7 @@ class Dropdown(disnake.ui.Select):
             min_values=1,
             max_values=1,
             options=options,
-            custom_id="music_dropdown"
+            custom_id="music_dropdown",
         )
 
     async def callback(self, inter):
@@ -182,7 +190,7 @@ class Dropdown(disnake.ui.Select):
                 thumbnail=f'https://i.ytimg.com/vi/{track["info"]["identifier"]}/maxresdefault.jpg'
             )
 
-            await inter.send(embed=embed, view=MusicButtons(self.bot, player, inter.author))
+            await inter.edit_original_message(embed=embed, view=MusicButtons(player, inter.author))
 
             if not player.is_playing:
                 await player.play()
@@ -232,6 +240,7 @@ class Views(disnake.ui.View):
     def __init__(self, query, bot, dj, options):
         super().__init__()
         self.add_item(Dropdown(query, bot, dj, options))
+        self.add_item(disnake.ui.Button(label='Я передумал(-а)', custom_id='off', style=disnake.ButtonStyle.red))
 
 
 class ForDropdownCallbackViews(disnake.ui.View):
@@ -325,33 +334,57 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
     async def music_play(self, ctx, *, query: str):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         query = query.strip('<>')
+        pattern = r'^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$'
 
         if not url_rx.match(query):
             query = f'ytmsearch:{query}'
 
         results = await player.node.get_tracks(query)
 
-        if results['loadType'] == 'PLAYLIST_LOADED':
-            tracks = results['tracks']
+        if not results or not results['tracks']:
+            return await ctx.send('Я ничего не нашла(')
+        else:
+            if results['loadType'] == 'PLAYLIST_LOADED':
+                tracks = results['tracks']
 
-            for track in tracks:
+                for track in tracks:
+                    player.add(requester=ctx.author.id, track=track)
+
+                await ctx.reply(f'Плейлист **{results["playlistInfo"]["name"]}** добавлен в очередь\nКоличество песен: **{len(tracks)}**', view=MusicButtons(player, ctx.author))
+                
+                if not player.is_playing:
+                    await player.play()
+    
+            elif re.match(pattern, query):
+                track = results['tracks'][0]
                 player.add(requester=ctx.author.id, track=track)
 
-            await ctx.reply(f'Плейлист: **{results["playlistInfo"]["name"]}** добавлен в очередь\nКоличество песен: **{len(tracks)}**', view=MusicButtons(self.bot, player, ctx.author))
-            
-            if not player.is_playing:
-                await player.play()
-        else:
-            if not results or not results['tracks']:
-                return await ctx.send('Я ничего не нашла(')
+                await ctx.reply(f'Трек **"{track["info"]["author"]} - {track["info"]["title"]}"** добавлен в очередь', view=MusicButtons(player, ctx.author))
+                
+                if not player.is_playing:
+                    await player.play()
+            else:
+                data = []
+                songs_list = [f"{i['info']['author']} - {i['info']['title']}" for i in results['tracks']]
 
-            data = []
-            songs_list = [f"{i['info']['author']} - {i['info']['title']}" for i in results['tracks']]
+                for i in list(dict.fromkeys(songs_list)):
+                    data.append(SelectOption(label=f"{i[:50]}..." if len(i) > 50 else i))
 
-            for i in list(dict.fromkeys(songs_list)):
-                data.append(SelectOption(label=i))
+                components = Views(query, self.bot, ctx.author, data[:5])
+                message = await ctx.send(view=components)
 
-            await ctx.reply(view=Views(query, self.bot, ctx.author, data[:5]))
+                try:
+                    await self.bot.wait_for('button_click', check=lambda x: x.component.custom_id == 'off', timeout=25)
+                    await ctx.voice_client.disconnect(force=True)
+                    await message.edit(f'{ctx.author.mention} отказался(-ась) включать трек', view=None)
+                except asyncio.TimeoutError:
+                    if not player.is_playing:
+                        components.children[0].disabled = True
+                        components.children[0].placeholder = 'Время вышло, трек не был выбран.'
+                        components.children[-1].view.remove_item(components.children[-1])
+
+                        await message.edit(view=components)
+
 
     @commands.command(name='queue', description="Вывод очереди песен")
     async def music_queue(self, ctx, page: int = 1):

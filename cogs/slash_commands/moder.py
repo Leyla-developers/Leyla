@@ -15,26 +15,18 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     def __init__(self, bot):
         self.bot = bot
 
-    async def warn_limit_action(self, interaction: disnake.ApplicationCommandInteraction, member: disnake.Member):
-        if not None in (timeout_duration, timeout_unit):
-            units = {
-                'Секунды': timeout_duration,
-                'Минуты': timeout_duration * 60,
-                'Часы': timeout_duration * 60 * 60,
-                'Дни': timeout_duration * 60 * 60 * 24
-            }
-
+    async def warn_limit_action(self, interaction: disnake.ApplicationCommandInteraction, member: disnake.Member, timeout_duration: int):
         if await self.bot.config.DB.warn_limit.count_documents({"_id": interaction.guild.id}) == 0:
             return
 
         user_data = await self.bot.config.DB.warns.count_documents({"guild": interaction.guild.id, "member": member.id})
         data = await self.bot.config.DB.warn_limit.find_one({"_id": interaction.guild.id})
 
-        if data['limit'] >= user_data:
+        if data['limit'] <= user_data:
             match data['action']:
                 case 'mute':
-                    if not None in (timeout_duration, timeout_unit):
-                        await member.timeout(reason=f'Лимит предупреждений (>={data["limit"]})', duration=units[timeout_unit])
+                    if timeout_duration >= 0:
+                        await member.timeout(reason=f'Лимит предупреждений (>={data["limit"]})', duration=timeout_duration)
                     else:
                         await member.timeout(reason=f'Лимит предупреждений (>={data["limit"]})', duration=43600)
                 case 'ban':
@@ -51,14 +43,15 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
         warn_id = random.randint(10000, 99999)
         embed = await self.bot.embeds.simple(title=f"(>-<)!!! {member.name} предупреждён!")
         embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
-        
+        warn_limits = await self.bot.config.DB.warn_limit.find_one({"_id": inter.guild.id})
+
         if inter.author == member:
             raise CustomError("Зачем вы пытаетесь себя предупредить?")
         elif inter.author.top_role <= member.top_role:
             raise CustomError("Ваша роль равна или меньше роли упомянутого участника.")
         else:
             embed.description = f"**{member.name}** было выдано предупреждение"
-            await self.warn_limit_action(interaction=inter, member=member)
+            await self.warn_limit_action(interaction=inter, member=member, timeout_duration=warn_limits['timeout_duration'])
             await self.bot.config.DB.warns.insert_one({"guild": inter.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
 
         await inter.send(embed=embed)
@@ -109,7 +102,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     @commands.has_permissions(manage_messages=True)
     async def clear(self, inter, messages_amount: int, member: disnake.Member = None):
         if messages_amount <= 0:
-            raise CustomError("Как ты собрался очистить <")
+            raise CustomError("Как ты собрался очистить ноль или меньше сообщений?")
         else:
             if member:
                 check = lambda m: m.author == member

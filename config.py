@@ -7,10 +7,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class Config:
 
-    MONGO_CLIENT = AsyncIOMotorClient(environ['DB']) 
+    MONGO_CLIENT = AsyncIOMotorClient('mongodb+srv://aboba:hubabuba2468@leyla.wpif7.mongodb.net/leyla-discord?retryWrites=true&w=majority') 
     DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'color': 0xa8a6f0}
-    OLD_MONGO_CLIENT = AsyncIOMotorClient(environ['OLD_DB'])
+    OLD_MONGO_CLIENT = AsyncIOMotorClient('mongodb+srv://Seriable:lolitspass@cluster0.ovie3.mongodb.net/Seriable?retryWrites=true&w=majority')
     OLD_DB = OLD_MONGO_CLIENT.Seriable.main.Seriable
 
     async def get_guild_data(self, guild: Union[Guild, int], key: str = None) -> dict:
