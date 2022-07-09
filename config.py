@@ -1,24 +1,12 @@
-from os import environ
-from typing import Union
+import os
 
-from disnake import Guild
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class Config:
 
-    MONGO_CLIENT = AsyncIOMotorClient('mongodb+srv://aboba:hubabuba2468@leyla.wpif7.mongodb.net/leyla-discord?retryWrites=true&w=majority') 
+    MONGO_CLIENT = AsyncIOMotorClient(os.environ['DB']) 
     DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'color': 0xa8a6f0}
-    OLD_MONGO_CLIENT = AsyncIOMotorClient('mongodb+srv://Seriable:lolitspass@cluster0.ovie3.mongodb.net/Seriable?retryWrites=true&w=majority')
+    OLD_MONGO_CLIENT = AsyncIOMotorClient(os.environ['OLD_DB'])
     OLD_DB = OLD_MONGO_CLIENT.Seriable.main.Seriable
-
-    async def get_guild_data(self, guild: Union[Guild, int], key: str = None) -> dict:
-        guild_id = guild.id if isinstance(guild, Guild) else guild
-
-        if await self.DB.guilds.count_documents({"_id": guild_id}) != 0:
-            data = await self.DB.guilds.find_one({"_id": guild_id})
-        else:
-            data = self.DEFAULT_GUILD_DATA
-            
-        return data.get(key) if key else data
