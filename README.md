@@ -11,15 +11,15 @@
 
 >Links: [`Official Discord Server`](https://discord.gg/43zapTjgvm)
 
->Creators: [`MagM1go`](https://discord.com/users/598387707311554570)
+>Creator: [`MagM1go`](https://discord.com/users/598387707311554570)
 ___
 
 #### **A little about the capabilities of the bot:**
-- **`RP commands`** 🎭
-- **`Fun commands`** 🥳
-- **`Utilities`** 🔨
-- **`Settings`** ⚙
-- **`Custom server commands`** 🔧
+- **RP commands** 🎭
+- **Fun commands** 🥳
+- **Utilities** 🔨
+- **Settings** ⚙
+- **Custom server commands** 🔧
 ___
 ### Other info
 
