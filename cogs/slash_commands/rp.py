@@ -51,23 +51,16 @@ class RP(commands.Cog, name="ролевые игры", description="Люблю �
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.slash_command(
-        description='Взаимодействовать с пользователем',
-        options=[
-            disnake.Option(
-                'choice', 'выбор действия', 
-                type=disnake.OptionType.string,
-                required=True, 
-                choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()]
-            ),
-            disnake.Option('user', 'пользователь', type=disnake.OptionType.user)
-        ]
-    )
-    async def rp(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User = commands.Param(lambda inter: inter.author), choice: str = None):
+    @commands.slash_command(description='Взаимодействовать с пользователем',)
+    async def rp(
+        self, 
+        inter: disnake.ApplicationCommandInteraction, 
+        user: disnake.User = commands.Param(lambda inter: inter.author), 
+        choice: str = commands.Param(choices=[disnake.OptionChoice(x, x) for x in RP_DESCRIPTIONS.keys()])
+    ):
         await inter.response.defer()
         descriptions = RP_DESCRIPTIONS if user != inter.author and user != self.bot.user else RP_DESCRIPTIONS_MYSELF if user == inter.author else RP_DESCRIPTIONS_LEYLA
         embed = await self.bot.embeds.simple(
-            inter, 
             description=f'***{descriptions[choice].format(user=user)}***',
             image=await waifu_pics.get_image('sfw', choice)
         )

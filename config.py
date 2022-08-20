@@ -4,7 +4,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class Config:
-
     MONGO_CLIENT = AsyncIOMotorClient(os.environ['DB']) 
     DB = MONGO_CLIENT.Leyla
     DEFAULT_GUILD_DATA = {'color': 0xa8a6f0}

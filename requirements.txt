@@ -1,4 +1,3 @@
-PyYAML
 asyncio
 aiohttp
 disnake==2.5.0
@@ -13,7 +12,6 @@ bs4
 git+https://github.com/Leyla-developers/Lavalink.py.git
 PyNaCl
 SmallGoogleTranslator
-genshinstats
 python-dotenv
 genshin
 psutil
@@ -22,3 +20,5 @@ git+https://github.com/MagM1go/DiscordActivity.git
 wikipedia
 git+https://github.com/boticord/blurplefier.git
 git+https://github.com/MagM1go/logg.git
+redis>=4.2.0rc1
+flask

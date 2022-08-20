@@ -4,22 +4,18 @@ import math
 import asyncio
 from datetime import timedelta
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import disnake
+import lavalink
+import humanize
 from disnake import SelectOption
 from disnake.ext import commands
-import lavalink
+
 from Tools.exceptions import CustomError
-import humanize
+from Tools.paginator import Paginator
 
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 
-
 class LavalinkVoiceClient(disnake.VoiceClient):
-
     def __init__(self, client: disnake.Client, channel: disnake.abc.Connectable):
         self.client = client
         self.channel = channel
@@ -182,6 +178,11 @@ class Dropdown(disnake.ui.Select):
                      self.values[0] == "{author} - {title}".format(author=i['info']['author'],
                                                                    title=i['info']['title'])][0]
             player.add(requester=inter.author.id, track=track)
+
+            # green = ':green_square:'
+            # black = ':black_large_square:'
+            # percent = round(player.)
+
             embed = await self.bot.embeds.simple(
                 title=f'Трек: {track["info"]["title"]}',
                 url=track["info"]["uri"],
@@ -359,7 +360,7 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
                 track = results['tracks'][0]
                 player.add(requester=ctx.author.id, track=track)
 
-                await ctx.reply(f'Трек **"{track["info"]["author"]} - {track["info"]["title"]}"** добавлен в очередь', view=MusicButtons(player, ctx.author))
+                await ctx.reply(f'Трек **{track["info"]["author"]} - {track["info"]["title"]}** добавлен в очередь', view=MusicButtons(player, ctx.author))
                 
                 if not player.is_playing:
                     await player.play()
@@ -378,12 +379,13 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
                     await ctx.voice_client.disconnect(force=True)
                     await message.edit(f'{ctx.author.mention} отказался(-ась) включать трек', view=None)
                 except asyncio.TimeoutError:
-                    if not player.is_playing:
-                        components.children[0].disabled = True
-                        components.children[0].placeholder = 'Время вышло, трек не был выбран.'
-                        components.children[-1].view.remove_item(components.children[-1])
+                    with __import__('contextlib').suppress(AttributeError):
+                        if not player.is_playing:
+                            components.children[0].disabled = True
+                            components.children[0].placeholder = 'Время вышло, трек не был выбран.'
+                            components.children[-1].view.remove_item(components.children[-1])
 
-                        await message.edit(view=components)
+                            await message.edit(view=components)
 
 
     @commands.command(name='queue', description="Вывод очереди песен")
@@ -396,6 +398,7 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
         end = start + items_per_page
 
         queue_list = ''
+
         for i, j in enumerate(player.queue[start:end], start=start):
             queue_list += f'[{i + 1} | {j.author} - {j.title} | {humanize.naturaldelta(timedelta(milliseconds=j.duration))}]({j.uri})\n'
 

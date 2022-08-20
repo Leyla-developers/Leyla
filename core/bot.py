@@ -31,7 +31,7 @@ class Leyla(commands.AutoShardedBot):
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.ignore_cogs = []
+        self.ignore_cogs = ['marakov', 'reaction_translator']
         self.wavelink = None
         self.humanize = humanize.i18n.activate("ru_RU")
         self.embed = LeylaEmbed
@@ -67,7 +67,7 @@ class Leyla(commands.AutoShardedBot):
 
 
     async def get_prefix(self, message):
-        if message.guild.id in [i.id for i in self.guilds]:
+        if message.guild.id:
             if await self.config.DB.prefix.count_documents({"_id": message.guild.id}) == 0:
                 prefix = 'l.'
             else:

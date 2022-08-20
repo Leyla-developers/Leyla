@@ -1,4 +1,5 @@
 import re
+from threading import Thread
 
 import disnake
 from disnake.ext import commands
@@ -8,27 +9,34 @@ class AntiInvite(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.regexp = r'(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(.+)'
+        self.compiled_regex = re.compile(self.regexp)
 
-    DISCORD_INVITE = r'(?:https*:\/\/)?(?:discord\.)?(?:com\/invite|gg)\/[\w\/]+'
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if len(re.findall(self.DISCORD_INVITE, message.content)) == 0:
+        message_data = self.compiled_regex.findall(message.content)
+
+        if len(message_data) == 0:
             return
 
         if await self.bot.config.DB.invites.count_documents({"_id": message.guild.id}) == 0:
             return
 
-        data = dict(await self.bot.config.DB.invites.find_one({"_id": message.guild.id}))
+        data = await self.bot.config.DB.invites.find_one({"_id": message.guild.id})
 
         if data['admin_ignore']:
             return
             
         if message.author.bot:
             return
+        
+        invite = await self.bot.fetch_invite(message_data[0][-1])
+        if invite.guild.id == message.guild.id:
+            return
 
         if data['mode']:
-            await message.channel.send(data['message']) if data['message'] else None
+            await message.channel.send(data['message'], delete_after=2) if data['message'] else None
 
             if data['action']:
                 action_data = data['action']
@@ -43,7 +51,7 @@ class AntiInvite(commands.Cog):
                     case 'warn':
                         await self.bot.config.DB.warns.insert_one({"guild": message.guild.id, "member": message.author.id, "reason": "Не отправляй приглашения! | (Автомодерация)", "warn_id": __import__('random').randint(10000, 99999)})
 
-            await message.delete()
+            Thread(target=await message.delete()).run()
 
 
 def setup(bot):

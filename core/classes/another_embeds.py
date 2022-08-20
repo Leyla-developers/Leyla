@@ -37,6 +37,7 @@ class LeylaEmbed:
         image: Optional[Image] = None,
         footer: Optional[Footer] = None,
         url: Optional[Url] = None,
+        fields: Optional[List[Field]] = None,
         **kwargs
     ) -> None:
         self.title = title
@@ -45,11 +46,16 @@ class LeylaEmbed:
         self.image = image
         self.footer = footer
         self.url = url
+        self.fields = [] if fields is None else fields
+        # self.timestamp = kwargs.get('timestamp')
+        # self._files = kwargs.get('_files')
+
+    def field(self, name: str, value: str, inline: bool = False):
+        self.fields.append(Field(name, value, inline))
 
     def start(
         self,
         author: Author = None,
-        fields: List[Field] = None
     ):
         embed = Embed()
         embed.color = 0xa8a6f0
@@ -66,9 +72,9 @@ class LeylaEmbed:
             embed.set_footer(text=self.footer.text, icon_url=self.footer.icon_url)
         if self.url:
             embed.url = self.url
-        if fields:
+        if self.fields:
             with suppress(Exception):
-                for i in fields:
+                for i in self.fields:
                     embed.add_field(name=i.name, value=i.value, inline=i.inline)
 
         if author:

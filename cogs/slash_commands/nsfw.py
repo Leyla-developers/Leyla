@@ -52,7 +52,6 @@ class NSFW(commands.Cog, name="nsfw", description="NSFW команды, что-�
     @commands.is_nsfw()
     async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
         embed = await self.bot.embeds.simple(
-            inter,
             image=hmtai.useHM("29", NSFW_DESCRIPTIONS[choice])
         )
         return await inter.send(embed=embed)

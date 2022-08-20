@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import disnake
 from disnake.ext import commands
 
@@ -10,7 +12,7 @@ class Voices(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if await self.bot.config.DB.voice.count_documents({"_id": member.guild.id}) == 0:
-            ...
+            return
         else:
             data = await self.bot.config.DB.voice.find_one({"_id": member.guild.id})
             permissions = {
@@ -32,17 +34,16 @@ class Voices(commands.Cog):
                 if member in channel.members:
                     voice_channel = await category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
             else:
-                if bool(channel.category):
-                    voice_channel = await channel.category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
-                else:
-                    voice_channel = await member.guild.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
+                with suppress(Exception):
+                    if channel.category:
+                        voice_channel = await channel.category.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
+                    else:
+                        voice_channel = await member.guild.create_voice_channel(name=f"Комната {member.name}", overwrites=permissions)
 
-            try:
+            with suppress(Exception):
                 await member.move_to(voice_channel)
                 await self.bot.wait_for('voice_state_update', check=lambda x, y, z: len(voice_channel.members) == 0)
                 await voice_channel.delete()
-            finally:
-                pass
 
 
 def setup(bot):

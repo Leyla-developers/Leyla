@@ -9,7 +9,7 @@ from io import BytesIO
 from os import environ
 from urllib.parse import quote
 from typing import Literal
-from string import punctuation
+from bs4 import BeautifulSoup
 
 import aiohttp
 from humanize import naturaldelta
@@ -200,29 +200,34 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
         user = await self.bot.fetch_user(user.id)
 
-        if not user.banner:
+        if user.banner:
+            embed.set_image(url=user.banner.url)
+        else:
             color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
             img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
             img.save('banner.png', 'png')
             file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
             
             embed.set_image(url='attachment://banner.png')
-        else:
-            embed.set_image(url=user.banner.url)
-    
+
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
 
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
             f"Полный никнейм: **{str(user)}**",
-            f"Бот?: **{'Да' if user.bot else 'Нет'}**",
         ]
 
         if user in inter.guild.members:
             user_to_member = inter.guild.get_member(user.id)
+            bool_to_symbol = {True: '+', False: '-'}
 
             embed.title = f'Информация о {"боте" if user.bot else "пользователе"} {user.name} {"📱" if user_to_member.is_on_mobile() else "🖥️"}'
+
+            permissions_embed = self.bot.embed(
+                title=f'Права {user_to_member}',
+                description='```' + 'diff\n' + '\n'.join([f'{bool_to_symbol[i[-1]]} {i[0].replace("_", " ").capitalize()}' for i in user_to_member.guild_permissions]) + '```'
+            ).start()
 
             spotify = list(filter(lambda x: isinstance(x, disnake.activity.Spotify), user_to_member.activities))
             second_information = [
@@ -246,9 +251,20 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             second_information) if user in inter.guild.members else "\n".join(main_information)
 
         try:
-            await inter.send(embed=embed, file=file)
-        except:
-            await inter.send(embed=embed)
+            embeds = [embed, permissions_embed]
+        except UnboundLocalError:
+            embeds = [embed]
+        
+        if len(embeds) > 1:
+            view = Paginator(embeds, inter.author)
+        else:
+            view = None
+
+        try:
+            await inter.send(embed=embeds[0], file=file)
+        except UnboundLocalError:
+            await inter.send(embed=embeds[0], view=view)
+
 
     @commands.slash_command(
         description="Получить эмодзик"
@@ -436,8 +452,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             embed = await self.bot.embeds.simple(
                 title=request['information']['name'],
                 description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' +
-                            request['information']['longDescription'] if guild in self.bot.guilds else '' + request[
-                    'information']['longDescription'],
+                            BeautifulSoup(request['information']['longDescription'], 'lxml').text if guild in self.bot.guilds else '' + BeautifulSoup(request[
+                    'information']['longDescription']).text,
                 url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
                 footer={"text": request['information']['shortDescription'],
                         'icon_url': inter.author.display_avatar.url},
@@ -500,7 +516,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
             embed = await self.bot.embeds.simple(
                 title=f'Информация о {bot}', 
-                description=request['information']['longDescription'], 
+                description=BeautifulSoup(request['information']['longDescription'], 'lxml').text, 
                 footer={'text': request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
                 fields=fields
             )

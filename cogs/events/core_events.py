@@ -1,4 +1,5 @@
 import asyncio
+from threading import Thread
 
 import disnake
 from disnake.ext import commands
@@ -29,8 +30,6 @@ class CoreEvents(commands.Cog):
     @commands.Cog.listener()
     async def on_connect(self):
         print('Я подключилась к этой хуйне.')
-        if not self.bot.checks.giveaway_check.is_running():
-            self.bot.checks.giveaway_check.start()
 
         if not self.bot.checks.nsfw.is_running():
             self.bot.checks.nsfw.start()
@@ -43,7 +42,7 @@ class CoreEvents(commands.Cog):
             await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать\n\n— Ссылка на сервер: <https://discord.gg/43zapTjgvm>\n— Сайт бота: <https://leylabot.ml/>\n— Пригласи меня и на другие сервера, тыкнув на кнопочку в профиле \🥺')
 
     @commands.Cog.listener()
-    async def on_guild_join(self, guild):
+    async def on_guild_join(self, guild: disnake.Guild):
         channel = self.bot.get_channel(864408447029215232)
         await channel.send(
             embed=await self.bot.embeds.simple(
@@ -53,6 +52,7 @@ class CoreEvents(commands.Cog):
                     {"name": "Участников", "value": len(guild.members)},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot])}
                 ],
+                image=guild.icon.url if guild.icon else guild.owner.display_avatar.url,
                 color=disnake.Color.green()
             )
         )

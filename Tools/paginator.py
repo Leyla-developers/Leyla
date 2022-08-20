@@ -6,7 +6,6 @@ from Tools.exceptions import CustomError
 
 
 class Paginator(disnake.ui.View):
-
     def __init__(self, pages: List[disnake.Embed], author: disnake.Member) -> None:
         super().__init__()
         self.author = author

@@ -1,8 +1,10 @@
 from asyncio import sleep
 from io import BytesIO
 from typing import Literal
-from random import randint
-from string import punctuation, whitespace
+from random import randint, choices
+from string import punctuation
+from typing import Literal
+from threading import Thread
 
 import disnake
 from disnake.ext import commands
@@ -66,7 +68,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
                 data = await response.read()
                 image_bytes = BytesIO(data)
                 image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
-                embed = await self.bot.embeds.simple(inter, title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
+                embed = await self.bot.embeds.simple(title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
                 await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
 
     @commands.slash_command(
@@ -82,7 +84,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
         description="Аниме тянки"
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
-        embed = await self.bot.embeds.simple(inter, title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
+        embed = await self.bot.embeds.simple(title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
         return await inter.send(embed=embed)
 
     @commands.slash_command(name="ship", description="Создание шип-картинки")
@@ -164,8 +166,21 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
                     await inter.send("Поздравляю! Вы вступили в игру, ожидайте.")
                     await db.update_one({"_id": inter.guild.id}, {"$push": {"users": inter.author.id}})
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
+    @commands.slash_command(
+        name="rps",
+        description="Классическая для многих игра: камень, ножницы, бумага",
+    )
+    async def fun_rps(self, inter, user_choice: Literal['камень', 'ножницы', 'бумага']):
+        variants = {'ножницы': 'бумага', 'камень': 'ножницы', 'бумага': 'камень'}
+        bot_choice = ''.join(choices(list(variants.keys()), weights=[50, 30, 35], k=1))
+
+        if user_choice == variants[bot_choice]:
+            await inter.send(f'Я победила u-u! Мой выбор был: `{bot_choice}`')
+        else:
+            await inter.send(f'Ты победил(-а) (. Мой выбор был: `{bot_choice}`' if bot_choice != user_choice else f'Ничья, никто не победил 😅\n ||{user_choice} - {bot_choice}||')
+
+    @commands.Cog.listener('on_message')
+    async def russian_roulette_event(self, message):
         db = self.bot.config.DB.russian_roulette
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
@@ -197,8 +212,8 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
                         else:
                             await message.channel.send(f'Застрелился(-ась) {message.author.mention}. Помянем. Следующий! {message.guild.get_member(get_last_user_id).mention}')
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
+    @commands.Cog.listener('on_message')
+    async def word_game_event(self, message):
         db = self.bot.config.DB.word_game
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
@@ -217,10 +232,10 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
             msg = self.word_game_validator(last_message.content, last_message.author)
 
             if len(message.attachments) > 0:
-                await message.delete()
+                Thread(target=await message.delete()).run()
 
             if message.content[0].lower() != msg[0][-1].lower() or message.author.id == msg[-1].id:
-                await message.delete()
+                Thread(target=await message.delete()).run()
 
 
 def setup(bot):

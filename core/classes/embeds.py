@@ -1,4 +1,5 @@
 from typing import Union
+from contextlib import suppress
 
 import disnake
 from disnake import Embed
@@ -7,7 +8,6 @@ from config import Config
 
 
 class Embeds(Embed):
-
     def __init__(self, default_color) -> None:
         self.default_color = default_color
 
@@ -19,6 +19,7 @@ class Embeds(Embed):
         footer: dict = None,
         fields: list = None,
         color: disnake.Colour = None,
+        author: dict = None,
         **kwargs
     ) -> None:
         embed = Embed(**kwargs)
@@ -36,12 +37,13 @@ class Embeds(Embed):
         if footer:
             embed.set_footer(text=footer.get('text'), icon_url=footer.get('icon_url'))
 
+        if author:
+            embed.set_author(name=author.get("name"), icon_url=author.get('icon_url'))
+
         if fields:
             for field in fields:
-                try:
+                with suppress(Exception):
                     embed.add_field(name=field.get('name'), value=field.get('value'), inline=field.get('inline') if field.get('inline') else None)
-                except:
-                    pass
 
         return embed
 

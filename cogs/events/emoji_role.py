@@ -4,7 +4,6 @@ import emoji as emj
 
 
 class EmojiRole(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -18,6 +17,7 @@ class EmojiRole(commands.Cog):
 
         if member.bot:
             return
+            
         if await self.get_data_from_db(payload.message_id):
             data = dict(await self.get_data_from_db(payload.message_id))
             emoji_data = payload.emoji if payload.emoji in emj.UNICODE_EMOJI_ALIAS_ENGLISH else str(payload.emoji)
