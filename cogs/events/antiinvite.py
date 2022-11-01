@@ -1,12 +1,9 @@
 import re
-from threading import Thread
 
-import disnake
 from disnake.ext import commands
 
 
 class AntiInvite(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.regexp = r'(https:\/\/)?(www\.)?(((discord(app)?)?\.com\/invite)|((discord(app)?)?\.gg))\/(.+)'
@@ -51,7 +48,7 @@ class AntiInvite(commands.Cog):
                     case 'warn':
                         await self.bot.config.DB.warns.insert_one({"guild": message.guild.id, "member": message.author.id, "reason": "Не отправляй приглашения! | (Автомодерация)", "warn_id": __import__('random').randint(10000, 99999)})
 
-            Thread(target=await message.delete()).run()
+            await message.delete()
 
 
 def setup(bot):

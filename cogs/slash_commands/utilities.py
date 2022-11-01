@@ -1,39 +1,38 @@
-import asyncio
-import calendar as cld
+import re
 import json
 import random
-import re
 import typing
-from datetime import datetime, timedelta
+import asyncio
+import calendar as cld
 from io import BytesIO
 from os import environ
-from urllib.parse import quote
 from typing import Literal
 from bs4 import BeautifulSoup
+from urllib.parse import quote
+from datetime import datetime, timedelta
 
 import aiohttp
-from humanize import naturaldelta
 from PIL import Image
 from textwrap3 import wrap
+from humanize import naturaldelta
 
 import disnake
-from google.translator import GoogleTranslator
+import wikipedia
 import emoji as emj
 from bs4 import BeautifulSoup
 from disnake.ext import commands
 from disnake import SelectOption
-import wikipedia
+from google.translator import GoogleTranslator
 
-from Tools.buttons import CurrencyButton
 from Tools.decoders import Decoder
-from Tools.exceptions import CustomError
-from Tools.links import emoji_converter
 from Tools.paginator import Paginator
+from Tools.links import emoji_converter
+from Tools.exceptions import CustomError
+from Tools.buttons import CurrencyButton
 
 
 class WikiDropdown(disnake.ui.Select):
-    def __init__(self, bot, author: disnake.Member, wiki_options: list):
-        self.bot = bot
+    def __init__(self, author: disnake.Member, wiki_options: list):
         self.author = author
 
         options = wiki_options
@@ -50,7 +49,7 @@ class WikiDropdown(disnake.ui.Select):
 
         if inter.author.id == self.author.id:
             data = wikipedia.page(title=wikipedia.search(self.values[0])[0])
-            embeds = [await self.bot.embeds.simple(title=data.title, url=data.url, description=i) for i in wrap(data.content, 1998)]
+            embeds = [await inter.bot.embeds.simple(title=data.title, url=data.url, description=i) for i in wrap(data.content, 1998)]
             await inter.edit_original_message(embed=embeds[0], view=Paginator(pages=embeds, author=inter.author))
         else:
             await inter.send('Не ты вызывал команду!', ephemeral=True)
@@ -59,9 +58,6 @@ class WikiDropdown(disnake.ui.Select):
 class Utilities(commands.Cog, name="слэш-утилиты", description="Вроде некоторые команды полезны, хд."):
 
     COG_EMOJI = "🔧"
-
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
 
     @commands.slash_command(
         description="Вывод аватара участника"
@@ -72,12 +68,12 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f"[JPG]({user.display_avatar.replace(format='jpg', size=1024).url})",
             f" | [GIF]({user.display_avatar.replace(format='gif', size=1024).url})" if user.display_avatar.is_animated() else ""
         ]
-        embed = await self.bot.embeds.simple(
+        embed = await inter.bot.embeds.simple(
             title=f"Аватар {'бота' if user.bot else 'пользователя'} {user.name}",
             description=''.join(formats),
             image=user.display_avatar.url
         )
-        return await inter.send(embed=embed)
+        await inter.send(embed=embed)
 
     @commands.slash_command(
         description='Перевод в/из азбуки морзе.'
@@ -90,7 +86,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             elif variant == 'decrypt':
                 morse = Decoder().from_morse(text)
 
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title='Decoder/Encoder морзе.',
                 description=morse
             )
@@ -102,7 +98,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             elif variant == 'decrypt':
                 cezar = ''.join([chr(ord(i) - 3) for i in text])
 
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title='Decoder/Encoder шифра Цезаря (3).',
                 description=' '.join([i for i in cezar.split()])
             )
@@ -173,7 +169,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             {'name': '> Роли', 'value': '\n'.join(roles)},
             {'name': '> Прочее', 'value': '\n'.join(other)},
         ]
-        embed = await self.bot.embeds.simple(
+        embed = await inter.bot.embeds.simple(
             title=f'Информация о {guild.name}', 
             description='У сервера нет описания :(' if not guild.description else guild.description, 
             fields=fields,
@@ -197,18 +193,11 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             disnake.Status.idle: '<:leyla_idle:980318419859685457>',
             disnake.Status.offline: '<:leyla_offline:980318029877502003>'
         }
-        embed = await self.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
-        user = await self.bot.fetch_user(user.id)
+        embed = await inter.bot.embeds.simple(title=f'Информация о {"боте" if user.bot else "пользователе"} {user.name}')
+        user = await inter.bot.fetch_user(user.id)
 
         if user.banner:
             embed.set_image(url=user.banner.url)
-        else:
-            color = Image.open(BytesIO(await user.display_avatar.read())).resize((720, 720)).convert('RGB')
-            img = Image.new('RGBA', (500, 200), '#%02x%02x%02x' % color.getpixel((360, 360)))
-            img.save('banner.png', 'png')
-            file = disnake.File(BytesIO(open('banner.png', 'rb').read()), filename='banner.png')
-            
-            embed.set_image(url='attachment://banner.png')
 
         embed.set_thumbnail(url=user.display_avatar.url)
         embed.set_footer(text=f"ID: {user.id}")
@@ -218,22 +207,25 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f"Полный никнейм: **{str(user)}**",
         ]
 
+        embeds = [embed]
+
         if user in inter.guild.members:
             user_to_member = inter.guild.get_member(user.id)
             bool_to_symbol = {True: '+', False: '-'}
 
             embed.title = f'Информация о {"боте" if user.bot else "пользователе"} {user.name} {"📱" if user_to_member.is_on_mobile() else "🖥️"}'
 
-            permissions_embed = self.bot.embed(
+            permissions_embed = inter.bot.embed(
                 title=f'Права {user_to_member}',
                 description='```' + 'diff\n' + '\n'.join([f'{bool_to_symbol[i[-1]]} {i[0].replace("_", " ").capitalize()}' for i in user_to_member.guild_permissions]) + '```'
             ).start()
+            embeds.append(permissions_embed)
 
             spotify = list(filter(lambda x: isinstance(x, disnake.activity.Spotify), user_to_member.activities))
             second_information = [
                 f"Зашёл(-ла) на сервер: **<t:{round(user_to_member.joined_at.timestamp())}:R> | {(datetime.utcnow() - user_to_member.joined_at.replace(tzinfo=None)).days} дней**",
                 f"Количество ролей: **{len(list(filter(lambda role: role, user_to_member.roles)))}**",
-                f"Статус: {str(user_to_member.activity) + ' | ' if user_to_member.activity else ''}{statuses[user_to_member.status]}"
+                f"Статус: {statuses[user_to_member.status]}"
             ]
 
             if len(spotify):
@@ -247,23 +239,21 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                         f"Длительность песни: {naturaldelta(data.duration.total_seconds())} | <t:{timestamps[0]}:R> - <t:{timestamps[-1]}:R>"
                 )
 
-        embed.description = "\n".join(main_information) + "\n" + "\n".join(
-            second_information) if user in inter.guild.members else "\n".join(main_information)
+            if len(user_to_member.activities) > 0:
+                activities_embed = inter.bot.embed(
+                    title=f"Активности {user_to_member}",
+                    description='\n'.join([f'{i.name} | <t:{round(i.created_at.timestamp())}:R>' for i in user_to_member.activities])
+                ).start()
+                embeds.append(activities_embed)
 
-        try:
-            embeds = [embed, permissions_embed]
-        except UnboundLocalError:
-            embeds = [embed]
+        embed.description = "\n".join(main_information) + "\n" + "\n".join(second_information) if user in inter.guild.members else "\n".join(main_information)
         
         if len(embeds) > 1:
             view = Paginator(embeds, inter.author)
         else:
             view = None
 
-        try:
-            await inter.send(embed=embeds[0], file=file)
-        except UnboundLocalError:
-            await inter.send(embed=embeds[0], view=view)
+        await inter.send(embed=embeds[0], view=view) if view is not None else await inter.send(embed=embeds[0])
 
 
     @commands.slash_command(
@@ -275,7 +265,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         else:
             get_emoji_id = int(''.join(re.findall(r'[0-9]', emoji)))
             url = f"https://cdn.discordapp.com/emojis/{get_emoji_id}.gif?size=480&quality=lossless"
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title=f"Эмодзи **{emoji}**",
                 image=await emoji_converter('webp', url)
             )
@@ -294,19 +284,21 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             "serverMembersOnlineCount": len(list(filter(lambda x: not x.status == disnake.Status.offline, inter.guild.members))),
             "serverOwnerID": str(inter.guild.owner_id),
             "serverOwnerTag": str(inter.guild.owner),
+            "upUserId": str(inter.author.id),
+            "upChannelID": str(inter.channel.id),
+            "upChannelName": inter.channel.name
         }
 
-        async with self.bot.session.post(
-            'https://api.boticord.top/v1/server',
-            headers={'Authorization': environ['BCORD']},
+        async with inter.bot.session.post(
+            'https://api.boticord.top/v2/server',
+            headers={'Authorization': 'Bot ' + environ['BCORD']},
             json=data
         ) as response:
             data = await response.json()
-            server = data["serverID"]
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title='Перейти на BotiCord!',
                 description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"],
-                url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{server}"
+                url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{inter.guild.id}"
             )
 
             await inter.send(
@@ -317,8 +309,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
     @commands.is_nsfw()
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
     async def random_emoji(self, inter):
-        emoji = random.choice(self.bot.emojis)
-        await inter.send(embed=await self.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[
+        emoji = random.choice(inter.bot.emojis)
+        await inter.send(embed=await inter.bot.embeds.simple(description="Эмодзяяяяяяяя", image=emoji.url, fields=[
             {'name': 'Скачать эмодзик', 'value': f'[ТЫКТЫКТЫК]({emoji.url})'}]))
 
     @commands.slash_command(
@@ -344,7 +336,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 await session.close()
         desc = re.sub('\n', '', desc, 1)
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 description=f'**[{name}]({url})**\n**Описание**\n> {desc}',
                 thumbnail=re.sub('media/cache/thumbs_\d{3}x\d{3}', '', img)
             )
@@ -352,7 +344,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
     @commands.slash_command(name="currency", description="Подскажу вам курс той или иной валюты :) (В рублях!)")
     async def currency_converter(self, inter, currency, how_many: float = 0):
-        async with self.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
+        async with inter.bot.session.get('https://www.cbr-xml-daily.ru/daily_json.js') as response:
             cb_data = await response.text()
 
         json_cb_data = json.loads(cb_data)
@@ -364,7 +356,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             upper_currency = currency.upper()
 
             await inter.send(
-                embed=await self.bot.embeds.simple(
+                embed=await inter.bot.embeds.simple(
                     title=f'Курс - {get_currency[upper_currency]} ({upper_currency})',
                     description=f'Один {get_currency[upper_currency]} на данный момент стоит **{round(data[upper_currency]["Value"], 2) / data[upper_currency]["Nominal"]}** рублей. ({round(data[upper_currency]["Value"] - data[upper_currency]["Previous"], 1)})',
                     fields=[
@@ -389,7 +381,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             )
         else:
             await inter.send(
-                embed=await self.bot.embeds.simple(
+                embed=await inter.bot.embeds.simple(
                     title='Курс... Так, стоп',
                     description="Такой валюты не существует! Попробуйте выбрать любую из валют (Кнопка ниже)"
                 ), view=view
@@ -401,7 +393,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         data = await google.translate_async(text, to_language, from_language)
 
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 title='Лейла-переводчик',
                 description=data,
                 fields=[{"name": "Оригинальный текст", "value": text}],
@@ -414,11 +406,11 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
     @commands.slash_command(description="Помогу решить почти любой пример!")
     async def calculator(self, inter, expression: str):
-        async with self.bot.session.get(f'http://api.mathjs.org/v4/?expr={quote(expression)}') as response:
+        async with inter.bot.session.get(f'http://api.mathjs.org/v4/?expr={quote(expression)}') as response:
             data = await response.text()
 
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 title='Калькулятор',
                 fields=[{"name": "Введённый пример", "value": expression, 'inline': True},
                         {'name': "Результат", "value": data, 'inline': True}]
@@ -431,8 +423,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
     @boticord_info_cmd.sub_command(name='server', description="Вывод информации о сервере с BotiCord'a!")
     async def boticord_server_info(self, inter, guild=None):
-        async with self.bot.session.get(
-                f'https://api.boticord.top/v1/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}') as response:
+        async with inter.bot.session.get(
+                f'https://api.boticord.top/v1/server/{inter.bot.get_guild(guild).id if inter.bot.get_guild(guild) in inter.bot.guilds else inter.guild.id if guild is None else guild}') as response:
             request = await response.json()
 
         if 'information' in request.keys():
@@ -449,12 +441,12 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                     'youtube'] else None,
             ]
             md = cld.monthrange(datetime.now().year, datetime.now().month)[-1]
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title=request['information']['name'],
                 description=f'**Владелец:** {guild.owner.name if guild else inter.guild.owner.name}\n' +
-                            BeautifulSoup(request['information']['longDescription'], 'lxml').text if guild in self.bot.guilds else '' + BeautifulSoup(request[
+                            BeautifulSoup(request['information']['longDescription'], 'lxml').text if guild in inter.bot.guilds else '' + BeautifulSoup(request[
                     'information']['longDescription']).text,
-                url=f"https://boticord.top/server/{self.bot.get_guild(guild).id if self.bot.get_guild(guild) in self.bot.guilds else inter.guild.id if guild is None else guild}",
+                url=f"https://boticord.top/server/{inter.bot.get_guild(guild).id if inter.bot.get_guild(guild) in inter.bot.guilds else inter.guild.id if guild is None else guild}",
                 footer={"text": request['information']['shortDescription'],
                         'icon_url': inter.author.display_avatar.url},
                 fields=[
@@ -494,11 +486,11 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
     @boticord_info_cmd.sub_command(name='bot', description="Вывод информации о боте с BotiCord'a!")
     async def boticord_bot_info(self, inter, bot=None):
-        async with self.bot.session.get(f'https://api.boticord.top/v1/bot/{bot}') as response:
+        async with inter.bot.session.get(f'https://api.boticord.top/v1/bot/{bot}') as response:
             request = await response.json()
 
         if 'information' in request:
-            fetch_developers = [await self.bot.fetch_user(i) for i in request["information"]["developers"]]
+            fetch_developers = [await inter.bot.fetch_user(i) for i in request["information"]["developers"]]
             fields = [
                 {
                     "name": "Статистика", "value": f'Серверов: {request["information"]["stats"]["servers"]}\n' + \
@@ -514,7 +506,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 {"name": "Разработчики", "value": f'Разработчики: {", ".join([str(i) for i in fetch_developers])}\n', "inline": True}
             ]
 
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title=f'Информация о {bot}', 
                 description=BeautifulSoup(request['information']['longDescription'], 'lxml').text, 
                 footer={'text': request['information']['shortDescription'], 'icon_url': inter.author.display_avatar.url},
@@ -527,16 +519,16 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
     async def giveaway_check(self):
         await asyncio.sleep(1)
 
-        async for i in self.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
-            if self.bot.get_guild(i['guild']) in self.bot.guilds:
-                message = await self.bot.get_channel(i['channel']).fetch_message(i['message_id'])
-                embed = await self.bot.embeds.simple(
+        async for i in inter.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
+            if inter.bot.get_guild(i['guild']) in inter.bot.guilds:
+                message = await inter.bot.get_channel(i['channel']).fetch_message(i['message_id'])
+                embed = await inter.bot.embeds.simple(
                     title='> Розыгрыш окончен!', 
                     description=f"**Приз:** {i['prize']}\n**Победитель:** {''.join(random.choices([i.mention async for i in message.reactions[0].users()], k=i['count']))}",
                 )
                 await message.edit(embed=embed)
         
-            return await self.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
+            await inter.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
 
 
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
@@ -556,14 +548,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 'Дней': datetime.now() + timedelta(days=time)
             }
 
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title='> Розыгрыш!',
                 description=f"**Приз:** {prize}",
                 footer={"text": f'До окончания: {time} {unit.lower()}', 'icon_url': inter.author.display_avatar.url}
             )
             message = await giveaway_channel.send(embed=embed)
             await message.add_reaction('👍')
-            await self.bot.config.DB.giveaway.insert_one(
+            await inter.bot.config.DB.giveaway.insert_one(
                 {"guild": inter.guild.id, "count": prizes_count, "prize": prize, "time": time_convert[unit],
                  "channel": giveaway_channel.id,
                  "message_id": message.id}
@@ -581,7 +573,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             f'Позиция: **{role.position}**',
             f'Роль создана: <t:{round(role.created_at.timestamp())}:D>'
         ]
-        embed = await self.bot.embeds.simple(
+        embed = await inter.bot.embeds.simple(
             title=f"Информация о {role.name}",
             description='\n'.join(role_info_array),
         )
@@ -603,7 +595,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             wiki_view.add_item(
                 WikiDropdown(
                     wiki_options=[SelectOption(label=i) for i in wikipedia.search(query)],
-                    bot=self.bot,
+                    bot=inter.bot,
                     author=inter.author
                 )
             )
@@ -622,14 +614,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
     async def reminder_task(self):
         await asyncio.sleep(1)
-        db = self.bot.config.DB.reminder
+        db = inter.bot.config.DB.reminder
         reminders = db.find({'time': {'$lte': datetime.now()}})
 
         async for reminder in reminders:
             ids = reminder['member']
-            member = await self.bot.fetch_user(ids)
-            channel = await self.bot.fetch_channel(reminder['channel'])
-            embed = await self.bot.embeds.simple(
+            member = await inter.bot.fetch_user(ids)
+            channel = await inter.bot.fetch_channel(reminder['channel'])
+            embed = await inter.bot.embeds.simple(
                 title='Вы ничего не забыли?',
                 description='Вы просили меня, напомнить Вас о чём-то важном, наверное',
                 fields=[{'name': 'Напоминание', 'value': reminder['text'] if len(reminder['text']) < 1024 else reminder['text'][:1023]+'...'}]
@@ -649,12 +641,12 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             'Часов': datetime.now() + timedelta(hours=duration),
             'Дней': datetime.now() + timedelta(days=duration)
         }
-        db = self.bot.config.DB.reminder
+        db = inter.bot.config.DB.reminder
 
         if not re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)', text):
             await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
             await inter.send(
-                embed=await self.bot.embeds.simple(
+                embed=await inter.bot.embeds.simple(
                     title="Напоминалка установлена!",
                     fields=[
                         {'name': 'Сообщение', 'value': text[:1023]},
@@ -665,7 +657,23 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
             await asyncio.create_task(self.reminder_task())
         else:
             await inter.send('Нельзя добавлять ссылки, увы :(')
-        
+    
+    @commands.slash_command(
+        name="invites",
+        description="Показывает топ приглашений"
+    )
+    async def invites_top_info(self, inter):
+        data = enumerate(sorted([(i.uses, str(i.inviter), i.url) for i in await inter.guild.invites()], key=lambda x: x[0], reverse=True))
+        invite_data = list(data)
+        yield_invite_data = lambda _: (f'{i[0]+1}. "{i[-1][-1].split("/")[-1]}" -> {i[1][0]} | {i[1][1]}' for i in invite_data if i[0]+1 <= 15)
+
+        await inter.send(
+            embed=inter.bot.embed(
+                title="Топ тех, кто приглашал", 
+                description='```py\n' + '\n'.join(list(yield_invite_data(invite_data))) + '```'
+            ).start()
+        )
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Utilities(bot))

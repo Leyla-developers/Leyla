@@ -6,7 +6,6 @@ from disnake.ext import commands
 
 
 class CoreEvents(commands.Cog):
-    
     def __init__(self, bot):
         self.bot = bot
 
@@ -29,17 +28,13 @@ class CoreEvents(commands.Cog):
 
     @commands.Cog.listener()
     async def on_connect(self):
-        print('Я подключилась к этой хуйне.')
-
-        if not self.bot.checks.nsfw.is_running():
-            self.bot.checks.nsfw.start()
-            
+        print('Я подключилась к этой хуйне.')            
         self.bot.load_extension('cogs.message_intent_commands.music')
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.content == self.bot.user.mention:
-            await message.reply('Да, да, что такое? Я здесь, Старшина Сенпай!\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать\n\n— Ссылка на сервер: <https://discord.gg/43zapTjgvm>\n— Сайт бота: <https://leylabot.ml/>\n— Пригласи меня и на другие сервера, тыкнув на кнопочку в профиле \🥺')
+            await message.reply('Да, да, что такое?\nКоманды ты можешь посмотреть, введя `/` и найди мою аватарку в списке ботов. Там будут все команды, которые я могу тебе дать\n\n— Ссылка на сервер: <https://discord.gg/43zapTjgvm>\n— Сайт бота: <https://leylabot.ml/>\n— Пригласи меня и на другие сервера, тыкнув на кнопочку в профиле \🥺')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: disnake.Guild):
@@ -52,9 +47,9 @@ class CoreEvents(commands.Cog):
                     {"name": "Участников", "value": len(guild.members)},
                     {"name": "Ботов", "value": len([i.id for i in guild.members if i.bot])}
                 ],
-                image=guild.icon.url if guild.icon else guild.owner.display_avatar.url,
+                image=guild.icon.url if guild.icon else guild.owner.display_avatar.url, 
                 color=disnake.Color.green()
-            )
+            ) # type: ignore
         )
 
     @commands.Cog.listener()

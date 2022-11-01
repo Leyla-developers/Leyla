@@ -9,14 +9,9 @@ class Activities(commands.Cog, name='активности'):
 
     COG_EMOJI = "<:AVAVVAVA:919119257063792670>"
 
-    def __init__(self, bot):
-        self.bot = bot
-        self.activity = Activity(bot)
-
-
     @commands.slash_command(name="activity", description="Всякие разные голосовые активности для кАнальчика")
     async def discord_activity(self, inter, voice_channel: disnake.VoiceChannel, activity_name: Literal['youtube', 'poker', 'betrayal', 'word-snack', 'doodle-crew']):
-        data = await self.activity.send_activity(voice=voice_channel, name=activity_name)
+        data = await Activity(inter.bot).send_activity(voice=voice_channel, name=activity_name)
         await inter.send(f'[Кликни сюда, чтобы начать!](https://discord.gg/{data["code"]})')
 
 

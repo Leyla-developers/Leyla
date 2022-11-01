@@ -18,7 +18,7 @@ class TriggerEvent(commands.Cog):
 
         data = await db.trigger.find_one({"guild": message.guild.id, "trigger_message": message.content.lower()})
 
-        return await message.channel.send(data['response'])
+        await message.channel.send(data['response'])
 
 
 def setup(bot):

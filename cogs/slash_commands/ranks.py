@@ -3,6 +3,7 @@ from asyncio import sleep
 from typing import NewType
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from contextlib import suppress
 
 import disnake
 from disnake.ext import commands
@@ -31,10 +32,8 @@ class RanksRepository(ABC):
 
 
 class Ranks(RanksRepository):
-
     def __init__(self, bot):
         self.bot = bot
-
 
     async def get_role_by_member_data(self, guild_id: LeylaGuildID, member_id: LeylaMemberID, lvl: Level, role_id: LeylaRoleID) -> RankData:
         db = await self.bot.config.DB.levels.find_one({"guild": guild_id, 'member': member_id})
@@ -89,17 +88,13 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
         if message.author.bot: 
             return
         
-        try:
+        with suppress(Exception):
             if message.channel.id in ignore_data['channels']:
                 return
-        except:
-            pass
 
-        try:
+        with suppress(Exception):
             if message.channel.id in [[i.id for i in self.bot.get_channel(i).channels] for i in ignore_data['category']][0]:
                 return
-        except:
-            pass
 
         if message.author.id in ignore_data['users']:
             return

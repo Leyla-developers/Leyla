@@ -19,7 +19,6 @@ from config import Config
 
 
 class Leyla(commands.AutoShardedBot):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         kwargs['command_prefix'] = self.get_prefix
@@ -31,7 +30,7 @@ class Leyla(commands.AutoShardedBot):
         self.checks = LeylaTasks(self)
         self.embeds = Embeds(0xa8a6f0)
         self.session = aiohttp.ClientSession()
-        self.ignore_cogs = ['marakov', 'reaction_translator']
+        self.ignore_cogs = ['markov', 'reaction_translator']
         self.wavelink = None
         self.humanize = humanize.i18n.activate("ru_RU")
         self.embed = LeylaEmbed
@@ -46,8 +45,6 @@ class Leyla(commands.AutoShardedBot):
                         log.info(f'{cog} loaded!')
                     except Exception as e:
                         log.error(f'{folder}.{cog} fucked up by Hueila: {e}')
-                        print(e)
-
 
     def __getitem__(self, item: str) -> commands.Command:
         return self.get_command(item)
@@ -56,15 +53,16 @@ class Leyla(commands.AutoShardedBot):
     def __delitem__(self, item: str) -> commands.Command:
         return self.remove_command(item)
 
-
     async def on_socket_raw_receive(self, data):
         message = disnake.utils._from_json(data)
         return self.dispatch("socket_response", message)
 
-
     async def get_context(self, message, *, cls=LeylaContext):
         return await super().get_context(message=message, cls=cls)
 
+    async def on_ready(self):
+        if not self.checks.nsfw.is_running():
+            self.checks.nsfw.start()
 
     async def get_prefix(self, message):
         if message.guild.id:

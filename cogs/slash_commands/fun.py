@@ -26,9 +26,6 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     COG_EMOJI = "⚽"
 
-    def __init__(self, bot):
-        self.bot = bot
-
     def word_game_validator(self, message: disnake.Message, author: disnake.Member):
         check = lambda x: ''.join([i for i in x if i not in ' '.join(punctuation).split()])
         return check(message.replace('ъ', '').replace('ь', '').replace(' ', '')), author
@@ -39,7 +36,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
         if b < a or a == b:
             raise CustomError('Второе число не должно быть равно первому либо быть меньше чем оно owo')
 
-        return await inter.send(f'Выпавшее число: {randint(a, b)}')
+        await inter.send(f'Выпавшее число: {randint(a, b)}')
 
     @commands.slash_command(
         options=[
@@ -64,11 +61,11 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
             await inter.send(file=disnake.File(avatar_bytes, filename=f'blurplefied_file.{extension}'))
         else:
-            async with self.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url}') as response:
+            async with inter.bot.session.get(f'https://some-random-api.ml/canvas/{overlay}?avatar={user.display_avatar.url.replace("gif", "png")}') as response:
                 data = await response.read()
                 image_bytes = BytesIO(data)
                 image_filename = f'overlay.{"png" if overlay != "triggered" else "gif"}'
-                embed = await self.bot.embeds.simple(title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
+                embed = await inter.bot.embeds.simple(title=OVERLAY_DESCRIPTIONS.get(overlay).format(user) if overlay in OVERLAY_DESCRIPTIONS else disnake.embeds.EmptyEmbed, image=f'attachment://{image_filename}')
                 await inter.send(embed=embed, file=disnake.File(image_bytes, filename=image_filename))
 
     @commands.slash_command(
@@ -84,7 +81,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
         description="Аниме тянки"
     )
     async def anime_girl(self, inter: disnake.ApplicationCommandInteraction, choice: str):
-        embed = await self.bot.embeds.simple(title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
+        embed = await inter.bot.embeds.simple(title=f'{choice.title()} OwO', image=await waifu_pics.get_image('sfw', choice.lower()))
         return await inter.send(embed=embed)
 
     @commands.slash_command(name="ship", description="Создание шип-картинки")
@@ -100,7 +97,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
         file = disnake.File(get_image.image_bytes, 'ship_img.png')
 
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 title=f'*Толкнула {user_one.name} на {second_user.name}* <:awww:878155710796550145>' if percentage > 30 else 'Хрусь 💔',
                 image='attachment://ship_img.png'
             ), file=file
@@ -115,13 +112,13 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
             'Начать': 1,
             'Присоединиться': 2
         }
-        db = self.bot.config.DB.russian_roulette
+        db = inter.bot.config.DB.russian_roulette
 
         if user_choice[join_or_start_game] == 1:
             if await db.count_documents({"_id": inter.guild.id, "status": 0}) == 0: # "status": 0 = набор игроков, игра не началась. "status": 1 = игра началась
                 await db.insert_one({"_id": inter.guild.id, "status": 0, "users": [], "queue": [inter.author.id], "host": inter.author.id})
                 await inter.send(
-                    embed=await self.bot.embeds.simple(
+                    embed=await inter.bot.embeds.simple(
                         title='Русская рулетка',
                         description="Новая игра начата! Ждём людей. Есть минута на подключение, если не будет хотя бы одного игрока - игра будет отменена"
                     )
@@ -142,14 +139,14 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
                 if game_status['status'] == 0:
                     await inter.send(
-                        embed=await self.bot.embeds.simple(
+                        embed=await inter.bot.embeds.simple(
                             title='Русская рулетка', 
                             description="На сервере уже есть действующее лобби, вы можете подключиться к нему!"
                         )
                     )
                 else:
                     await inter.send(
-                        embed=await self.bot.embeds.simple(
+                        embed=await inter.bot.embeds.simple(
                             title='Русская рулетка', 
                             description="На сервере уже есть действующее лобби, дождитесь окончания игры!"
                         )
@@ -181,7 +178,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     @commands.Cog.listener('on_message')
     async def russian_roulette_event(self, message):
-        db = self.bot.config.DB.russian_roulette
+        db = inter.bot.config.DB.russian_roulette
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
             return
@@ -214,7 +211,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     @commands.Cog.listener('on_message')
     async def word_game_event(self, message):
-        db = self.bot.config.DB.word_game
+        db = inter.bot.config.DB.word_game
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
             return

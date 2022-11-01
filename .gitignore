@@ -3,3 +3,11 @@ application.yml
 system.properties
 .vscode
 .env
+.pylintrc
+ship_img.png
+resized_image.png
+runtime.txt
+target
+data
+services/database.py
+mypy.ini

@@ -1,5 +1,6 @@
 import disnake
 from disnake.ext import commands
+
 from Tools.buttons import SupportButton
 from Tools.exceptions import CustomError
 
@@ -12,6 +13,7 @@ DESCRIPTIONS = {
     commands.NSFWChannelRequired: "В этом чате нельзя поразвлекаться(",
     commands.MissingRequiredArgument: "Вы пропустили какой-то аргумент \🤔",
     commands.NotOwner: "Вы не мой папочка, чтобы мне указывать uwu.",
+    commands.RoleNotFound: "Я не нашла такой роли, попробуйте ещё раз!",
     commands.GuildNotFound: "Я не нашла такого сервера!\nПроверьте правильность написания названия/ID. [Ну или вы можете добавить меня туда!)](https://discord.com/oauth2/authorize?client_id=828934385112711188&scope=bot+applications.commands)",
     50013: "У меня нет прав на это("
 }
@@ -44,6 +46,9 @@ class OnErrors(commands.Cog):
 
         if isinstance(cmd_error, CustomError):
             embed.add_field(name="Описание ошибки", value=cmd_error)
+        
+        if isinstance(cmd_error, commands.MissingRequiredArgument):
+            embed.add_field(name="Использование", value=f"`{ctx.prefix}{ctx.command.usage}`")
 
         if not type(cmd_error) in DESCRIPTIONS.keys():
             if isinstance(cmd_error, commands.CommandNotFound):

@@ -3,6 +3,7 @@ import re
 import math
 import asyncio
 from datetime import timedelta
+from contextlib import suppress
 
 import disnake
 import lavalink
@@ -11,7 +12,6 @@ from disnake import SelectOption
 from disnake.ext import commands
 
 from Tools.exceptions import CustomError
-from Tools.paginator import Paginator
 
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 
@@ -298,10 +298,8 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
 
             player.store('channel', ctx.channel.id)
 
-            try:
+            with suppress(Exception):
                 await ctx.author.voice.channel.connect(cls=LavalinkVoiceClient)
-            except:
-                pass
 
         else:
             if int(player.channel_id) != ctx.author.voice.channel.id:
@@ -317,19 +315,15 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
     async def on_voice_state_update(self, member, before, after):
         state = self.bot.lavalink.player_manager.get(member.guild.id)
 
-        if not state:
-            return
-
-        try:
-            channel = self.bot.get_channel(int(state.channel_id))
-            if len(channel.members) == 1:
-                player = self.bot.lavalink.player_manager.get(member.guild.id)
-                vc = LavalinkVoiceClient(self.bot, channel)
-                player.queue.clear()
-                await player.stop()
-                await vc.disconnect(force=True)
-        except:
-            return # просто задолбала ошибка в консоли
+        if state:
+            with suppress(Exception):
+                channel = self.bot.get_channel(int(state.channel_id))
+                if len(channel.members) == 1:
+                    player = self.bot.lavalink.player_manager.get(member.guild.id)
+                    vc = LavalinkVoiceClient(self.bot, channel)
+                    player.queue.clear()
+                    await player.stop()
+                    await vc.disconnect(force=True)
 
     @commands.command(name='play', description="Спою... Точнее, включу песню, которую вы попросите :р", usage="play <Название песни>")
     async def music_play(self, ctx, *, query: str):
@@ -371,15 +365,16 @@ class Music(commands.Cog, name="музыка", description="Всякие ком�
                 for i in list(dict.fromkeys(songs_list)):
                     data.append(SelectOption(label=f"{i[:50]}..." if len(i) > 50 else i))
 
-                components = Views(query, self.bot, ctx.author, data[:5])
+                components = Views(query, self.bot, ctx.author, data[:25])
                 message = await ctx.send(view=components)
 
                 try:
                     await self.bot.wait_for('button_click', check=lambda x: x.component.custom_id == 'off', timeout=25)
-                    await ctx.voice_client.disconnect(force=True)
+                    if not player.is_playing:
+                        await ctx.voice_client.disconnect(force=True)
                     await message.edit(f'{ctx.author.mention} отказался(-ась) включать трек', view=None)
                 except asyncio.TimeoutError:
-                    with __import__('contextlib').suppress(AttributeError):
+                    with suppress(AttributeError):
                         if not player.is_playing:
                             components.children[0].disabled = True
                             components.children[0].placeholder = 'Время вышло, трек не был выбран.'

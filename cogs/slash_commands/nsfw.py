@@ -3,58 +3,46 @@ from disnake.ext import commands
 import hmtai
 
 
-NSFW_DESCRIPTIONS = {
-    'Зопки :³ (ass)': 'ass',
-    'БДСМ (Асуждаю) (bdsm)': 'bdsm',
-    'КониТИВАААА (Слишком много йогуртика) (cum)': 'cum',
-    'Да. (creampie)': 'creampie', 
-    'Девушки тоже умеют... (femdom)': 'femdom', 
-    'Просто хентай (hentai)': 'hentai',
-    '×Агрессивные звуки осуждения× (incest)': 'incest',
-    'Оказывается, не только мальчики др×чат (masturbation)': 'masturbation',
-    'Эээ.. Ладно. (public)': 'public', 
-    'ПаЛюБуЙтЕсЬ (ero)': 'ero', 
-    'Оргия (orgy)': 'orgy', 
-    'Эльфики uwu (elves)': 'elves', 
-    'Девочка и девочка, хмм... (yuri)': 'yuri', 
-    '(Мы, если честно, сами не знаем, что это.) (pantsu)': 'pantsu', 
-    'В очках тоже неплохо) (glasses)': 'glasses', 
-    'Куколд (cuckold)': 'cuckold', 
-    'Блоуджоб (blowjob)': 'blowjob', 
-    'Работа грудью, что))) (boobjob)': 'boobjob', 
-    'Ношшшшшшшшшки (foor)': 'foot', 
-    'Ещё больше хентая (hentai gifs)': 'hnt_gifs', 
-    'Дыротька, не моя, нет( (vagina)': 'vagina', 
-    'Ахегао, что ещё говорить? (ahegao)': 'ahegao', 
-    'Школьницы и не только... ой. (uniform)': 'uniform', 
-    'Щупальца (tentacles)': 'tentacles'
-}
-
-
 class NSFW(commands.Cog, name="nsfw", description="NSFW команды, что-то ещё?"):
-
     COG_EMOJI = "🥵"
+    NSFW_DESCRIPTIONS = {
+        'Жопки :³ (ass)': 'ass',
+        'БДСМ (Асуждаю) (bdsm)': 'bdsm',
+        'Кам) (cum)': 'cum',
+        'Крем). (creampie)': 'creampie', 
+        'Девушки-доминаторы (femdom)': 'femdom', 
+        'Хентай (hentai)': 'hentai',
+        '×Агрессивные звуки осуждения... Наверное× (incest)': 'incest',
+        'Др×чат девочки, др×чат мальчики (masturbation)': 'masturbation',
+        'На публике (public)': 'public', 
+        'Ну типа... Напишите моему разработчику в лс, что это(((((( (ero)': 'ero', 
+        'Оргия (orgy)': 'orgy', 
+        'Эльфики uwu (elves)': 'elves', 
+        'Девочка и девочка, и девочка... *Переполнение рекурсии* (yuri)': 'yuri', 
+        'Что это (pantsu)': 'pantsu', 
+        'Очко (очки) (glasses)': 'glasses', 
+        'Куколд (cuckold)': 'cuckold', 
+        'Блоуджоб (blowjob)': 'blowjob', 
+        'Работа грудью, что))) (boobjob)': 'boobjob', 
+        'Ношшшшшшшшшки (foot)': 'foot', 
+        # 'Ещё больше хентая (hentai gifs)': 'hnt_gifs', 
+        # 'Дыротька, не моя, нет( (vagina)': 'vagina', 
+        'Ахегао, что ещё говорить? (ahegao)': 'ahegao', 
+        'Школьницы и не только... (uniform)': 'uniform', 
+        'Щупальца (tentacles)': 'tentacles'
+    }
 
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-
-    @commands.slash_command(
-        description='Ну... Это было неплохо.',
-        options=[
-            disnake.Option(
-                'choice', 'Выбор картинки', 
-                type=disnake.OptionType.string,
-                required=True, 
-                choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS.keys()]
-            ),
-        ]
-    )
+    @commands.slash_command(description='Ну... Это было неплохо.')
     @commands.is_nsfw()
-    async def nsfw(self, inter: disnake.ApplicationCommandInteraction, choice: str = None):
-        embed = await self.bot.embeds.simple(
-            image=hmtai.useHM("29", NSFW_DESCRIPTIONS[choice])
+    async def nsfw(
+        self, 
+        inter: disnake.ApplicationCommandInteraction, 
+        choice: str = commands.Param(choices=[disnake.OptionChoice(x, x) for x in NSFW_DESCRIPTIONS.keys()])
+    ):
+        embed = await inter.bot.embeds.simple(
+            image=hmtai.useHM("29", self.NSFW_DESCRIPTIONS[choice])
         )
-        return await inter.send(embed=embed)
+        await inter.send(embed=embed)
 
 
 def setup(bot: commands.Bot):

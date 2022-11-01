@@ -8,10 +8,11 @@ class Logs(commands.Cog):
         self.bot = bot
 
     async def get_channel(self, guild):
-        if await self.bot.config.DB.logs.count_documents({"guild": guild.id}) == 0:
-            return False
-        else:
-            return dict(await self.bot.config.DB.logs.find_one({"guild": guild.id}))['channel']
+        if not await self.bot.config.DB.logs.count_documents({"guild": guild.id}) == 0:
+            try:
+                return dict(await self.bot.config.DB.logs.find_one({"guild": guild.id}))['channel']
+            except AttributeError:
+                await self.bot.config.DB.logs.delete_one({"guild": guild.id})
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -80,38 +81,40 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        if not await self.get_channel(after.guild): return
-        elif before.name == after.name: return
-        elif before.display_avatar == after.display_avatar: return
-        elif before.banner == after.banner: return
-        else:
-            embed = await self.bot.embeds.simple(title=f'Изменение участника', url=f"https://discord.com/users/{after.id}")
+        embed = await self.bot.embeds.simple(title=f'Изменение профиля участника', url=f"https://discord.com/users/{after.id}")
 
-            if before.banner != after.banner:
-                embed.description = f"Баннер {after.name} был сменён.\n[Прошлый баннер]({before.banner.url if before.banner else self.bot.user.avatar.url}) | [Новый баннер]({after.banner.url if after.banner else None})"
-                embed.set_image(url=after.banner.url)
-            elif before.display_avatar.url != after.display_avatar.url:
-                embed.description = f"Аватар {after.display_avatar.url} был сменён."
-                embed.set_image(url=after.display_avatar.url)
-            elif before.name != after.name:
-                embed.description = f"Никнейм {after.name} был сменён"
+        if not await self.get_channel(after.guild):
+            return
 
-            await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=embed)
+        if not before.name == after.name:
+            embed.description = f"Никнейм `{before.name}` был сменён на `{after.name}`"
+        elif not before.display_name == after.display_name:
+            embed.description = f"Никнейм `{before.display_name}` был сменён на `{after.display_name}`"
+        elif not before.display_avatar.url == after.display_avatar.url:
+            embed.description = f"Аватар {after.name} был сменён."
+            embed.set_image(url=after.display_avatar.url)
+        elif not before.banner == after.banner:
+            embed.description = f"Баннер {after.name} был сменён.\n[Прошлый баннер]({before.banner.url if before.banner else self.bot.user.avatar.url}) | [Новый баннер]({after.banner.url if after.banner else None})"
+            embed.set_image(url=after.banner.url)
+
+        await self.bot.get_channel(await self.get_channel(after.guild)).send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
-        if not await self.get_channel(guild): return
-        if not await self.bot.config.DB.logs.find_one({"_id": guild.id})['moderation']: return
-        else:
-            channel = await self.get_channel(guild)
-            embed = await self.bot.embeds.simple(
-                title="Бан участника", 
-                fields=[
-                    {"name": "Забаненный", "value": str(member)}
-                ]
-            )
+        if not await self.get_channel(guild):
+            return
+        if not await self.bot.config.DB.logs.count_documents({"_id": guild.id}) == 0:
+            return
 
-            await self.bot.get_channel(channel(guild)).send(embed=embed)
+        channel = await self.get_channel(guild)
+        embed = await self.bot.embeds.simple(
+            title="Бан участника", 
+            fields=[
+                {"name": "Забаненный", "value": str(member)}
+            ]
+        )
+
+        await self.bot.get_channel(channel(guild)).send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):

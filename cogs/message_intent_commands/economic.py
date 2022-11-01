@@ -165,20 +165,22 @@ class Economy(commands.Cog, name="экономика", description="Типа э�
             data = [i async for i in db.find({"shop_guild": ctx.guild.id})]
             description = ''
             for i, j in enumerate(data):
-                description += f'{i+1} | {j["name"] if not isinstance(j["name"], disnake.Role) else ctx.guild.get_role(j["name"]).mention} - {j["price"]}'
+                # description += f'{i} - {j}'
+                description += f'{i+1} | {ctx.guild.get_role(j["product"]["name"]).mention} - {j["product"]["price"]}'
 
             await ctx.reply(embed=await self.bot.embeds.simple(title=f'Магазинчик {ctx.guild.name}', description=description))
 
     @commands.command(name='add-product', description='Добавление товара в магазинчик', usage="add-product <Название товара> <Цена>")
     @commands.has_permissions(manage_guild=True)
-    async def economy_add_product(self, ctx, product: Union[str, disnake.Role], price: int):
+    async def economy_add_product(self, ctx, product: disnake.Role, price: int):
         db = self.bot.config.DB.economic
-        if await db.count_documents({"shop_guild": ctx.guild.id, "product": {'name:': product, 'price': price}}) == 0:
-            await db.insert_one({"shop_guild": ctx.guild.id, "product": {'name:': product if not isinstance(product, disnake.Role) else product.id, 'price': price}})
+        if await db.count_documents({"shop_guild": ctx.guild.id, "product": {'name:': product.id, 'price': price}}) == 0:
+            await db.insert_one({"shop_guild": ctx.guild.id, "product": {'name': product.id, 'price': price, "num": }})
+            await ctx.reply("Товар успешно добавлен в магазин!")
         else:
             raise CustomError("Такой товар уже есть в магазине")
 
-    @commands.command(name="buy", description="Купить какой-то предмет, да", usage="buy <Название товара>")
+    commands.command(name="buy", description="Купить какой-то предмет, да", usage="buy <Название товара>")
     async def economy_buy(self, ctx, product: Union[str, disnake.Role]):
         db = self.bot.config.DB.economic"""
 

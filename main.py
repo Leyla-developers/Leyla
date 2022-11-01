@@ -1,11 +1,13 @@
 import asyncio
 from os import environ
+from multiprocessing import Process
 
 import disnake
+from dotenv import load_dotenv
+
 from core import Leyla
 from Tools.help import LeylaHelp
-
-from dotenv import load_dotenv
+from web_server import LeylaServer
 
 load_dotenv()
 
@@ -25,6 +27,4 @@ bot = Leyla(
     enable_debug_events=True,
 )
 bot.help_command = LeylaHelp()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(bot.start(environ.get('TOKEN')))
+bot.run(environ.get("TOKEN"))

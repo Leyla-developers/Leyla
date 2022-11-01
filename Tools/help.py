@@ -95,7 +95,5 @@ class LeylaHelp(HelpCommand):
         for cog in self.get_all_cogs():
             cog_name = cog.qualified_name.capitalize() if not cog.qualified_name == 'nsfw' else cog.qualified_name.upper()
             embed.description = embed.description + ' ' + f'`{cog_name}`'
-        
-        embeds = []
 
         await self.context.reply(embed=embed, view=Views(self.context.author, self.generate_options(self.get_all_cogs()), self.context.bot))

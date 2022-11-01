@@ -12,15 +12,12 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
 
     COG_EMOJI = "🔨"
 
-    def __init__(self, bot):
-        self.bot = bot
-
     async def warn_limit_action(self, interaction: disnake.ApplicationCommandInteraction, member: disnake.Member, timeout_duration: int):
-        if await self.bot.config.DB.warn_limit.count_documents({"_id": interaction.guild.id}) == 0:
+        if await interaction.bot.config.DB.warn_limit.count_documents({"_id": interaction.guild.id}) == 0:
             return
         else:
-            user_data = await self.bot.config.DB.warns.count_documents({"guild": interaction.guild.id, "member": member.id})
-            data = await self.bot.config.DB.warn_limit.find_one({"_id": interaction.guild.id})
+            user_data = await interaction.bot.config.DB.warns.count_documents({"guild": interaction.guild.id, "member": member.id})
+            data = await interaction.bot.config.DB.warn_limit.find_one({"_id": interaction.guild.id})
 
             if data['limit'] <= user_data:
                 match data['action']:
@@ -41,7 +38,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     @commands.has_permissions(ban_members=True)
     async def warn(self, inter, member: disnake.Member, *, reason: str = None):
         warn_id = random.randint(10000, 99999)
-        embed = await self.bot.embeds.simple(title=f"(>-<)!!! {member.name} предупреждён!")
+        embed = await inter.bot.embeds.simple(title=f"(>-<)!!! {member.name} предупреждён!")
         embed.set_footer(text=f"ID: {warn_id} | {reason if reason else 'Нет причины'}")
 
         if inter.author == member:
@@ -51,12 +48,12 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
         else:
             warn_limits = {"timeout_duration": 42600}
 
-            if await self.bot.config.DB.warn_limit.count_documents({"_id": inter.guild.id}) > 0:
-                warn_limits = await self.bot.config.DB.warn_limit.find_one({"_id": inter.guild.id})
+            if await inter.bot.config.DB.warn_limit.count_documents({"_id": inter.guild.id}) > 0:
+                warn_limits = await inter.bot.config.DB.warn_limit.find_one({"_id": inter.guild.id})
 
             embed.description = f"**{member.name}** было выдано предупреждение"
             await self.warn_limit_action(interaction=inter, member=member, timeout_duration=warn_limits['timeout_duration'])
-            await self.bot.config.DB.warns.insert_one({"guild": inter.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
+            await inter.bot.config.DB.warns.insert_one({"guild": inter.guild.id, "member": member.id, "reason": reason if reason else "Нет причины", "warn_id": warn_id})
 
         await inter.send(embed=embed)
 
@@ -67,18 +64,18 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     async def warns(self, inter, member: disnake.Member = commands.Param(lambda inter: inter.author)):
         if member.bot:
             raise CustomError("Невозможно просмотреть предупреждения **бота**")
-        elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
+        elif await inter.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У вас/участника отсутствуют предупреждения.")
         else:
             warn_description = "Чтобы просмотреть все свои предупреждения, нажмите на кнопку ниже."
 
-            embed = await self.bot.embeds.simple(
+            embed = await inter.bot.embeds.simple(
                 title=f"Вилкой в глаз или... Предупреждения {member.name}",
                 description=warn_description,
                 thumbnail=member.display_avatar.url,
                 footer={
                     "text": "Предупреждения участника", 
-                    "icon_url": self.bot.user.avatar.url
+                    "icon_url": inter.bot.user.avatar.url
                 }
             )
 
@@ -89,13 +86,13 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     async def unwarn(self, inter, member: disnake.Member, warn_id: int):
         if inter.author == member:
             raise CustomError("Вы не можете снять предупреждение с себя.")
-        elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
+        elif await inter.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "member": member.id}) == 0:
             raise CustomError("У этого чудика нет предупреждений(")
-        elif await self.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "warn_id": warn_id}) == 0:
+        elif await inter.bot.config.DB.warns.count_documents({"guild": inter.guild.id, "warn_id": warn_id}) == 0:
             raise CustomError("Такого warn-ID не существует.")
         else:
-            await self.bot.config.DB.warns.delete_one({"guild": inter.guild.id, "member": member.id, "warn_id": warn_id})
-            await inter.send(embed=await self.bot.embeds.simple(
+            await inter.bot.config.DB.warns.delete_one({"guild": inter.guild.id, "member": member.id, "warn_id": warn_id})
+            await inter.send(embed=await inter.bot.embeds.simple(
                 title=f"Снятие предупреждения с {member.name}", 
                 description="Предупреждение участника было снято! :з", 
                 footer={"text": f"Модератор: {inter.author.name}", "icon_url": inter.author.display_avatar.url}
@@ -115,7 +112,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
 
             cleared_messages = await inter.channel.purge(limit=messages_amount, check=check)
 
-        await inter.send(embed=await self.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
+        await inter.send(embed=await inter.bot.embeds.simple(description=f"Я очистила **{len(cleared_messages)}** сообщений!"))
 
     @commands.slash_command(name="timeout", description="Надоел нарушитель? Теперь ему можно заклеить рот!")
     @commands.has_permissions(ban_members=True)
@@ -135,7 +132,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
 
         await member.timeout(duration=units[unit])
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 title='Мут! (timeout)',
                 description=f'Ротик {member.mention} был заклеен, и больше не сможет отработать!)',
                 thumbnail=inter.author.display_avatar.url,
@@ -148,7 +145,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
     @commands.has_permissions(ban_members=True)
     async def unmute(self, inter, member: disnake.Member):
         await member.timeout(duration=0)
-        await inter.send(embed=await self.bot.embeds.simple(title='Мут снят!', description="Кляп с участника был снят, пусть пока радуется жизни, пока может..)"))
+        await inter.send(embed=await inter.bot.embeds.simple(title='Мут снят!', description="Кляп с участника был снят, пусть пока радуется жизни, пока может..)"))
 
     @commands.slash_command(description="Помогу поставить любой медленный режим на канал")
     @commands.has_permissions(manage_messages=True)
@@ -165,7 +162,7 @@ class Moderation(commands.Cog, name="модерация", description="Тепе�
             await channel.edit(slowmode_delay=units[unit])
         
         await inter.send(
-            embed=await self.bot.embeds.simple(
+            embed=await inter.bot.embeds.simple(
                 title='Ненавижу всё медленное!', 
                 description=f"Зачем вы так ограничиваете людей?(" if time > 0 else "Медленный режим был успешно убран!", 
                 fields=[{"name": "Время", "value": "Нолик :3, Вы убрали медленный режим" if time == 0 else f'{units[unit]} секунд'}]

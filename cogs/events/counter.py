@@ -1,10 +1,10 @@
 from string import digits
 
+import disnake
 from disnake.ext import commands
 
 
 class Counter(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -14,8 +14,11 @@ class Counter(commands.Cog):
             return
 
         data = await self.bot.config.DB.counter.find_one({"_id": member.guild.id})
-        channel = self.bot.get_channel(data['channel'])
-        await channel.edit(name=''.join([i for i in channel.name if not i in digits]) + f'{len(member.guild.members)}')
+        channel: disnake.TextChannel = self.bot.get_channel(data['channel'])
+        channel_digits = ''.join([i for i in channel.name if i in digits])
+        modified_name = channel.name.replace(channel_digits, str(len(member.guild.members)))
+
+        await channel.edit(name=modified_name)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -23,8 +26,11 @@ class Counter(commands.Cog):
             return
 
         data = await self.bot.config.DB.counter.find_one({"_id": member.guild.id})
-        channel = self.bot.get_channel(data['channel'])
-        await channel.edit(name=''.join([i for i in channel.name if not i in digits]) + f'{len(member.guild.members)}')
+        channel: disnake.TextChannel = self.bot.get_channel(data['channel'])
+        channel_digits = ''.join([i for i in channel.name if i in digits])
+        modified_name = channel.name.replace(channel_digits, str(len(member.guild.members)))
+        
+        await channel.edit(name=modified_name)
 
 
 def setup(bot):

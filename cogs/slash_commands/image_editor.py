@@ -12,9 +12,6 @@ class ImageEditor(commands.Cog, name="картинки", description="Работ
 
     COG_EMOJI = "<:comen:875434518746644531>"
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.slash_command(name='images', description="Всячески можно изменять картинки")
     async def image_editor(self, inter):
         ...
@@ -26,7 +23,7 @@ class ImageEditor(commands.Cog, name="картинки", description="Работ
         if (x+y) > (2048+1080):
             raise CustomError('Можно максимум 2К (2048 x 1080)')
         else:
-            async with self.bot.session.get(image) as response:
+            async with inter.bot.session.get(image) as response:
                 data = await response.read()
 
             img = Image.open(BytesIO(data)).resize((x, y))

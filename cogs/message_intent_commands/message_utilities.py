@@ -89,7 +89,7 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
             f"Я создана: **13 июля, 2021 года.**",
             f"[Мой сервер поддержки](https://discord.gg/43zapTjgvm)",
             f"Операционная система: **{platform.platform()}**",
-            f"Язык программирования: **Python {sys.version}**"
+            f"Язык программирования: **Python {platform.python_version()}**"
         )
         other_info = (
             f"Мой ID: **{ctx.me.id}**",
@@ -109,7 +109,7 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
                 {"name": "Информация про меня", "value": '\n'.join(about_me_info), "inline": True},
                 {"name": "Всё прочее", "value": '\n'.join(other_info), "inline": True}
             ],
-            footer={"text": f"Мои создатели: {', '.join([str(self.bot.get_user(i)) for i in self.bot.owner_ids])}", "icon_url": ctx.me.avatar.url}
+            footer={"text": f"Мой создатель: {', '.join([str(self.bot.get_user(i)) for i in self.bot.owner_ids])}", "icon_url": ctx.me.avatar.url}
         )
 
         await ctx.reply(embed=embed)
@@ -192,7 +192,6 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
         embed.field(name='Вторая половинка', value=str(marry_data), inline=True)
         embed.field(name='Пол', value=get_gender, inline=True)
         embed.field(name='Возраст', value=age, inline=True)
-
 
         if badge_data != 'Значков нет':
             embed.field(name='Значки', value=badge_data, inline=True)

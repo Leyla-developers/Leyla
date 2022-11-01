@@ -13,7 +13,7 @@ class Paginator(disnake.ui.View):
         self.first_page.disabled = True
         self.last_page.disabled = False
         self.page_index = 0
-
+        
     @disnake.ui.button(emoji="<:double_left_arrow:984444620010311692>")
     async def first_page(self, button, inter):
         if not inter.author.id == self.author.id:
