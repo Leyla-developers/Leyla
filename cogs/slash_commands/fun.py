@@ -26,6 +26,10 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     COG_EMOJI = "⚽"
 
+    def __init__(self, bot) -> None:
+        self.bot = bot
+
+
     def word_game_validator(self, message: disnake.Message, author: disnake.Member):
         check = lambda x: ''.join([i for i in x if i not in ' '.join(punctuation).split()])
         return check(message.replace('ъ', '').replace('ь', '').replace(' ', '')), author
@@ -178,7 +182,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     @commands.Cog.listener('on_message')
     async def russian_roulette_event(self, message):
-        db = inter.bot.config.DB.russian_roulette
+        db = self.bot.config.DB.russian_roulette
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
             return
@@ -211,7 +215,7 @@ class FunSlashCommands(commands.Cog, name="развлечения", description=
 
     @commands.Cog.listener('on_message')
     async def word_game_event(self, message):
-        db = inter.bot.config.DB.word_game
+        db = self.bot.config.DB.word_game
 
         if await db.count_documents({"_id": message.guild.id}) == 0:
             return

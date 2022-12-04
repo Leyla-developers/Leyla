@@ -516,19 +516,19 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         else:
             raise CustomError("Я не нашла ничего по такому запросу!")
 
-    async def giveaway_check(self):
-        await asyncio.sleep(1)
+    async def giveaway_check(self, interaction, time):
+        await asyncio.sleep(time)
 
-        async for i in inter.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
-            if inter.bot.get_guild(i['guild']) in inter.bot.guilds:
-                message = await inter.bot.get_channel(i['channel']).fetch_message(i['message_id'])
-                embed = await inter.bot.embeds.simple(
+        async for i in interaction.bot.config.DB.giveaway.find({"time": {"$lte": datetime.now()}}):
+            if interaction.bot.get_guild(i['guild']) in interaction.bot.guilds:
+                message = await interaction.bot.get_channel(i['channel']).fetch_message(i['message_id'])
+                embed = await interaction.bot.embeds.simple(
                     title='> Розыгрыш окончен!', 
                     description=f"**Приз:** {i['prize']}\n**Победитель:** {''.join(random.choices([i.mention async for i in message.reactions[0].users()], k=i['count']))}",
                 )
                 await message.edit(embed=embed)
         
-            await inter.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
+            await interaction.bot.config.DB.giveaway.delete_one({"guild": i['guild'], 'prize': i['prize']})
 
 
     @commands.slash_command(name="giveaway", description="Можно всякие там розыгрыши делатц...")
@@ -545,7 +545,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 'Секунд': datetime.now() + timedelta(seconds=time),
                 'Минут': datetime.now() + timedelta(minutes=time),
                 'Часов': datetime.now() + timedelta(hours=time),
-                'Дней': datetime.now() + timedelta(days=time)
+                'Дней': datetime.now() + timedelta(days=time),
             }
 
             embed = await inter.bot.embeds.simple(
@@ -560,7 +560,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                  "channel": giveaway_channel.id,
                  "message_id": message.id}
             )
-            asyncio.create_task(self.giveaway_check())
+            asyncio.create_task(self.giveaway_check(inter, time_convert[unit]))
 
     @commands.slash_command(name='role-info', description="Выдам информацию о любой роли на сервере")
     async def utilities_role_info(self, inter, role: disnake.Role):

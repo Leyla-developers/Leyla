@@ -5,7 +5,6 @@ disnake-jishaku
 motor
 dnspython
 emoji
-hmtai
 textwrap3
 easy_pil
 bs4
@@ -22,4 +21,3 @@ git+https://github.com/boticord/blurplefier.git
 git+https://github.com/MagM1go/logg.git
 redis>=4.2.0rc1
 flask[async]
-nest_asyncio

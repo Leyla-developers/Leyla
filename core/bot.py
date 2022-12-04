@@ -61,8 +61,7 @@ class Leyla(commands.AutoShardedBot):
         return await super().get_context(message=message, cls=cls)
 
     async def on_ready(self):
-        if not self.checks.nsfw.is_running():
-            self.checks.nsfw.start()
+        await self.checks.start_tasks()
 
     async def get_prefix(self, message):
         if message.guild.id:
