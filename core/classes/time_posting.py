@@ -31,7 +31,7 @@ class LeylaTasks:
 
                 with suppress(Exception):
                     if channel.is_nsfw():
-                        async with self.bot.session.get(f'https://hmtai.hatsunia.cfd/nsfw/{random.choice(self.nsfw_categories)}') as response:
+                        async with self.bot.session.get(f'https://hmtai.hatsunia.cfd/nsfw/{random.choice(nsfw_categories)}') as response:
                             await channel.send((await response.json())['url'])
 
             except AttributeError:
