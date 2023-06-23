@@ -28,7 +28,7 @@ class LeylaTasks:
 
         async for i in self.bot.config.DB.nsfw.find():
             try:
-                url = self.bot.get_channel((await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['hook'])
+                url = (await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['hook']
 
                 with suppress(Exception):
                     async with ClientSession() as session:
@@ -38,7 +38,7 @@ class LeylaTasks:
                                 await hook.send((await response.json())['url'])
 
             except AttributeError:
-                await self.bot.config.DB.nsfw.delete_one({"_id": i['_id'], "channel": i['channel']})
+                await self.bot.config.DB.nsfw.delete_one({"_id": i['_id']})
 
         await asyncio.sleep(30)
 
