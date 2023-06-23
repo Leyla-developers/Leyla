@@ -38,7 +38,7 @@ class LeylaTasks:
                                 await hook.send((await response.json())['url'])
 
             except AttributeError:
-                await self.bot.config.DB.nsfw.delete_one({"_id": i['_id'], "channel": i['channel']})
+                await self.bot.config.DB.nsfw.delete_one({"_id": i['_id']})
 
         await asyncio.sleep(30)
 
