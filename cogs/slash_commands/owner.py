@@ -28,7 +28,7 @@ class Owner(commands.Cog, description="Люблю ебаться в задниц
     @owner.sub_command(name='link')
     async def link(self, ctx, link: str = None):
         try:
-            await inter.bot.config.OLD_DB.links.insert_one({"id": "bad", "link": link})
+            await ctx.bot.config.OLD_DB.links.insert_one({"id": "bad", "link": link})
         except:
             raise CustomError('Ссылка уже есть в базе.')
 
@@ -36,7 +36,7 @@ class Owner(commands.Cog, description="Люблю ебаться в задниц
 
     @owner.sub_command(name='unlink')
     async def unlink(self, ctx, link: str = None):
-        await inter.bot.config.OLD_DB.links.delete_one({"id": "bad", "link": link})
+        await ctx.bot.config.OLD_DB.links.delete_one({"id": "bad", "link": link})
         await ctx.send('Ссылка была удалена.')
 
     @owner.sub_command(name="jail")
@@ -58,6 +58,9 @@ class Owner(commands.Cog, description="Люблю ебаться в задниц
     @owner.sub_command(name="forced-divorce")
     async def force_divorce(self, inter, user: disnake.User):
         marry_data = await inter.bot.config.DB.marry.find_one({'$or': [{'_id': user.id}, {'mate': user.id}]})
+        if not marry_data:
+            raise CustomError('У пользователя нет второй половинки.')
+
         user = await inter.bot.fetch_user(marry_data['_id'] if marry_data['_id'] != inter.author.id else marry_data['mate'])
 
         if not await inter.bot.config.DB.marry.count_documents({'$or': [{'_id': user.id}, {'mate': user.id}]}):
