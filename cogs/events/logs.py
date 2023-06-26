@@ -1,6 +1,8 @@
 import disnake
 from disnake.ext import commands
 
+from Tools.update_changer import updated_username
+
 
 class Logs(commands.Cog):
 
@@ -21,7 +23,7 @@ class Logs(commands.Cog):
             await self.bot.get_channel(
                 await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Новый участник тут зашёл :3",
-                    fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
+                    fields=[{"name": "Никнейм пользователя", "value": updated_username(member), "inline": True}],
                     footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else self.bot.user.avatar.url},
                     thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
@@ -34,7 +36,7 @@ class Logs(commands.Cog):
         else:
             await self.bot.get_channel(await self.get_channel(member.guild)).send(embed=await self.bot.embeds.simple(
                     title="Кто-то ушёл отседова...(",
-                    fields=[{"name": "Никнейм пользователя", "value": str(member), "inline": True}],
+                    fields=[{"name": "Никнейм пользователя", "value": updated_username(member), "inline": True}],
                     footer={"text": f"Дата регистрации: {member.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": member.guild.icon.url if member.guild.icon else self.bot.user.avatar.url},                    thumbnail=member.display_avatar.url,
                     color=disnake.Colour.red()
                 )
@@ -110,7 +112,7 @@ class Logs(commands.Cog):
         embed = await self.bot.embeds.simple(
             title="Бан участника", 
             fields=[
-                {"name": "Забаненный", "value": str(member)}
+                {"name": "Забаненный", "value": updated_username(member)}
             ]
         )
 
@@ -125,7 +127,7 @@ class Logs(commands.Cog):
             embed = await self.bot.embeds.simple(
                 title="Разбан участника", 
                 fields=[
-                    {"name": "Разбаненный", "value": str(member)}
+                    {"name": "Разбаненный", "value": updated_username(member)}
                 ]
             )
 

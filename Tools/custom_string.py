@@ -12,7 +12,7 @@ def welcome_function(member, message):
         'memberMention': member.mention,
         'guildMembers': str(len(member.guild.members)),
         'guild': member.guild.name,
-        'member': str(member)
+        'member': updated_username(member)
     }
 
     return MyTemplate(message).safe_substitute(variables)
