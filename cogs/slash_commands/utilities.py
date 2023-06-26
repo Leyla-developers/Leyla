@@ -628,7 +628,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                 fields=[{'name': 'Напоминание', 'value': reminder['text'] if len(reminder['text']) < 1024 else reminder['text'][:1023]+'...'}]
             )
 
-            await inter.send(content=member.mention, embed=embed)
+            await inter.send(content=inter.author.mention, embed=embed)
             return await db.delete_one(reminder)
 
     @utilities_reminder.sub_command(
