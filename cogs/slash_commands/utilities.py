@@ -658,7 +658,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
                         ]
                     )
                 )
-                await asyncio.create_task(self.reminder_task())
+                await asyncio.create_task(self.reminder_task(inter))
         else:
             await inter.send('Нельзя добавлять ссылки, увы :(')
     
