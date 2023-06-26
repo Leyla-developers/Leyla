@@ -645,17 +645,20 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         db = inter.bot.config.DB.reminder
 
         if not re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)', text):
-            await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
-            await inter.send(
-                embed=await inter.bot.embeds.simple(
-                    title="Напоминалка установлена!",
-                    fields=[
-                        {'name': 'Сообщение', 'value': text[:1023]},
-                        {'name': 'Время', 'value': f'{duration} {unit.lower()}'}
-                    ]
+            if duration <= 0:
+                raise CustomError("Э! Ниже нуля нельзя! Продолжительность укажите, пожалуйста, корректную \🥺")
+            else:
+                await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
+                await inter.send(
+                    embed=await inter.bot.embeds.simple(
+                        title="Напоминалка установлена!",
+                        fields=[
+                            {'name': 'Сообщение', 'value': text[:1023]},
+                            {'name': 'Время', 'value': f'{duration} {unit.lower()}'}
+                        ]
+                    )
                 )
-            )
-            await asyncio.create_task(self.reminder_task())
+                await asyncio.create_task(self.reminder_task())
         else:
             await inter.send('Нельзя добавлять ссылки, увы :(')
     
