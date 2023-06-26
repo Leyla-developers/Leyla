@@ -13,6 +13,7 @@ from disnake.ext import commands
 from core.classes.another_embeds import Field, Footer
 from Tools.update_changer import updated_username
 
+
 class ProfileMenu(disnake.ui.Select):
     def __init__(self, user):
         self.user = user
