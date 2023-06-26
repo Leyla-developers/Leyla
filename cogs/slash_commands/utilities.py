@@ -29,6 +29,7 @@ from Tools.paginator import Paginator
 from Tools.links import emoji_converter
 from Tools.exceptions import CustomError
 from Tools.buttons import CurrencyButton
+from Tools.update_changer import updated_username
 
 
 class WikiDropdown(disnake.ui.Select):
@@ -204,7 +205,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
-            f"Полный никнейм: **{str(user)}**",
+            f"Полный никнейм: **{updated_username(user)}**",
         ]
 
         embeds = [embed]
