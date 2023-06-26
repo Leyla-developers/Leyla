@@ -34,13 +34,14 @@ class LeylaTasks:
                     async with ClientSession() as session:
                         hook = Webhook.from_url(url=url, session=session)
                         if hook.channel.is_nsfw():
-                            async with self.bot.session.get(f'https://hmtai.hatsunia.cfd/nsfw/{random.choice(nsfw_categories)}') as response:
+                            async with session.get(f'https://hmtai.hatsunia.cfd/nsfw/{random.choice(nsfw_categories)}') as response:
                                 await hook.send((await response.json())['url'])
 
             except AttributeError:
                 await self.bot.config.DB.nsfw.delete_one({"_id": i['_id']})
 
         await asyncio.sleep(30)
+        await self.start_tasks()
 
     async def start_tasks(self):
         await self.nsfw()

@@ -93,6 +93,10 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         if await inter.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
             raise CustomError('Ну... Сейчас нет каналов, куда я бы постила NSFW.')
         else:
+            nsfw_data = await inter.bot.config.DB.nsfw.find_one({"_id": inter.guild.id})
+            async with ClientSession() as session:
+                await disnake.Webhook.from_url(url=nsfw_data["hook"], session=session).delete()
+
             await inter.bot.config.DB.nsfw.delete_one({"_id": inter.guild.id})
 
         await inter.send(embed=await inter.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был убран."))
