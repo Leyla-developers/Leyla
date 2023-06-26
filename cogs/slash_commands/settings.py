@@ -5,6 +5,7 @@ from typing import Literal, Optional
 import disnake
 import emoji as emj
 from disnake.ext import commands
+from aiohttp import ClientSession
 
 from core.classes.another_embeds import Field
 from Tools.exceptions import CustomError
@@ -74,7 +75,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             await inter.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "hook": hook.url})
         else:
             nsfw_data = await inter.bot.config.DB.nsfw.find_one({"_id": inter.guild.id})
-            async with inter.bot.session as session:
+            async with ClientSession() as session:
                 await disnake.Webhook.from_url(url=nsfw_data["hook"], session=session).delete()
                 
             await inter.bot.config.DB.nsfw.update_one({"_id": inter.guild.id}, {"$set": {"hook": hook.url}})
@@ -93,7 +94,7 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
             raise CustomError('Ну... Сейчас нет каналов, куда я бы постила NSFW.')
         else:
             nsfw_data = await inter.bot.config.DB.nsfw.find_one({"_id": inter.guild.id})
-            async with inter.bot.session as session:
+            async with ClientSession() as session:
                 await disnake.Webhook.from_url(url=nsfw_data["hook"], session=session).delete()
 
             await inter.bot.config.DB.nsfw.delete_one({"_id": inter.guild.id})

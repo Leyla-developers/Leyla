@@ -3,6 +3,7 @@ import random
 from contextlib import suppress
 
 from disnake import Webhook
+from aiohttp import ClientSession
 
 
 class LeylaTasks:
@@ -30,7 +31,7 @@ class LeylaTasks:
                 url = (await self.bot.config.DB.nsfw.find_one({"_id": i['_id']}))['hook']
 
                 with suppress(Exception):
-                    async with self.bot.session as session:
+                    async with ClientSession() as session:
                         hook = Webhook.from_url(url=url, session=session)
                         if hook.channel.is_nsfw():
                             async with session.get(f'https://hmtai.hatsunia.cfd/nsfw/{random.choice(nsfw_categories)}') as response:
