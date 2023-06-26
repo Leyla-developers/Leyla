@@ -621,14 +621,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         async for reminder in reminders:
             ids = reminder['member']
             member = await inter.bot.fetch_user(ids)
-            channel = await inter.bot.fetch_channel(reminder['channel'])
+            #channel = await inter.bot.fetch_channel(reminder['channel'])
             embed = await inter.bot.embeds.simple(
                 title='Вы ничего не забыли?',
                 description='Вы просили меня, напомнить Вас о чём-то важном, наверное',
                 fields=[{'name': 'Напоминание', 'value': reminder['text'] if len(reminder['text']) < 1024 else reminder['text'][:1023]+'...'}]
             )
 
-            await channel.send(content=member.mention, embed=embed)
+            await inter.send(content=member.mention, embed=embed)
             return await db.delete_one(reminder)
 
     @utilities_reminder.sub_command(
