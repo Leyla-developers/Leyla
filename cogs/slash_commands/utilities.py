@@ -613,7 +613,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
     async def utilities_reminder(self, inter):
         ...
 
-    async def reminder_task(self):
+    async def reminder_task(self, inter):
         await asyncio.sleep(1)
         db = inter.bot.config.DB.reminder
         reminders = db.find({'time': {'$lte': datetime.now()}})
