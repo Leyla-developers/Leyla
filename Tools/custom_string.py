@@ -1,4 +1,5 @@
 from string import Template
+from update_changer import updated_username
 
 
 class MyTemplate(Template):
@@ -11,7 +12,7 @@ def welcome_function(member, message):
         'memberMention': member.mention,
         'guildMembers': str(len(member.guild.members)),
         'guild': member.guild.name,
-        'member': str(member)
+        'member': updated_username(member)
     }
 
     return MyTemplate(message).safe_substitute(variables)
@@ -22,7 +23,7 @@ async def level_string(bot, member):
     message = await bot.config.DB.levels.find_one({"_id": member.guild.id})
     variables = {
         'memberMention': member.mention,
-        'member': str(member),
+        'member': updated_username(member),
         'lvl': str(data['lvl']),
         'xp': str(5*(data['lvl']**2)+50*data['lvl']+100)
     }
