@@ -1,7 +1,7 @@
 import disnake
 import easy_pil as pil
 
-from update_changer import updated_username
+from uchanger import updated_username
 
 
 def user_rank_card(member, lvl, xp, need_xp, percentage: int = 0):

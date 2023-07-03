@@ -1,5 +1,5 @@
 from string import Template
-from update_changer import updated_username
+from uchanger import updated_username
 
 
 class MyTemplate(Template):
