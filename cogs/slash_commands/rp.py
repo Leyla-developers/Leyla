@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 
 from services import waifu_pics
-from Tools.uchanger import updated_username
+from Tools.update_changer import updated_username
 
 
 RP_DESCRIPTIONS = {
