@@ -273,7 +273,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
             await inter.send(embed=embed)
 
-    @commands.slash_command(description="Данная команда может поднять сервер или бота в топе на boticord'e")
+   @commands.slash_command(description="Данная команда может поднять сервер или бота в топе на boticord'e")
     async def up(
         self, 
         interaction: disnake.ApplicationCommandInteraction, 
@@ -298,7 +298,20 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
         if prepare_data_status == 429:
             await interaction.send("Вы уже апали (а если сервер - кто-то уже апнул)! "
-                                  f"Приходите через <t:{round(datetime.now().timestamp() + (prepare_data_response_json['result']['cd'] / 1000))}:R>")
+                                  f"Приходите через <t:{round(datetime.now().timestamp() + (prepare_data_response_json['result']['cd'] / 1000))}:R>",
+                                  ephemeral=True)
+            return
+
+        if 'errors' in prepare_data_response_json:
+            error_codes = [i['code'] for i in prepare_data_response_json["errors"]]
+            error_messages = [i['message'] for i in prepare_data_response_json["errors"]]
+
+            errors = zip(error_codes, error_messages)
+            await interaction.send(
+                f"Такого сервера или бота не существует (или ещё какая-то ошибка).\n" +
+                '\n'.join([f'{error_code} - {error_message}' for error_code, error_message in errors]), 
+                ephemeral=True
+            )
             return
 
         prepare_captcha = prepare_data_response_json["result"]["captcha"]
@@ -334,7 +347,8 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         if 'errors' in proceed_data_response:
             await interaction.send("Вы выбрали неверный эмодзи.")
         else:
-            await interaction.send("[UP](<https://boticord.top>) был успешно произведён! ✅")
+            await message.clear_reactions()
+            await interaction.edit_original_message("[UP](<https://boticord.top>) был успешно произведён! ✅")
 
     @commands.is_nsfw()
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
