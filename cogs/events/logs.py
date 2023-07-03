@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 
-from Tools.uchanger import updated_username
+from Tools.update_changer import updated_username
 
 
 class Logs(commands.Cog):
