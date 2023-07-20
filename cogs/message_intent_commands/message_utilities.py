@@ -11,6 +11,7 @@ import psutil
 from disnake.ext import commands
 
 from core.classes.another_embeds import Field, Footer
+from Tools.update_changer import updated_username
 
 
 class ProfileMenu(disnake.ui.Select):
@@ -109,7 +110,7 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
                 {"name": "Информация про меня", "value": '\n'.join(about_me_info), "inline": True},
                 {"name": "Всё прочее", "value": '\n'.join(other_info), "inline": True}
             ],
-            footer={"text": f"Мой создатель: {', '.join([str(self.bot.get_user(i)) for i in self.bot.owner_ids])}", "icon_url": ctx.me.avatar.url}
+            footer={"text": f"Мой создатель: {', '.join([updated_username(self.bot.get_user(i)) for i in self.bot.owner_ids])}", "icon_url": ctx.me.avatar.url}
         )
 
         await ctx.reply(embed=embed)
@@ -142,7 +143,8 @@ class MessageUtilities(commands.Cog, name='утилиты', description="Вся�
         if await self.bot.config.DB.marries.count_documents({'$or': [{'_id': user.id}, {'mate': user.id}]}) > 0:
             data = await self.bot.config.DB.marries.find_one({'$or': [{'_id': user.id}, {'mate': user.id}]})
             key = {v:k for k, v in data.items()}[user.id]
-            marry_data: disnake.User = await self.bot.fetch_user(int(data['_id'] if key == 'mate' else data['mate']))
+            married_user = await self.bot.fetch_user(int(data['_id'] if key == 'mate' else data['mate']))
+            marry_data = updated_username(married_user)
         else:
             marry_data = 'Нет пары'
 

@@ -5,6 +5,7 @@ from typing import Literal, Optional
 import disnake
 import emoji as emj
 from disnake.ext import commands
+from aiohttp import ClientSession
 
 from core.classes.another_embeds import Field
 from Tools.exceptions import CustomError
@@ -55,7 +56,6 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     async def voice_settings(self, inter):
         ...
 
-
     @settings.sub_command_group(description="Установка авто-постинга NSFW канала")
     @commands.is_nsfw()
     async def nsfw(self, inter):
@@ -68,10 +68,17 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
     @nsfw.sub_command(name='set', description='Установка авто-постинга NSFW канала')
     @commands.is_nsfw()
     async def nsfw_set(self, inter, channel: disnake.TextChannel):
+        avatar = await inter.bot.user.avatar.read()
+        hook = await channel.create_webhook(name="Лейла", avatar=avatar)
+
         if await inter.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
-            await inter.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "channel": channel.id})
+            await inter.bot.config.DB.nsfw.insert_one({"_id": inter.guild.id, "hook": hook.url})
         else:
-            await inter.bot.config.DB.nsfw.update_one({"_id": inter.guild.id}, {"$set": {"channel": channel.id}})
+            nsfw_data = await inter.bot.config.DB.nsfw.find_one({"_id": inter.guild.id})
+            async with ClientSession() as session:
+                await disnake.Webhook.from_url(url=nsfw_data["hook"], session=session).delete()
+                
+            await inter.bot.config.DB.nsfw.update_one({"_id": inter.guild.id}, {"$set": {"hook": hook.url}})
 
         await inter.send(
             embed=await inter.bot.embeds.simple(
@@ -86,6 +93,10 @@ class Settings(commands.Cog, name='настройки', description="ЧТО ДЕ
         if await inter.bot.config.DB.nsfw.count_documents({"_id": inter.guild.id}) == 0:
             raise CustomError('Ну... Сейчас нет каналов, куда я бы постила NSFW.')
         else:
+            nsfw_data = await inter.bot.config.DB.nsfw.find_one({"_id": inter.guild.id})
+            async with ClientSession() as session:
+                await disnake.Webhook.from_url(url=nsfw_data["hook"], session=session).delete()
+
             await inter.bot.config.DB.nsfw.delete_one({"_id": inter.guild.id})
 
         await inter.send(embed=await inter.bot.embeds.simple(title='Leyla settings **(posting)**', description="Канал автопостинга NSFW был убран."))

@@ -30,6 +30,7 @@ from Tools.paginator import Paginator
 from Tools.links import emoji_converter
 from Tools.exceptions import CustomError
 from Tools.buttons import CurrencyButton
+from Tools.update_changer import updated_username
 
 
 class WikiDropdown(disnake.ui.Select):
@@ -205,7 +206,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
         main_information = [
             f"Зарегистрировался: **<t:{round(user.created_at.timestamp())}:R>** | {(datetime.utcnow() - user.created_at.replace(tzinfo=None)).days} дней",
-            f"Полный никнейм: **{str(user)}**",
+            f"Полный никнейм: **{updated_username(user)}**",
         ]
 
         embeds = [embed]
@@ -665,7 +666,7 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
     async def utilities_reminder(self, inter):
         ...
 
-    async def reminder_task(self):
+    async def reminder_task(self, inter):
         await asyncio.sleep(1)
         db = inter.bot.config.DB.reminder
         reminders = db.find({'time': {'$lte': datetime.now()}})
@@ -673,14 +674,14 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         async for reminder in reminders:
             ids = reminder['member']
             member = await inter.bot.fetch_user(ids)
-            channel = await inter.bot.fetch_channel(reminder['channel'])
+            #channel = await inter.bot.fetch_channel(reminder['channel'])
             embed = await inter.bot.embeds.simple(
                 title='Вы ничего не забыли?',
                 description='Вы просили меня, напомнить Вас о чём-то важном, наверное',
                 fields=[{'name': 'Напоминание', 'value': reminder['text'] if len(reminder['text']) < 1024 else reminder['text'][:1023]+'...'}]
             )
 
-            await channel.send(content=member.mention, embed=embed)
+            await inter.send(content=inter.author.mention, embed=embed)
             return await db.delete_one(reminder)
 
     @utilities_reminder.sub_command(
@@ -697,17 +698,20 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
         db = inter.bot.config.DB.reminder
 
         if not re.match(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)', text):
-            await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
-            await inter.send(
-                embed=await inter.bot.embeds.simple(
-                    title="Напоминалка установлена!",
-                    fields=[
-                        {'name': 'Сообщение', 'value': text[:1023]},
-                        {'name': 'Время', 'value': f'{duration} {unit.lower()}'}
-                    ]
+            if duration <= 0:
+                raise CustomError("Э! Ниже нуля нельзя! Продолжительность укажите, пожалуйста, корректную \🥺")
+            else:
+                await db.insert_one({"guild": inter.guild.id, "member": inter.author.id, "text": text, 'time': time_convert[unit], 'channel': inter.channel.id})
+                await inter.send(
+                    embed=await inter.bot.embeds.simple(
+                        title="Напоминалка установлена!",
+                        fields=[
+                            {'name': 'Сообщение', 'value': text[:1023]},
+                            {'name': 'Время', 'value': f'{duration} {unit.lower()}'}
+                        ]
+                    )
                 )
-            )
-            await asyncio.create_task(self.reminder_task())
+                await asyncio.create_task(self.reminder_task(inter))
         else:
             await inter.send('Нельзя добавлять ссылки, увы :(')
     
