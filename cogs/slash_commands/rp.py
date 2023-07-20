@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 
 from services import waifu_pics
+from Tools.update_changer import updated_username
 
 
 RP_DESCRIPTIONS = {
@@ -57,8 +58,8 @@ class RP(commands.Cog, name="ролевые игры", description="Люблю �
     ):
         await inter.response.defer()
         descriptions = RP_DESCRIPTIONS if user != inter.author and user != inter.bot.user else RP_DESCRIPTIONS_MYSELF if user == inter.author else RP_DESCRIPTIONS_LEYLA
-        embed = await self.bot.embeds.simple(
-            description=f'***{descriptions[choice].format(user=user)}***',
+        embed = await inter.client.embeds.simple(
+            description=f'***{descriptions[choice].format(user=updated_username(user))}***',
             image=await waifu_pics.get_image('sfw', choice)
         )
         await inter.send(embed=embed)

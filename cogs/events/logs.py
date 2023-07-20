@@ -132,6 +132,33 @@ class Logs(commands.Cog):
             await self.bot.get_channel(channel(guild)).send(embed=embed)
 
     @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        if not await self.get_channel(channel.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(channel.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Новый канал :eyes:",
+                    url=channel.jump_url,
+                    description=f"Канал: **{channel.mention}**",
+                    footer={"text": f"Дата создания: {channel.created_at.strftime('%Y.%m.%d %H:%M:%S')}", "icon_url": channel.guild.icon.url if channel.guild.icon else self.bot.user.avatar.url},
+                    thumbnail=channel.guild.icon.url if channel.guild.icon else self.bot.user.avatar.url,
+                    color=disnake.Colour.red()
+                )
+            )
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        if not await self.get_channel(channel.guild): return
+        else:
+            await self.bot.get_channel(await self.get_channel(channel.guild)).send(embed=await self.bot.embeds.simple(
+                    title="Удаление канала :eyes:",
+                    url=channel.jump_url,
+                    description=f"Канал назывался: **{channel.name}**",
+                    thumbnail=channel.guild.icon.url if channel.guild.icon else self.bot.user.avatar.url,
+                    color=disnake.Colour.red()
+                )
+            )
+
+    @commands.Cog.listener()
     async def on_thread_join(self, thread):
         if not await self.get_channel(thread.guild): return
         else:

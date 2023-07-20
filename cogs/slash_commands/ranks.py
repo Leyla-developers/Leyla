@@ -6,10 +6,14 @@ from abc import ABC, abstractmethod
 from contextlib import suppress
 
 import disnake
+import pymongo
 from disnake.ext import commands
+
 from Tools.exceptions import CustomError
 from Tools.images import user_rank_card
 from Tools.custom_string import level_string
+from Tools.paginator import Paginator
+
 
 
 Level = NewType('Level', int)
@@ -75,6 +79,14 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
             data = await level_string(self.bot, message.author)
             return await message.guild.get_channel(channel_id).send(data)
 
+    def get_guild_member_for_leaderboard(self, guild_id: int, member_id: int = None) -> str:
+        cached_guild = self.bot.get_guild(guild_id)
+        cached_member = cached_guild.get_member(member_id)
+        if cached_member is not None:
+            return cached_member.mention
+
+        return "Неизвестен"
+
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
         ignore_data = await self.bot.config.DB.levels.find_one({"_id": message.guild.id})
@@ -123,7 +135,7 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
             raise CustomError("Система уровней не включена здесь!")
         else:
             data = dict(await self.bot.config.DB.levels.find_one({"guild": inter.guild.id, "member": member.id}))
-            card = user_rank_card(
+            user_rank_card(
                 member, 
                 data['lvl'], 
                 data['xp'], 
@@ -131,6 +143,30 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
                 (data['xp'] / (5*(data['lvl']**2)+50*data['lvl']+100)) * 100
             ).save('user_card.png')
             await inter.send(file=disnake.File(BytesIO(open('user_card.png', 'rb').read()), 'user_card.png'), ephemeral=True)
+
+    @commands.slash_command(description="Список лидеров по уровню.")
+    async def leaderboard(self, inter: disnake.ApplicationCommandInteraction):
+        embeds = []
+        iterable_data = [i async for i in (
+            self.bot.config.DB.levels.find({"guild": inter.guild_id})
+            .limit(100)
+            .sort([("lvl", pymongo.DESCENDING), ("xp", pymongo.DESCENDING)])
+        )]
+        level_data = [
+            f"{position + 1} | {self.get_guild_member_for_leaderboard(inter.guild_id, member_data.get('member'))} - "
+            f"{member_data.get('lvl')} | {member_data.get('xp')}" 
+            for position, member_data in enumerate(iterable_data)
+        ]
+
+        for index, _ in enumerate(level_data):
+            if not index % 10 == 0:
+                continue
+
+            embed = await self.bot.embeds.simple(title="Лидеры по уровню", description="\n".join(level_data[index:index + 10]))
+            embeds.append(embed)
+
+        view = Paginator(pages=embeds, author=inter.author)
+        await inter.send(embed=embeds[0], view=view)
 
 
 def setup(bot):

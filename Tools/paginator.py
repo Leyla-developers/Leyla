@@ -8,11 +8,19 @@ from Tools.exceptions import CustomError
 class Paginator(disnake.ui.View):
     def __init__(self, pages: List[disnake.Embed], author: disnake.Member) -> None:
         super().__init__()
+
         self.author = author
         self.pages = pages
         self.first_page.disabled = True
         self.last_page.disabled = False
         self.page_index = 0
+
+        if not len(pages) or len(pages) == 1:
+            self.first_page.disabled = True
+            self.previous_page.disabled = True
+            self.close_paginator.disabled = True
+            self.next_page.disabled = True
+            self.last_page.disabled = True
         
     @disnake.ui.button(emoji="<:double_left_arrow:984444620010311692>")
     async def first_page(self, button, inter):

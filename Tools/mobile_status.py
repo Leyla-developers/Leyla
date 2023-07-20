@@ -6,11 +6,9 @@ async def leyla_mobile_identify(self):
         'd': {
             'token': self.token,
             'properties': {
-                '$os': sys.platform,
-                '$browser': 'Discord Android',
-                '$device': 'Discord Android',
-                '$referrer': '',
-                '$referring_domain': ''
+                'os': sys.platform,
+                'browser': 'Discord Android',
+                'device': 'Discord Android',
             },
             'compress': True,
             'large_threshold': 250,

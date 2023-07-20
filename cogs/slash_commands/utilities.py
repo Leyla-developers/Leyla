@@ -1,3 +1,4 @@
+import base64
 import re
 import json
 import random
@@ -272,39 +273,91 @@ class Utilities(commands.Cog, name="слэш-утилиты", description="Вр�
 
             await inter.send(embed=embed)
 
-    @commands.slash_command(description="Данная команда может поднять сервер в топе на boticord'e")
-    async def up(self, inter: disnake.ApplicationCommandInteraction):
-        data = {
-            "serverID": str(inter.guild.id),
-            "up": 1,
-            "status": 1,
-            "serverName": inter.guild.name,
-            "serverAvatar": inter.guild.icon.url if inter.guild.icon else None,
-            "serverMembersAllCount": len(inter.guild.members),
-            "serverMembersOnlineCount": len(list(filter(lambda x: not x.status == disnake.Status.offline, inter.guild.members))),
-            "serverOwnerID": str(inter.guild.owner_id),
-            "serverOwnerTag": str(inter.guild.owner),
-            "upUserId": str(inter.author.id),
-            "upChannelID": str(inter.channel.id),
-            "upChannelName": inter.channel.name
+    @commands.slash_command(description="Данная команда может поднять сервер или бота в топе на boticord'e")
+    async def up(
+        self, 
+        interaction: disnake.ApplicationCommandInteraction, 
+        up_object: str = commands.Param(
+            default=lambda interaction: str(interaction.guild.id),
+            description="Идентификатор сервера или бота, которого вы хотите апнуть"
+        )
+    ):
+        boticord_token = environ['BCORD']
+        boticord_api_url = "https://api.boticord.top/v3"
+        captcha_prepare_route = "/resources/ups/service/prepare"
+        captcha_proceed_route = "/resources/ups/service/proceed"
+        captcha_prepare_data = {
+            "token": boticord_token,
+            "resource": up_object,
+            "user": str(interaction.author.id)
         }
 
-        async with inter.bot.session.post(
-            'https://api.boticord.top/v2/server',
-            headers={'Authorization': 'Bot ' + environ['BCORD']},
-            json=data
-        ) as response:
-            data = await response.json()
-            embed = await inter.bot.embeds.simple(
-                title='Перейти на BotiCord!',
-                description="У меня нет доступа к API методу(\nЗайдите на [сервер поддержки](https://discord.gg/43zapTjgvm) для дальнейшей помощи" if "error" in data else data["message"],
-                url=f"https://boticord.top/add/server" if "error" in data else f"https://boticord.top/server/{inter.guild.id}"
-            )
+        async with aiohttp.ClientSession() as session:
+            async with session.post(boticord_api_url + captcha_prepare_route, json=captcha_prepare_data) as response:
+                prepare_data_response_json, prepare_data_status = (await response.json(), response.status)
 
-            await inter.send(
-                'Благодарю за поддержку сервера! <3' if 'успешно' in data['message'] else None,
-                embed=embed
+        if prepare_data_status == 429:
+            await interaction.send("Вы уже апали (а если сервер - кто-то уже апнул)! "
+                                  f"Приходите через <t:{round(datetime.now().timestamp() + (prepare_data_response_json['result']['cd'] / 1000))}:R>",
+                                  ephemeral=True)
+            return
+
+        if 'errors' in prepare_data_response_json:
+            error_codes = [i['code'] for i in prepare_data_response_json["errors"]]
+            error_messages = [i['message'] for i in prepare_data_response_json["errors"]]
+
+            if error_messages[0] == "Unknown user":
+                await interaction.send("Авторизуйтесь на [сайте](<https://boticord.top>), чтобы апнуть")
+                return
+
+            errors = zip(error_codes, error_messages)
+            await interaction.send(
+                f"Такого сервера или бота не существует (или ещё какая-то ошибка).\n" +
+                '\n'.join([f'{error_code} - {error_message}' for error_code, error_message in errors]), 
+                ephemeral=True
             )
+            return
+
+        prepare_captcha = prepare_data_response_json["result"]["captcha"]
+        captcha_id = prepare_captcha["id"]
+        emojis = zip(prepare_captcha["choices"], list(range(3)))
+        image = prepare_captcha['image']
+        await interaction.response.send_message(
+            file=disnake.File(
+                BytesIO(base64.b64decode(image)), 
+                filename="captcha.jpg"
+            )
+        )
+        message = await interaction.original_message()
+        reactions = {emoji: index for emoji, index in emojis}
+
+        for emoji in reactions.keys():
+            await message.add_reaction(emoji)
+
+        await asyncio.sleep(0.5)
+        try:
+            reaction = (await interaction.client.wait_for('reaction_add', timeout=15))[0]
+        except asyncio.TimeoutError:
+            await interaction.send("Никто не прошёл капчу! Время вышло.")
+            return
+        finally:
+            captcha_answer = reactions[reaction.emoji]
+            proceed_to_send_data = {
+                "token": boticord_token,
+                "resource": str(up_object),
+                "user": str(interaction.author.id),
+                "captchaId": captcha_id,
+                "captchaAnswer": captcha_answer
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(boticord_api_url + captcha_proceed_route, json=proceed_to_send_data) as response:
+                    proceed_data_response = await response.json()
+
+            if 'errors' in proceed_data_response:
+                await interaction.send("Вы выбрали неверный эмодзи.")
+            else:
+                await message.clear_reactions()
+                await interaction.edit_original_message("[UP](<https://boticord.top>) был успешно произведён! ✅", file=None)
 
     @commands.is_nsfw()
     @commands.slash_command(name='emoji-random', description="Я найду тебе рандомный эмодзик :3")
