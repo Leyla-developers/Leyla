@@ -98,7 +98,7 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
             ])
         )
 
-    def generate_leaderboard_data(self, interaction: disnake.ApplicationCommandInteraction, data: List) -> List[str]:
+    def format_leaderboard_data(self, interaction: disnake.ApplicationCommandInteraction, data: List) -> List[str]:
         level_data = []
         guild_id = interaction.guild_id
         
@@ -185,7 +185,7 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
             raise CustomError("Система уровней не включена здесь!")
 
         iterable_data = [i async for i in self.get_leaderboard_data(guild_id=inter.guild_id, limit=100)]
-        level_data = self.generate_leaderboard_data(interaction=inter, data=iterable_data)
+        level_data = self.format_leaderboard_data(interaction=inter, data=iterable_data)
         embeds = await self.create_leaderboard_pages(data=level_data)
         view = Paginator(pages=embeds, author=inter.author)
 
