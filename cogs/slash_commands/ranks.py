@@ -1,6 +1,6 @@
 from io import BytesIO
 from asyncio import sleep
-from typing import NewType
+from typing import List, NewType
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from contextlib import suppress
@@ -8,6 +8,7 @@ from contextlib import suppress
 import disnake
 import pymongo
 from disnake.ext import commands
+from motor.motor_asyncio import AsyncIOMotorCursor
 
 from Tools.exceptions import CustomError
 from Tools.images import user_rank_card
@@ -86,6 +87,40 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
             return cached_member.mention
 
         return "Неизвестен"
+    
+    def get_leaderboard_data(self, guild_id: int, limit: int) -> AsyncIOMotorCursor:
+        return (
+            self.bot.config.DB.levels.find({"guild": guild_id})
+            .limit(limit)
+            .sort([
+                ("lvl", pymongo.DESCENDING), 
+                ("xp", pymongo.DESCENDING)
+            ])
+        )
+
+    def generate_leaderboard_data(self, interaction: disnake.ApplicationCommandInteraction, data: List) -> List[str]:
+        level_data = []
+        guild_id = interaction.guild_id
+        
+        for position, member_data in enumerate(data):
+            member = self.get_guild_member_for_leaderboard(guild_id=guild_id, member_id=member_data.get('member'))
+            level = member_data.get('lvl')
+            experience = member_data.get('xp')
+            entry_string = f"{position + 1} | {member} - {level} | {experience}"
+            level_data.append(entry_string)
+
+        return level_data
+
+    async def create_leaderboard_pages(self, data: List[str]) -> List[disnake.Embed]:
+        embeds = []
+        page_count = len(data) // 10
+        for page_i in range(page_count):
+            index = (page_i + 1) * 10
+            embed = await self.bot.embeds.simple(title="Лидеры по уровню", description="\n".join(data[index - 10:index]))
+            embeds.append(embed)
+
+        return embeds
+
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
@@ -146,26 +181,14 @@ class RanksCog(commands.Cog, name="уровни", description="Ну, уровн�
 
     @commands.slash_command(description="Список лидеров по уровню.")
     async def leaderboard(self, inter: disnake.ApplicationCommandInteraction):
-        embeds = []
-        iterable_data = [i async for i in (
-            self.bot.config.DB.levels.find({"guild": inter.guild_id})
-            .limit(100)
-            .sort([("lvl", pymongo.DESCENDING), ("xp", pymongo.DESCENDING)])
-        )]
-        level_data = [
-            f"{position + 1} | {self.get_guild_member_for_leaderboard(inter.guild_id, member_data.get('member'))} - "
-            f"{member_data.get('lvl')} | {member_data.get('xp')}" 
-            for position, member_data in enumerate(iterable_data)
-        ]
+        if not await self.cog_check(inter):
+            raise CustomError("Система уровней не включена здесь!")
 
-        for index, _ in enumerate(level_data):
-            if not index % 10 == 0:
-                continue
-
-            embed = await self.bot.embeds.simple(title="Лидеры по уровню", description="\n".join(level_data[index:index + 10]))
-            embeds.append(embed)
-
+        iterable_data = [i async for i in self.get_leaderboard_data(guild_id=inter.guild_id, limit=100)]
+        level_data = self.generate_leaderboard_data(interaction=inter, data=iterable_data)
+        embeds = await self.create_leaderboard_pages(data=level_data)
         view = Paginator(pages=embeds, author=inter.author)
+
         await inter.send(embed=embeds[0], view=view)
 
 
