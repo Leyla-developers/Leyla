@@ -5,7 +5,6 @@ from disnake.ext import commands
 from config import Config
 import aiohttp
 
-
 class SupportButton(disnake.ui.View):
     
     def __init__(self):
